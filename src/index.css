@@ -2,16 +2,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Scientific Socialism palette */
-  --color-crimson: #b22234;
-  --color-ember: #db3a34;
+  /* Scientific Socialism palette - Revised */
+  --color-crimson: #DA251D; /* Flag Red */
+  --color-gold: #FFFF00; /* Flag Yellow/Gold */
+  --color-ember: #e0ac00; /* Darker Gold for text/borders */
   --color-ink: #0f172a;
-  --color-graphite: #111827;
-  --color-sand: #f4f1e8;
-  --color-bone: #f9f7f3;
-  --color-olive: #5b7553;
-  --color-copper: #d48b45;
-  --color-ice: #e7f3ff;
+  --color-graphite: #333333;
+  --color-sand: #fefcf5;
+  --color-bone: #fffefb;
+  --color-olive: #4b6a45;
+  --color-copper: #c77d28;
+  --color-ice: #f0f7ff;
 
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-body: "Sora", system-ui, sans-serif;
@@ -26,9 +27,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  background: radial-gradient(circle at 20% 20%, rgba(219, 58, 52, 0.08), transparent 25%),
-    radial-gradient(circle at 80% 0%, rgba(91, 117, 83, 0.12), transparent 22%),
-    linear-gradient(160deg, var(--color-bone) 0%, var(--color-ice) 100%);
+  background: radial-gradient(circle at 20% 20%, rgba(218, 37, 29, 0.05), transparent 30%),
+    radial-gradient(circle at 80% 10%, rgba(255, 205, 0, 0.08), transparent 25%),
+    linear-gradient(180deg, var(--color-bone) 0%, var(--color-ice) 100%);
   color: var(--color-graphite);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -37,13 +38,13 @@ body {
 
 a {
   font-weight: 600;
-  color: var(--color-ember);
+  color: var(--color-crimson);
   text-decoration: none;
   transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 a:hover {
-  color: var(--color-copper);
+  color: var(--color-ember);
   opacity: 0.9;
 }
 

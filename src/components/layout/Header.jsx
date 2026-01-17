@@ -20,9 +20,9 @@ export default function Header() {
 
   const navItems = [
     { name: "Trang chủ", path: "/" },
-    { name: "CNXH khoa học", path: "/chu-nghia-xa-hoi" },
-    { name: "Thời kì quá độ", path: "/thoi-ki-qua-do" },
-    { name: "Podcast", path: "/video-podcast" },
+    { name: "Bộ máy Nhà nước", path: "/chu-nghia-xa-hoi" },
+    { name: "Đảng & Nhân dân", path: "/thoi-ki-qua-do" },
+    { name: "Trò chơi", path: "/tro-choi" },
     { name: "Trợ lý MLN131", path: "/ai-chatbot" },
     { name: "Công cụ AI", path: "/ai-usage" },
     { name: "Thông tin", path: "/informations" },
