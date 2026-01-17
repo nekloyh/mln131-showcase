@@ -1,0 +1,4 @@
+.home-shell {
+  background: radial-gradient(circle at 15% 25%, rgba(178, 34, 52, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(91, 117, 83, 0.08), transparent 30%);
+}

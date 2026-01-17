@@ -1,0 +1,4 @@
+.transition-shell {
+  background: radial-gradient(circle at 20% 25%, rgba(219, 58, 52, 0.06), transparent 35%),
+    radial-gradient(circle at 85% 10%, rgba(91, 117, 83, 0.06), transparent 30%);
+}
