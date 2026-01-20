@@ -1,0 +1,202 @@
+[
+  {
+    "id": "math_001",
+    "question": "15 + 23 = ?",
+    "choices": ["36", "37", "38", "39"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_002",
+    "question": "48 - 19 = ?",
+    "choices": ["27", "28", "29", "30"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_003",
+    "question": "67 + 28 = ?",
+    "choices": ["93", "94", "95", "96"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_004",
+    "question": "82 - 35 = ?",
+    "choices": ["45", "46", "47", "48"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_005",
+    "question": "34 + 57 = ?",
+    "choices": ["89", "90", "91", "92"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_006",
+    "question": "100 - 43 = ?",
+    "choices": ["55", "56", "57", "58"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_007",
+    "question": "29 + 46 = ?",
+    "choices": ["73", "74", "75", "76"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_008",
+    "question": "71 - 28 = ?",
+    "choices": ["41", "42", "43", "44"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_009",
+    "question": "55 + 38 = ?",
+    "choices": ["91", "92", "93", "94"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_010",
+    "question": "96 - 47 = ?",
+    "choices": ["47", "48", "49", "50"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_011",
+    "question": "18 + 64 = ?",
+    "choices": ["80", "81", "82", "83"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_012",
+    "question": "85 - 56 = ?",
+    "choices": ["27", "28", "29", "30"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_013",
+    "question": "42 + 39 = ?",
+    "choices": ["79", "80", "81", "82"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_014",
+    "question": "63 - 27 = ?",
+    "choices": ["34", "35", "36", "37"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_015",
+    "question": "76 + 18 = ?",
+    "choices": ["92", "93", "94", "95"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_016",
+    "question": "54 - 19 = ?",
+    "choices": ["33", "34", "35", "36"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_017",
+    "question": "87 + 9 = ?",
+    "choices": ["94", "95", "96", "97"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_018",
+    "question": "100 - 68 = ?",
+    "choices": ["30", "31", "32", "33"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_019",
+    "question": "33 + 49 = ?",
+    "choices": ["80", "81", "82", "83"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_020",
+    "question": "91 - 34 = ?",
+    "choices": ["55", "56", "57", "58"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_021",
+    "question": "26 + 58 = ?",
+    "choices": ["82", "83", "84", "85"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_022",
+    "question": "79 - 42 = ?",
+    "choices": ["35", "36", "37", "38"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_023",
+    "question": "45 + 47 = ?",
+    "choices": ["90", "91", "92", "93"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_024",
+    "question": "88 - 59 = ?",
+    "choices": ["27", "28", "29", "30"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  },
+  {
+    "id": "math_025",
+    "question": "61 + 32 = ?",
+    "choices": ["91", "92", "93", "94"],
+    "answerIndex": 2,
+    "topic": "math",
+    "difficulty": 1
+  }
+]

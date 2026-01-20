@@ -1,43 +1,55 @@
-import { motion } from "framer-motion";
-import { Gamepad2, BrainCircuit, Users, Trophy } from "lucide-react";
+import { useState } from "react";
+import { Gamepad2, BrainCircuit, Users, Trophy, Zap } from "lucide-react";
 import Section from "../../components/layout/Section";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
+import RunnerQuizGame from "./runner-quiz/RunnerQuizGame";
 
 const GamesPage = () => {
+    const [showRunnerQuiz, setShowRunnerQuiz] = useState(false);
+
     const games = [
         {
             id: 1,
-            title: "Chinh phục Lý luận",
-            description: "Trò chơi trắc nghiệm kiến thức về Triết học Mác - Lênin và CNXH Khoa học. Thử thách bản thân với các cấp độ từ cơ bản đến nâng cao.",
-            icon: <BrainCircuit size={40} className="text-crimson" />,
-            status: "Sắp ra mắt",
+            title: "Runner Quiz",
+            description: "Trò chơi endless runner kết hợp giải đố. Nhảy qua chướng ngại vật, trả lời câu hỏi nhanh để ghi điểm. Sai 3 lần là thua!",
+            icon: <Zap size={40} className="text-crimson" />,
+            status: "Chơi được",
             action: "Chơi ngay",
-            color: "border-crimson"
+            color: "border-crimson",
+            playable: true,
+            onClick: () => setShowRunnerQuiz(true)
         },
         {
             id: 2,
+            title: "Chinh phục Lý luận",
+            description: "Trò chơi trắc nghiệm kiến thức về Triết học Mác - Lênin và CNXH Khoa học. Thử thách bản thân với các cấp độ từ cơ bản đến nâng cao.",
+            icon: <BrainCircuit size={40} className="text-gold" />,
+            status: "Sắp ra mắt",
+            action: "Đăng ký sớm",
+            color: "border-gold",
+            playable: false
+        },
+        {
+            id: 3,
             title: "Xây dựng Xã hội",
             description: "Mô phỏng quy trình ra quyết định chính sách trong môi trường giả lập. Đóng vai người lãnh đạo để giải quyết các vấn đề xã hội.",
             icon: <Users size={40} className="text-blue-600" />,
             status: "Đang phát triển",
-            action: "Đăng ký sớm",
-            color: "border-blue-600"
-        },
-        {
-            id: 3,
-            title: "Bảo vệ Nền tảng",
-            description: "Trò chơi tranh biện và nhận diện các quan điểm sai trái. Rèn luyện tư duy phản biện sắc bén dựa trên thế giới quan duy vật biện chứng.",
-            icon: <ShieldGame size={40} className="text-ember" />,
-            status: "Sắp ra mắt",
             action: "Tìm hiểu",
-            color: "border-ember"
+            color: "border-blue-600",
+            playable: false
         }
     ];
 
     return (
         <div className="page-shell w-full bg-bone min-h-screen">
+            {/* Runner Quiz Game Modal */}
+            {showRunnerQuiz && (
+                <RunnerQuizGame onClose={() => setShowRunnerQuiz(false)} />
+            )}
+
             {/* SECTION 1: HEADER */}
             <Section autoHeight={true} className="items-center justify-center pt-32 px-4 md:px-10 border-b-2 border-ink bg-bone">
                 <div className="space-y-4 max-w-4xl text-center">
@@ -78,9 +90,14 @@ const GamesPage = () => {
                                 </p>
 
                                 <div className="mt-auto">
-                                    <Button variant={index === 0 ? "primary" : "outline"} className="w-full justify-center group">
+                                    <Button 
+                                        variant={game.playable ? "primary" : "outline"} 
+                                        className="w-full justify-center group"
+                                        onClick={game.onClick}
+                                        disabled={!game.playable && !game.onClick}
+                                    >
                                         {game.action}
-                                        {index === 0 && <Gamepad2 className="ml-2 group-hover:rotate-12 transition-transform" size={18} />}
+                                        {game.playable && <Gamepad2 className="ml-2 group-hover:rotate-12 transition-transform" size={18} />}
                                     </Button>
                                 </div>
                             </Card>
@@ -113,24 +130,5 @@ const GamesPage = () => {
         </div>
     );
 };
-
-// Helper component for Icon (since lucide icons are components)
-const ShieldGame = ({ size, className }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" opacity="0.2" fill="currentColor" />
-    </svg>
-);
 
 export default GamesPage;
