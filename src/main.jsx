@@ -5,8 +5,8 @@ import "./index.css";
 
 import HomePage from "./pages/home/index.jsx";
 import Header from "./components/layout/Header.jsx";
-import SocialismPage from "./pages/socialism/index.jsx";
-import TransitionPeriodPage from "./pages/transition-period/index.jsx";
+import BoMayNhaNuocPage from "./pages/government/index.jsx";
+import DangVaNhanDanPage from "./pages/popular/index.jsx";
 import GamesPage from "./pages/games/index.jsx";
 import AIChatboxPage from "./pages/ai/index.jsx";
 import AiUsagePage from "./pages/ai-usage/index.jsx";
@@ -19,8 +19,8 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/trang-chu" element={<HomePage />} />
-        <Route path="/chu-nghia-xa-hoi" element={<SocialismPage />} />
-        <Route path="/thoi-ki-qua-do" element={<TransitionPeriodPage />} />
+        <Route path="/bo-may-nha-nuoc" element={<BoMayNhaNuocPage />} />
+        <Route path="/dang-va-nhan-dan" element={<DangVaNhanDanPage />} />
         <Route path="/tro-choi" element={<GamesPage />} />
         <Route path="/ai-chatbot" element={<AIChatboxPage />} />
         <Route path="/ai-usage" element={<AiUsagePage />} />

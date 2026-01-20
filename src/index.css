@@ -3,6 +3,7 @@
 @theme {
     /* COLORS */
     --color-bone: #FFFDF5;
+    --color-paper: #F2EFE9;
     --color-ink: #000000;
     --color-crimson: #FF2A2A;
     --color-gold: #FFD700;
@@ -11,59 +12,131 @@
     --color-charcoal: #1a1a1a;
     --color-graphite: #333333;
     --color-sand: #f0f0e0;
+    --color-void: #050505;
 
     /* SHADOWS (Hard Shadows) */
-    --shadow-hard: 4px 4px 0px 0px #000000;
-    --shadow-hard-lg: 8px 8px 0px 0px #000000;
-    --shadow-hard-sm: 2px 2px 0px 0px #000000;
+    --shadow-hard-sm: 2px 2px 0px 0px var(--color-ink);
+    --shadow-hard: 4px 4px 0px 0px var(--color-ink);
+    --shadow-hard-md: 6px 6px 0px 0px var(--color-ink);
+    --shadow-hard-lg: 8px 8px 0px 0px var(--color-ink);
+    --shadow-hard-xl: 12px 12px 0px 0px var(--color-ink);
+
+    /* ANIMATIONS */
+    --animate-spin-slow: spin 12s linear infinite;
+    --animate-float: float 6s ease-in-out infinite;
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
 }
 
 /* BASE STYLES */
 :root {
-    font-family: monospace;
-    /* Defaulting to mono for raw feel, can override */
-    background-color: var(--color-bone);
-    color: var(--color-ink);
+    /* Typography */
+    --font-display: "Oswald", "Impact", "Arial Black", sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+    /* Base Colors */
+    --color-bg-default: var(--color-bone);
+    --color-text-default: var(--color-ink);
+
+    font-family: var(--font-body);
+    background-color: var(--color-bg-default);
+    color: var(--color-text-default);
 }
 
 body {
     margin: 0;
     min-height: 100vh;
+    font-size: clamp(16px, 1vw + 12px, 18px);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* TYPOGRAPHY UTILS */
+.font-display {
+    font-family: var(--font-display);
+}
+
+.font-body {
+    font-family: var(--font-body);
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+}
+
+/* TEXT STROKE UTILS */
+.text-stroke-red {
+    -webkit-text-stroke: 2px var(--color-crimson);
+    color: transparent;
+}
+
+.text-stroke-black {
+    -webkit-text-stroke: 2px var(--color-ink);
+    color: transparent;
+}
+
+.text-stroke-white {
+    -webkit-text-stroke: 2px var(--color-bone);
+    color: transparent;
 }
 
 /* UTILITIES */
-.border-thick {
-    border: 2px solid var(--color-ink);
+.snap-container {
+    height: 100vh;
+    width: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    position: relative;
 }
 
-.box-brutal {
-    background-color: var(--color-bone);
-    border: 2px solid var(--color-ink);
-    box-shadow: var(--shadow-hard);
-}
-
-.btn-brutal {
-    display: inline-flex;
-    align-items: center;
+.snap-section {
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    padding: 0.5rem 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    background-color: var(--color-bone);
-    color: var(--color-ink);
-    border: 2px solid var(--color-ink);
-    box-shadow: var(--shadow-hard);
-    transition: all 0.1s ease;
-    cursor: pointer;
 }
 
-.btn-brutal:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px 0px #000000;
-    background-color: var(--color-gold);
+.snap-section-scrollable {
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    overflow-y: auto;
+    display: block;
 }
 
-.btn-brutal:active {
-    transform: translate(0px, 0px);
-    box-shadow: none;
+/* GLOBAL SCROLLBAR */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bone);
+    border-left: 2px solid var(--color-ink);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-ink);
+    border: 2px solid var(--color-bone);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-crimson);
 }

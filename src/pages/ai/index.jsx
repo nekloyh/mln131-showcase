@@ -3,12 +3,14 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { sendMessageToAI } from "../../services/aiService";
+import Section from "../../components/layout/Section";
+import Button from "../../components/ui/Button";
 
 import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
 
 const AITalkingAvatar = () => {
   return (
-    <div className="w-12 h-12 flex items-center justify-center bg-ink border-2 border-ink shadow-hard-sm rounded-sm">
+    <div className="w-12 h-12 flex items-center justify-center bg-ink border-2 border-ink shadow-hard-sm rounded-none">
       <Bot className="text-bone w-7 h-7" />
     </div>
   );
@@ -24,14 +26,8 @@ const AIResponse = ({ text }) => {
       <div className="shrink-0 mt-1">
         <AITalkingAvatar />
       </div>
-      <div className="bg-white p-5 border-2 border-ink shadow-hard rounded-sm max-w-[85%] md:max-w-[75%] relative">
-        {/* Decorative corner */}
-        <div className="absolute -top-1 -left-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -top-1 -right-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-ember"></div>
-
-        <h4 className="font-display text-ember text-base mb-2 uppercase tracking-wide">MLN131 Bot</h4>
+      <div className="bg-white p-5 border-2 border-ink shadow-hard rounded-none max-w-[85%] md:max-w-[75%] relative">
+        <h4 className="font-display text-crimson text-sm mb-2 uppercase tracking-wide font-bold">MLN131 Bot</h4>
         <div className="ai-markdown text-graphite font-body text-lg leading-relaxed">
           <ReactMarkdown>{text}</ReactMarkdown>
         </div>
@@ -47,16 +43,10 @@ const UserPrompt = ({ text }) => {
       animate={{ opacity: 1, x: 0 }}
       className="w-full flex items-center justify-end gap-3 mb-6"
     >
-      <div className="p-5 bg-ink text-bone border-2 border-ink shadow-hard rounded-sm max-w-[80%] md:max-w-[70%] text-right relative">
-        {/* Decorative corner */}
-        <div className="absolute -top-1 -left-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -top-1 -right-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-ember"></div>
-        <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-ember"></div>
-
+      <div className="p-5 bg-ink text-bone border-2 border-ink shadow-hard rounded-none max-w-[80%] md:max-w-[70%] text-right relative">
         <p className="break-words font-body leading-relaxed">{text}</p>
       </div>
-      <div className="shrink-0 w-12 h-12 bg-white flex items-center justify-center border-2 border-ink shadow-hard-sm rounded-sm">
+      <div className="shrink-0 w-12 h-12 bg-white flex items-center justify-center border-2 border-ink shadow-hard-sm rounded-none">
         <User className="text-graphite w-6 h-6" />
       </div>
     </motion.div>
@@ -132,84 +122,89 @@ const AIPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-28 pb-10 px-4 md:px-8 bg-bone flex flex-col items-center">
-      <div className="w-full max-w-screen-xl flex-1 flex flex-col h-[calc(100vh-160px)] px-4 lg:px-8">
+    <div className="w-full h-screen flex flex-col bg-bone">
+      <Section className="flex-1 flex flex-col items-center pt-28 pb-4 px-4 md:px-8 border-b-0 h-full">
+        <div className="w-full max-w-screen-xl flex-1 flex flex-col overflow-hidden px-0 lg:px-8 h-full">
 
-        {/* Header Section */}
-        <div className="text-center mb-6 shrink-0 space-y-4">
-          <KineticHeading
-            align="center"
-            title="Hỏi đáp cùng MLN131 Bot"
-            size="lg"
-          />
-          <KineticSubline className="text-center max-w-3xl mx-auto">
-            Đặt câu hỏi về Chủ nghĩa xã hội khoa học, lịch sử tư tưởng, thời kỳ quá độ và nhận giải thích súc tích.
-          </KineticSubline>
-        </div>
-
-        {/* Chat Container */}
-        <div className="flex-1 bg-white border-2 border-ink shadow-hard-lg flex flex-col relative overflow-hidden rounded-sm kinetic-grid">
-
-          {/* Decorative Header Bar */}
-          <div className="h-10 bg-ink flex items-center justify-between px-4 shrink-0">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-ember/80 border border-white/20"></div>
-              <div className="w-3 h-3 rounded-full bg-olive/80 border border-white/20"></div>
-              <div className="w-3 h-3 rounded-full bg-copper/80 border border-white/20"></div>
-            </div>
-            <div className="text-white/60 text-xs font-mono">MLN131_CONSOLE</div>
-          </div>
-
-          {/* Messages Area */}
-          <div
-            id="chat_content"
-            className="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth custom-scrollbar bg-[radial-gradient(rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:16px_16px] [background-color:#fff]"
-          >
-            <AnimatePresence>
-              {chatHistory.map((msg, index) => (
-                <div key={index}>
-                  {msg.role === "ai" ? (
-                    <AIResponse text={msg.text} />
-                  ) : (
-                    <UserPrompt text={msg.text} />
-                  )}
-                </div>
-              ))}
-            </AnimatePresence>
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="p-6 bg-bone border-t border-ink/10 shrink-0">
-            <form
-              onSubmit={handleFormSubmit}
-              className="relative flex items-center gap-3 max-w-4xl mx-auto"
+          {/* Header Section */}
+          <div className="text-center mb-6 shrink-0 space-y-4">
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl md:text-6xl lg:text-7xl font-black font-display text-ink uppercase"
             >
-              <input
-                ref={inputRef}
-                type="text"
-                disabled={isLoading}
-                placeholder="Nhập câu hỏi của bạn tại đây..."
-                className="w-full pl-6 pr-16 py-4 bg-white border-2 border-ink rounded-sm font-body text-graphite placeholder:text-gray-500 focus:outline-none focus:ring-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-hard-sm"
-              />
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="absolute right-3 p-2 bg-ember text-bone border-2 border-ink rounded-sm hover:bg-copper disabled:bg-gray-300 disabled:border-gray-200 transition-colors shadow-hard-sm"
+              Hỏi đáp cùng <span className="text-crimson">MLN131 Bot</span>
+            </motion.h1>
+            <KineticSubline className="text-center max-w-3xl mx-auto pt-2">
+              Đặt câu hỏi về Chủ nghĩa xã hội khoa học, lịch sử tư tưởng, thời kỳ quá độ và nhận giải thích súc tích.
+            </KineticSubline>
+          </div>
+
+          {/* Chat Container */}
+          <div className="flex-1 bg-white border-2 border-ink shadow-hard-lg flex flex-col relative overflow-hidden rounded-none kinetic-grid mb-6">
+
+            {/* Decorative Header Bar */}
+            <div className="h-10 bg-ink flex items-center justify-between px-4 shrink-0">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-none bg-crimson border border-white/20"></div>
+                <div className="w-3 h-3 rounded-none bg-gold border border-white/20"></div>
+                <div className="w-3 h-3 rounded-none bg-blue-500 border border-white/20"></div>
+              </div>
+              <div className="text-white/60 text-xs font-mono tracking-widest uppercase">MLN131_CONSOLE v2.0</div>
+            </div>
+
+            {/* Messages Area */}
+            <div
+              id="chat_content"
+              className="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth custom-scrollbar bg-white"
+            >
+              <AnimatePresence>
+                {chatHistory.map((msg, index) => (
+                  <div key={index}>
+                    {msg.role === "ai" ? (
+                      <AIResponse text={msg.text} />
+                    ) : (
+                      <UserPrompt text={msg.text} />
+                    )}
+                  </div>
+                ))}
+              </AnimatePresence>
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-6 bg-bone border-t-2 border-ink shrink-0">
+              <form
+                onSubmit={handleFormSubmit}
+                className="relative flex items-center gap-3 max-w-4xl mx-auto"
               >
-                {isLoading ? (
-                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <Send size={24} />
-                )}
-              </button>
-            </form>
-            <p className="text-center text-xs text-graphite/60 mt-3 font-mono">
-              * AI có thể mắc lỗi. Hãy kiểm tra lại thông tin.
-            </p>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  disabled={isLoading}
+                  placeholder="Nhập câu hỏi của bạn tại đây..."
+                  className="w-full pl-6 pr-16 py-4 bg-white border-2 border-ink rounded-none font-body text-graphite placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-gold/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-hard-sm"
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  variant="primary"
+                  className="absolute right-2 px-3 py-2 h-auto"
+                >
+                  {isLoading ? (
+                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Send size={20} />
+                  )}
+                </Button>
+              </form>
+              <p className="text-center text-xs text-graphite/60 mt-3 font-mono">
+                * AI có thể mắc lỗi. Hãy kiểm tra lại thông tin.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </Section>
     </div>
   );
 };

@@ -1,84 +1,226 @@
 import { motion } from "framer-motion";
+import {
+  Users,
+  Crown,
+  FileText,
+  Video,
+  Newspaper,
+  ExternalLink,
+  BookOpen,
+  Sparkles,
+  Fingerprint,
+  FolderOpen
+} from "lucide-react";
+import Section from "../../components/layout/Section";
+import Card from "../../components/ui/Card";
 
-import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
+const members = [
+  {
+    name: "Lê Thị Thanh Thúy",
+    studentCode: "SE170111",
+    role: "leader",
+    gender: "female",
+    task: [
+      "Điều phối tiến độ, rà soát học thuật",
+      "Quay, dựng và chỉnh sửa podcast",
+    ],
+  },
+  {
+    name: "Nguyễn Tấn Phát",
+    studentCode: "SE183397",
+    role: "member",
+    gender: "male",
+    task: ["Thiết kế & xây dựng website", "Tích hợp chatbot AI và hạ tầng API"],
+  },
+  {
+    name: "Châu Vĩnh Tiến",
+    studentCode: "SE183243",
+    role: "member",
+    gender: "male",
+    task: [
+      "Thu thập tư liệu, số liệu cho website",
+      "Biên tập nội dung thuyết trình",
+    ],
+  },
+  {
+    name: "Lê Quốc Bảo",
+    studentCode: "SS170194",
+    role: "member",
+    gender: "male",
+    task: [
+      "Hỗ trợ xây dựng nội dung website",
+      "Đối chiếu nguồn chính thống, kiểm chứng trích dẫn",
+    ],
+  },
+  {
+    name: "Nguyễn Lý Minh Kỳ",
+    studentCode: "SE181748",
+    role: "member",
+    gender: "male",
+    task: ["Hỗ trợ nghiên cứu nội dung", "Kiểm thử và đánh giá trải nghiệm"],
+  },
+];
+
+const references = [
+  {
+    title: "Giáo trình Tư tưởng Hồ Chí Minh (Bộ GD&ĐT)",
+    type: "document",
+    link: "https://moet.gov.vn/content/vanban/Lists/VBDH/Attachments/2729/GT%20h%E1%BB%8Dc%20ph%E1%BA%A7n%20T%C6%B0%20t%C6%B0%E1%BB%9Fng%20HCM%20(K)%20Tr69%20-Tr141.pdf",
+  },
+  {
+    title: "Cương lĩnh xây dựng đất nước (2011)",
+    type: "article",
+    link: "https://tulieuvankien.dangcongsan.vn/ban-chap-hanh-trung-uong-dang/dai-hoi-dang/lan-thu-xi/cuong-linh-xay-dung-dat-nuoc-trong-thoi-ky-qua-do-len-chu-nghia-xa-hoi-bo-sung-phat-trien-nam-2011-1528",
+  },
+  {
+    title: "Đường Kách Mệnh",
+    type: "document",
+    link: "https://cdn.thuvienphapluat.vn/uploads/Hoidapphapluat/2024/NTH/06122024/T%C3%A1c%20ph%E1%BA%A9m%20%C4%90%C6%B0%E1%BB%9Dng%20K%C3%A1ch%20M%E1%BB%87nh.pdf",
+  },
+];
+
+const ProfileCard = ({ member }) => {
+  const isLeader = member.role === "leader";
+  // Simulated avatar initials
+  const initials = member.name.split(" ").slice(-2).map(n => n[0]).join("");
+
+  return (
+    <Card
+      variant="default"
+      hoverEffect
+      className={`relative group h-full flex flex-col p-6 overflow-hidden border-2 border-ink shadow-hard bg-white`}
+      hasDecorativeCorners={false}
+    >
+      <div className="flex justify-between items-start mb-6">
+        {/* Avatar Placeholder */}
+        <div className="w-20 h-20 border-2 border-ink bg-bone shrink-0 flex items-center justify-center relative shadow-sm">
+          <span className="font-display font-black text-2xl text-ink/40 select-none group-hover:text-crimson transition-colors">{initials}</span>
+        </div>
+
+        {/* Name & Role */}
+        <div className="text-right flex-1 pl-4">
+          <h3 className="font-display text-2xl text-ink leading-tight uppercase mb-2">
+            {member.name}
+          </h3>
+          <div className="text-sm font-mono text-ink/60 mb-1">{member.studentCode}</div>
+          <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-ink ${isLeader ? 'bg-gold text-ink' : 'bg-gray-100 text-ink/70'}`}>
+            {isLeader ? "Leader" : "Member"}
+          </span>
+        </div>
+      </div>
+
+      {/* Tasks */}
+      <div className="mt-auto border-t-2 border-dashed border-ink/20 pt-4">
+        <ul className="space-y-2">
+          {member.task.map((t, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm font-body text-ink leading-snug">
+              <span className="mt-1.5 w-1.5 h-1.5 bg-crimson rounded-full shrink-0"></span>
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
+  );
+};
+
+const ReferenceCard = ({ reference, index }) => {
+  const getIcon = (type) => {
+    switch (type) {
+      case "video": return Video;
+      case "document": return FileText;
+      default: return Newspaper;
+    }
+  };
+
+  const Icon = getIcon(reference.type);
+
+  return (
+    <a
+      href={reference.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block group relative bg-white border-2 border-ink shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all h-full"
+    >
+      <div className="p-6 flex flex-col h-full">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 bg-bone px-2 py-1 text-xs font-bold font-mono uppercase border border-ink/20 rounded-sm">
+            <Icon size={14} />
+            {reference.type}
+          </span>
+          <ExternalLink size={16} className="text-ink/40 group-hover:text-crimson transition-colors" />
+        </div>
+
+        <h3 className="font-display text-lg font-bold text-ink leading-tight group-hover:text-crimson transition-colors line-clamp-2">
+          {reference.title}
+        </h3>
+      </div>
+    </a>
+  );
+};
 
 const InformationsPage = () => {
   return (
-    <div id="informations_page" className="min-h-screen w-full pt-24 pb-16 px-4 md:px-10 info-shell">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="panel rounded-sm border-2 border-ink shadow-hard-lg p-10 md:p-14 accent-grid relative overflow-hidden"
-      >
-        <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_20%_10%,rgba(218,37,29,0.08),transparent_35%),radial-gradient(circle_at_90%_0%,rgba(255,205,0,0.1),transparent_30%)]"></div>
-        <div className="relative z-10 space-y-6">
-          <KineticHeading
-            title="Tổng quan & tài liệu tham khảo"
-            size="lg"
-          />
-          <KineticSubline className="max-w-3xl">
-            Tổng hợp các mảng kiến thức chính, tài liệu bắt buộc và gợi ý làm việc nhóm cho môn Chủ nghĩa xã hội khoa học.
-          </KineticSubline>
-        </div>
+    <div className="w-full bg-bone min-h-screen page-shell selection:bg-gold selection:text-ink">
+      <Section autoHeight={true} className="py-20 px-4 md:px-8">
 
-        <div className="relative z-10 grid md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard kinetic-grid">
-            <h3 className="font-display text-2xl font-bold text-ink mb-3">Trọng tâm kiến thức</h3>
-            <ul className="space-y-3 text-base text-graphite/80">
-              <li>• Bản chất, mục tiêu, động lực của CNXH theo tư tưởng Hồ Chí Minh.</li>
-              <li>• Nhà nước pháp quyền XHCN: tổ chức quyền lực, phân công – phối hợp – kiểm soát.</li>
-              <li>• Mối quan hệ Đảng - Nhà nước - Nhân dân và cơ chế giải trình.</li>
-            </ul>
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-7xl mx-auto mb-20 text-center"
+        >
+          <h1 className="text-5xl md:text-7xl font-black font-display text-ink uppercase tracking-tight leading-none mb-6">
+            HỒ SƠ DỰ ÁN
+          </h1>
+          <p className="font-body text-xl text-ink/70 max-w-2xl mx-auto">
+            Nhóm thực hiện đề tài MLN131: Chủ nghĩa xã hội khoa học <br /> & Tư tưởng Hồ Chí Minh.
+          </p>
+        </motion.div>
+
+        {/* Team Section */}
+        <div className="max-w-7xl mx-auto mb-20">
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="h-px bg-ink/30 flex-1 max-w-[100px]"></div>
+            <h2 className="text-2xl font-display font-bold text-ink uppercase tracking-widest">
+              Thành viên nhóm
+            </h2>
+            <div className="h-px bg-ink/30 flex-1 max-w-[100px]"></div>
           </div>
 
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard kinetic-grid">
-            <h3 className="font-display text-2xl font-bold text-ink mb-3">Tài liệu tham khảo</h3>
-            <ul className="space-y-3 text-base text-graphite/80">
-              <li>• Giáo trình Chủ nghĩa xã hội khoa học (NXB CTQG Sự thật, bản mới nhất).</li>
-              <li>• Văn kiện Đại hội XIII, Hiến pháp 2013, các nghị quyết về xây dựng Nhà nước pháp quyền.</li>
-              <li>• Báo cáo thực tiễn: phát triển kinh tế thị trường định hướng XHCN, cải cách tư pháp.</li>
-            </ul>
-          </div>
-
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard kinetic-grid">
-            <h3 className="font-display text-2xl font-bold text-ink mb-3">Gợi ý làm việc nhóm</h3>
-            <ul className="space-y-3 text-base text-graphite/80">
-              <li>• Phân vai: tìm văn bản pháp lý, tổng hợp lý thuyết, đối chiếu thực tiễn.</li>
-              <li>• Tạo slide theo mô-đun, chèn trích dẫn chuẩn và nguồn dẫn.</li>
-              <li>• Sử dụng MLN131 Bot để kiểm tra sự rõ ràng và thêm ví dụ minh họa.</li>
-            </ul>
+          <div className="flex flex-wrap justify-center gap-6">
+            {members.map((m, index) => (
+              <div key={index} className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1rem)] max-w-sm">
+                <ProfileCard member={m} />
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="relative z-10 grid md:grid-cols-2 gap-6 mt-8">
-          <div className="p-6 rounded-sm border-2 border-ink bg-ink text-bone shadow-hard">
-            <h3 className="font-display text-xl font-bold mb-3 kinetic-title">Mốc học tập gợi ý</h3>
-            <ul className="space-y-3 text-sm opacity-90">
-              <li>• Tuần 1-2: Ôn cơ sở lý luận, khái niệm CNXH và thời kỳ quá độ.</li>
-              <li>• Tuần 3-4: Nhà nước pháp quyền XHCN, bộ máy và nguyên tắc vận hành.</li>
-              <li>• Tuần 5-6: Đảng lãnh đạo, Nhân dân làm chủ, cơ chế giám sát.</li>
-            </ul>
+        {/* References Section */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="h-px bg-ink/30 flex-1 max-w-[100px]"></div>
+            <h2 className="text-2xl font-display font-bold text-ink uppercase tracking-widest">
+              Tài liệu tham khảo
+            </h2>
+            <div className="h-px bg-ink/30 flex-1 max-w-[100px]"></div>
           </div>
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard flex flex-col gap-3">
-            <h3 className="font-display text-xl font-bold text-ink">Liên kết nhanh</h3>
-            <p className="text-base text-graphite/70">Khám phá các trang nội dung đã hoàn thiện.</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/trang-chu" className="px-4 py-2 rounded-sm border-2 border-ink bg-crimson text-bone font-semibold shadow-hard">
-                Trang chủ
-              </a>
-              <a href="/chu-nghia-xa-hoi" className="px-4 py-2 rounded-sm border-2 border-ink text-ink hover:bg-gold transition-colors">
-                Cơ cấu & vận hành
-              </a>
-              <a href="/thoi-ki-qua-do" className="px-4 py-2 rounded-sm border-2 border-ink text-ink hover:bg-gold transition-colors">
-                Đảng & Nhân dân
-              </a>
-              <a href="/ai-chatbot" className="px-4 py-2 rounded-sm border-2 border-ink text-ink hover:bg-gold transition-colors">
-                MLN131 Bot
-              </a>
-            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {references.map((ref, index) => (
+              <ReferenceCard key={index} reference={ref} index={index} />
+            ))}
           </div>
         </div>
-      </motion.div>
+
+        {/* Footer Note */}
+        <div className="text-center pb-12 opacity-50">
+          <p className="font-mono text-xs uppercase tracking-widest text-ink">
+            FPT University &copy; 2026
+          </p>
+        </div>
+      </Section>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Button from "../ui/Button";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -11,17 +12,39 @@ export default function Header() {
 
   // Track scroll for header animation
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    let cleanupContainer = null;
+
+    const setupScrollListener = () => {
+      const container = document.querySelector('.snap-container');
+
+      const handleScroll = () => {
+        const scrollTop = container ? container.scrollTop : window.scrollY;
+        setScrolled(scrollTop > 20);
+      };
+
+      if (container) {
+        container.addEventListener("scroll", handleScroll, { passive: true });
+        cleanupContainer = () => container.removeEventListener("scroll", handleScroll);
+        // Initial check
+        handleScroll();
+      } else {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        cleanupContainer = () => window.removeEventListener("scroll", handleScroll);
+      }
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+
+    const timeoutId = setTimeout(setupScrollListener, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (cleanupContainer) cleanupContainer();
+    };
+  }, [location.pathname]);
 
   const navItems = [
     { name: "Trang chủ", path: "/" },
-    { name: "Bộ máy Nhà nước", path: "/chu-nghia-xa-hoi" },
-    { name: "Đảng & Nhân dân", path: "/thoi-ki-qua-do" },
+    { name: "Bộ máy Nhà nước", path: "/bo-may-nha-nuoc" },
+    { name: "Đảng & Nhân dân", path: "/dang-va-nhan-dan" },
     { name: "Trò chơi", path: "/tro-choi" },
     { name: "Trợ lý MLN131", path: "/ai-chatbot" },
     { name: "Công cụ AI", path: "/ai-usage" },
@@ -32,8 +55,6 @@ export default function Header() {
     navigate(href);
     setMobileMenuOpen(false);
   };
-
-  const isHomePage = location.pathname === "/" || location.pathname === "/trang-chu";
 
   const headerBgClass = "bg-bone border-b-2 border-ink";
   const headerShadowClass = scrolled ? "shadow-hard" : "";
@@ -49,49 +70,45 @@ export default function Header() {
           {/* Logo / Brand */}
           <div
             onClick={() => handleNavigate("/")}
-            className="font-kinetic text-2xl text-ink cursor-pointer select-none hover:translate-x-1 transition-transform tracking-tight leading-none uppercase border-2 border-transparent hover:border-ink hover:bg-gold p-1"
+            className="font-display text-3xl text-ink cursor-pointer select-none hover:translate-x-1 transition-transform tracking-tighter leading-none uppercase border-2 border-transparent hover:border-ink hover:bg-gold p-1"
           >
-            MLN<span className="font-bold text-crimson">131</span>
-            <span className="text-ink text-xs font-mono ml-2 tracking-tighter block md:inline md:tracking-wide">
+            MLN<span className="text-crimson">131</span>
+            <span className="hidden md:inline-block ml-3 text-xs font-mono tracking-widest text-ink/60 border-l-2 border-ink/20 pl-3">
               SCIENTIFIC SOCIALISM
             </span>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             {navItems.map((item) => {
               let isActive = location.pathname === item.path;
               if (location.pathname === "/" && item.path === "/trang-chu") {
                 isActive = true;
               }
               return (
-                <button
+                <Button
                   key={item.path}
+                  variant={isActive ? "danger" : "ghost"}
                   onClick={() => handleNavigate(item.path)}
-                  className={`
-                    px-4 py-2 font-mono text-sm uppercase font-bold border-2 border-ink transition-all duration-75
-                    ${
-                      isActive
-                        ? "bg-crimson text-bone shadow-hard translate-x-[-1px] translate-y-[-1px]"
-                        : "bg-bone text-ink hover:bg-gold hover:shadow-hard hover:-translate-y-1 hover:-translate-x-1"
-                    }
-                  `}
+                  size="sm"
+                  className={isActive ? "" : "hover:bg-gold hover:text-ink hover:border-ink hover:shadow-hard"}
                 >
                   {item.name}
-                </button>
+                </Button>
               );
             })}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center">
-            <button
+            <Button
+              variant="outline"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 bg-bone text-ink border-2 border-ink shadow-hard active:shadow-none active:translate-y-1 active:translate-x-1"
               aria-label={mobileMenuOpen ? "Đóng menu" : "Mở menu"}
+              className="p-2"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            </Button>
           </div>
         </nav>
       </motion.header>
@@ -117,11 +134,11 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-bone border-l border-ink/10 shadow-2xl p-6 pt-24"
+              className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-bone border-l-2 border-ink shadow-2xl p-6 pt-24"
             >
               <div className="flex flex-col gap-4">
-                <div className="border-b border-ink/10 pb-4 mb-4">
-                  <h3 className="font-display text-xl text-ink">Điều hướng</h3>
+                <div className="border-b-2 border-ink pb-4 mb-4">
+                  <h3 className="font-display text-2xl text-ink uppercase">Điều hướng</h3>
                 </div>
 
                 {navItems.map((item, index) => {
@@ -130,23 +147,20 @@ export default function Header() {
                     isActive = true;
                   }
                   return (
-                    <motion.button
+                    <motion.div
                       key={item.path}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      onClick={() => handleNavigate(item.path)}
-                      className={`
-                        w-full px-4 py-4 font-body font-semibold text-left text-sm border border-ink/15 transition-all
-                        ${
-                          isActive
-                            ? "bg-ember text-bone shadow-hard translate-x-[-2px] translate-y-[-2px]"
-                            : "bg-white text-graphite shadow-hard-sm hover:bg-sand"
-                        }
-                      `}
                     >
-                      {item.name}
-                    </motion.button>
+                      <Button
+                        variant={isActive ? "danger" : "primary"}
+                        onClick={() => handleNavigate(item.path)}
+                        className="w-full justify-start text-left mb-2"
+                      >
+                        {item.name}
+                      </Button>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -157,3 +171,4 @@ export default function Header() {
     </>
   );
 }
+

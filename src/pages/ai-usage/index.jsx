@@ -1,72 +1,193 @@
 import { motion } from "framer-motion";
+import {
+  Search,
+  Cpu,
+  Layout,
+  ArrowRight,
+  Terminal,
+  Sparkles,
+  FileText,
+  ShieldAlert
+} from "lucide-react";
+import Section from "../../components/layout/Section";
+import Card from "../../components/ui/Card";
 
-import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
+const tools = [
+  {
+    category: "RESEARCH & DATA",
+    name: "Nghiên cứu & Tổng hợp",
+    tools: ["ChatGPT 4o", "NoteGPT"],
+    icon: Search,
+    description: [
+      "Phân tích, đối chiếu quan điểm giáo trình & văn kiện Đảng.",
+      "Tóm tắt video bài giảng, trích xuất luận điểm cốt lõi.",
+      "Kiểm tra chéo (Cross-check) kiến thức lịch sử."
+    ],
+    images: ["DATA_ANALYSIS", "SOURCE_CHECK", "SUMMARY_LOG"],
+    color: "bg-green-100",
+    border: "border-green-800",
+    iconColor: "text-green-800",
+    status: "OPERATIONAL"
+  },
+  {
+    category: "CHATBOT OPERATION",
+    name: "Vận hành Chatbot Cộng",
+    tools: ["Google AI Studio", "Groq Cloud"],
+    icon: Cpu,
+    description: [
+      "Fine-tune Gemini 1.5 Flash với dữ liệu Tư tưởng HCM.",
+      "Tối ưu độ trễ phản hồi (<1s) với Groq LPU.",
+      "Xây dựng Persona 'Cộng' gần gũi, học thuật."
+    ],
+    images: ["MODEL_TUNING", "LATENCY_TEST", "PERSONA_CFG"],
+    color: "bg-orange-100",
+    border: "border-orange-800",
+    iconColor: "text-orange-800",
+    status: "OPTIMIZED"
+  },
+  {
+    category: "WEB DEVELOPMENT",
+    name: "Xây dựng Website",
+    tools: ["Gemini Advanced"],
+    icon: Layout,
+    description: [
+      "Generate code UI React/Tailwind chuẩn Neo-Brutalist.",
+      "Tối ưu Responsive & Animation (Framer Motion).",
+      "Debug logic & Refactor code base."
+    ],
+    images: ["UI_SCAFFOLD", "DOM_TREE", "BUILD_LOG"],
+    color: "bg-blue-100",
+    border: "border-blue-800",
+    iconColor: "text-blue-800",
+    status: "ACTIVE"
+  }
+];
+
+const ToolCard = ({ item, index }) => {
+  const Icon = item.icon;
+
+  return (
+    <Card
+      variant="default"
+      hoverEffect
+      className="h-full flex flex-col p-6 md:p-8 bg-white border-4 border-ink shadow-hard"
+      hasDecorativeCorners={false}
+    >
+      <div className="flex-1">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <span className={`inline-block border-2 border-ink px-3 py-1 font-bold font-mono text-xs mb-3 uppercase shadow-sm ${item.color}`}>
+              {item.category}
+            </span>
+            <h3 className="font-display text-4xl text-ink leading-[0.9] uppercase font-black">
+              {item.name}
+            </h3>
+          </div>
+
+          <div className="shrink-0 p-3 border-4 border-ink bg-white shadow-sm">
+            <Icon size={32} strokeWidth={1.5} className="text-ink" />
+          </div>
+        </div>
+
+        {/* Tools Grid */}
+        <div className="mb-6">
+          <h4 className="font-bold font-mono text-xs text-ink/60 uppercase mb-2 tracking-widest">Tools Used:</h4>
+          <div className="flex flex-wrap gap-2">
+            {item.tools.map(t => (
+              <span key={t} className="px-3 py-1 border-2 border-ink bg-bone font-bold text-sm">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Description Process */}
+        <ul className="space-y-3 mb-6">
+          {item.description.map((desc, i) => (
+            <li key={i} className="flex items-start gap-3 text-base text-ink leading-snug">
+              <ArrowRight size={20} className="text-crimson shrink-0 mt-0.5" />
+              <span>{desc}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Footer Status */}
+      <div className="mt-auto pt-4 border-t-2 border-dashed border-ink flex items-center justify-between">
+        <div className="flex items-center gap-2 font-mono text-xs font-bold text-ink/70">
+          <div className={`w-2 h-2 rounded-full ${item.status === 'OPERATIONAL' ? 'bg-green-500' : item.status === 'OPTIMIZED' ? 'bg-orange-500' : 'bg-blue-500'}`}></div>
+          {item.status}
+        </div>
+      </div>
+    </Card>
+  );
+};
 
 const AiUsagePage = () => {
   return (
-    <div className="min-h-screen bg-bone pt-24 pb-16 px-4 md:px-10 ai-usage-shell">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="panel rounded-sm border-2 border-ink shadow-hard-lg p-10 md:p-14 accent-grid relative overflow-hidden space-y-8"
-      >
-        <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_15%_25%,rgba(218,37,29,0.08),transparent_35%),radial-gradient(circle_at_85%_5%,rgba(255,205,0,0.1),transparent_30%)]"></div>
-        <div className="relative z-10 space-y-6">
-          <KineticHeading
-            title="Ứng dụng AI trong môn học"
-            size="lg"
-          />
-          <KineticSubline className="max-w-3xl">
-            Tận dụng AI để tóm tắt bài, gợi ý kế hoạch thảo luận và kiểm tra mức độ hiểu.
-          </KineticSubline>
+    <div className="w-full bg-bone min-h-screen page-shell selection:bg-crimson selection:text-white">
+      <Section autoHeight={true} className="py-20 px-4 md:px-8">
+
+        {/* Header Section */}
+        <div className="max-w-6xl mx-auto mb-20 text-center relative">
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="inline-block bg-ink text-bone px-4 py-2 font-mono text-sm uppercase font-bold tracking-widest mb-6"
+          >
+            Transparency Report
+          </motion.div>
+
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black font-display text-ink uppercase leading-[0.85] mb-8">
+            AI TOOLS <br />
+            <span className="text-crimson">USAGE</span>
+          </h1>
+
+          <p className="font-body text-xl md:text-2xl text-ink/80 max-w-3xl mx-auto leading-relaxed">
+            Báo cáo chi tiết về việc ứng dụng Trí tuệ nhân tạo trong quá trình phát triển dự án, đảm bảo tính minh bạch và liêm chính học thuật.
+          </p>
         </div>
 
-        <div className="relative z-10 grid md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard kinetic-grid">
-            <h3 className="font-display text-2xl font-bold text-ink mb-3">Tác vụ gợi ý</h3>
-            <ul className="space-y-3 text-base text-graphite/80">
-              <li>• Tóm tắt nhanh từng mục trong giáo trình hoặc slide.</li>
-              <li>• Soạn 5-7 câu hỏi thảo luận cho chủ đề được giao.</li>
-              <li>• Biến khái niệm khô khan thành ví dụ thời sự gắn với Việt Nam.</li>
-              <li>• Kiểm tra hiểu biết: yêu cầu giải thích lại bằng ngôn ngữ của bạn.</li>
-            </ul>
-          </div>
-
-          <div className="p-6 rounded-sm bg-white border-2 border-ink shadow-hard kinetic-grid">
-            <h3 className="font-display text-2xl font-bold text-ink mb-3">Quy tắc & lưu ý</h3>
-            <ul className="space-y-3 text-base text-graphite/80">
-              <li>• Nói rõ bối cảnh: môn MLN131, nội dung khoa học chính trị.</li>
-              <li>• Xin nguồn tham khảo hoặc điều khoản trích dẫn khi cần.</li>
-              <li>• Kiểm tra chéo thông tin quan trọng với giáo trình và văn kiện Đảng.</li>
-              <li>• Luôn đặt giới hạn: trả lời ngắn gọn (150-200 từ) hoặc dạng bullet.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="relative z-10 grid md:grid-cols-3 gap-4">
-          {[
-            "Tóm tắt mục 'Nhà nước pháp quyền' trong 180 từ, thêm 2 ví dụ thực tiễn VN.",
-            "Đề xuất 5 câu hỏi mở cho thảo luận về vai trò Mặt trận Tổ quốc trong giám sát.",
-            "Kiểm tra hiểu biết: hỏi lại mình 4 câu trắc nghiệm về thời kỳ quá độ.",
-          ].map((prompt) => (
-            <div key={prompt} className="p-4 rounded-sm border-2 border-bone bg-ink text-bone text-base font-semibold shadow-hard">
-              {prompt}
+        {/* Tools Section */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
+          {tools.map((item, index) => (
+            <div key={item.name} className={index === 2 ? "lg:col-span-2 lg:w-2/3 lg:mx-auto" : ""}>
+              <ToolCard item={item} index={index} />
             </div>
           ))}
         </div>
 
-        <div className="relative z-10 flex flex-wrap gap-3">
-          <a
-            href="/ai-chatbot"
-            className="px-5 py-3 bg-crimson text-bone border-2 border-ink rounded-sm font-semibold shadow-hard hover:bg-red-700 transition-colors"
-          >
-            Trò chuyện với trợ lý
-          </a>
-          <span className="px-4 py-2 border-2 border-ink rounded-sm bg-white text-graphite/70 text-sm">
-            Định dạng gợi ý rõ ràng • Hạn chế nhiễu
-          </span>
-        </div>
-      </motion.div>
+        {/* Footer Disclaimer - Academic Commitment */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="bg-white border-4 border-ink p-8 md:p-12 text-center relative shadow-hard-lg">
+            <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-crimson text-white px-6 py-2 font-bold font-mono uppercase text-sm border-2 border-ink shadow-sm">
+              Academic Integrity
+            </div>
+
+            <ShieldAlert size={64} className="text-crimson mx-auto mb-6" />
+
+            <h3 className="font-display text-4xl text-ink uppercase mb-4">
+              Cam kết học thuật
+            </h3>
+
+            <div className="space-y-4 text-ink/80 text-lg leading-relaxed max-w-2xl mx-auto">
+              <p>
+                AI chỉ đóng vai trò là <strong>công cụ hỗ trợ</strong> (tra cứu, gợi ý, tối ưu mã nguồn),
+                <span className="text-crimson font-bold"> KHÔNG</span> thay thế tư duy.
+              </p>
+              <p>
+                Mọi nội dung chuyên môn đều được đối chiếu với <strong>Giáo trình Tư tưởng Hồ Chí Minh</strong> & Văn kiện Đảng.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </Section>
     </div>
   );
 };
