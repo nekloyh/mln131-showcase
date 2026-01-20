@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
 
 const games = [
     {
@@ -19,19 +20,21 @@ const games = [
 
 export default function GamesPage() {
     return (
-        <div className="pt-24 pb-20 min-h-screen px-4 md:px-8 max-w-7xl mx-auto">
+        <div className="pt-24 pb-20 min-h-screen px-4 md:px-10 lg:px-16 max-w-screen-2xl mx-auto">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="text-center mb-16"
+                className="text-center mb-10 space-y-4"
             >
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-ink mb-4">
-                    Góc Giải Trí & Học Tập
-                </h1>
-                <p className="text-lg text-graphite/80 max-w-2xl mx-auto">
-                    Vừa học vừa chơi với các minigame thú vị về Chủ nghĩa xã hội khoa học.
-                </p>
+                <KineticHeading
+                    align="center"
+                    title="Góc Giải Trí & Học Tập"
+                    size="lg"
+                />
+                <KineticSubline className="text-center max-w-2xl mx-auto">
+                    Vừa học vừa chơi với các minigame, thử thách để ghi nhớ các khái niệm Chủ nghĩa xã hội khoa học.
+                </KineticSubline>
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -41,11 +44,11 @@ export default function GamesPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group"
+                        className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group kinetic-grid"
                     >
                         <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                            <img 
-                                src={game.image} 
+                            <img
+                                src={game.image}
                                 alt={game.title}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
@@ -58,15 +61,14 @@ export default function GamesPage() {
                             )}
                         </div>
                         <div className="p-6">
-                            <h3 className="text-xl font-display font-bold text-crimson mb-2">{game.title}</h3>
-                            <p className="text-sm text-graphite/70 mb-4">{game.description}</p>
-                            <button 
+                            <h3 className="text-2xl font-display font-bold text-crimson mb-2">{game.title}</h3>
+                            <p className="text-base text-graphite/70 mb-4">{game.description}</p>
+                            <button
                                 disabled={game.comingSoon}
-                                className={`w-full py-2 px-4 rounded-lg font-bold transition-colors ${
-                                    game.comingSoon 
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                        : 'bg-crimson text-white hover:bg-red-700'
-                                }`}
+                                className={`w-full py-2 px-4 rounded-lg font-bold transition-colors ${game.comingSoon
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'bg-crimson text-white hover:bg-red-700'
+                                    }`}
                             >
                                 {game.comingSoon ? 'Đang phát triển' : 'Chơi ngay'}
                             </button>

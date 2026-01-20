@@ -35,64 +35,63 @@ export default function Header() {
 
   const isHomePage = location.pathname === "/" || location.pathname === "/trang-chu";
 
-  const headerBgClass = "backdrop-blur-md bg-bone/90 border-b border-ink/10";
-  const headerShadowClass = scrolled ? "shadow-lg shadow-ink/5" : "";
+  const headerBgClass = "bg-bone border-b-2 border-ink";
+  const headerShadowClass = scrolled ? "shadow-hard" : "";
 
   return (
     <>
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${headerBgClass} ${headerShadowClass}`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-100 ${headerBgClass} ${headerShadowClass}`}
       >
-        <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto px-4 md:px-6">
-
+        <nav className="flex justify-between items-center h-20 max-w-screen-2xl mx-auto px-4 md:px-10 lg:px-16">
           {/* Logo / Brand */}
           <div
             onClick={() => handleNavigate("/")}
-            className="font-display text-2xl text-ink cursor-pointer select-none hover:scale-105 transition-transform"
+            className="font-kinetic text-2xl text-ink cursor-pointer select-none hover:translate-x-1 transition-transform tracking-tight leading-none uppercase border-2 border-transparent hover:border-ink hover:bg-gold p-1"
           >
-            MLN131
-            <span className="text-graphite text-sm font-body ml-2 tracking-tight">Scientific Socialism</span>
+            MLN<span className="font-bold text-crimson">131</span>
+            <span className="text-ink text-xs font-mono ml-2 tracking-tighter block md:inline md:tracking-wide">
+              SCIENTIFIC SOCIALISM
+            </span>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-4">
             {navItems.map((item) => {
               let isActive = location.pathname === item.path;
               if (location.pathname === "/" && item.path === "/trang-chu") {
                 isActive = true;
               }
               return (
-                <motion.button
+                <button
                   key={item.path}
                   onClick={() => handleNavigate(item.path)}
-                  whileHover={{ y: -2, x: -2, boxShadow: "4px 4px 0px 0px rgba(15,23,42,0.2)" }}
-                  whileTap={{ y: 0, x: 0, boxShadow: "0px 0px 0px 0px rgba(15,23,42,0.2)" }}
                   className={`
-                    px-4 py-2 rounded-md font-display text-xs transition-all duration-150 border border-ink/15
-                    ${isActive
-                      ? "bg-ember text-bone shadow-[3px_3px_0px_0px_rgba(15,23,42,0.25)]"
-                      : "bg-bone text-graphite hover:bg-white"
+                    px-4 py-2 font-mono text-sm uppercase font-bold border-2 border-ink transition-all duration-75
+                    ${
+                      isActive
+                        ? "bg-crimson text-bone shadow-hard translate-x-[-1px] translate-y-[-1px]"
+                        : "bg-bone text-ink hover:bg-gold hover:shadow-hard hover:-translate-y-1 hover:-translate-x-1"
                     }
                   `}
                 >
                   {item.name}
-                </motion.button>
+                </button>
               );
             })}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 bg-ink text-bone border border-ink/20 rounded-md shadow-[3px_3px_0px_0px_rgba(15,23,42,0.25)]"
+              className="p-2 bg-bone text-ink border-2 border-ink shadow-hard active:shadow-none active:translate-y-1 active:translate-x-1"
               aria-label={mobileMenuOpen ? "Đóng menu" : "Mở menu"}
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </motion.button>
+            </button>
           </div>
         </nav>
       </motion.header>
@@ -139,9 +138,10 @@ export default function Header() {
                       onClick={() => handleNavigate(item.path)}
                       className={`
                         w-full px-4 py-4 font-body font-semibold text-left text-sm border border-ink/15 transition-all
-                        ${isActive
-                          ? "bg-ember text-bone shadow-[4px_4px_0px_0px_rgba(15,23,42,0.25)] translate-x-[-2px] translate-y-[-2px]"
-                          : "bg-white text-graphite shadow-[2px_2px_0px_0px_rgba(15,23,42,0.15)] hover:bg-sand"
+                        ${
+                          isActive
+                            ? "bg-ember text-bone shadow-hard translate-x-[-2px] translate-y-[-2px]"
+                            : "bg-white text-graphite shadow-hard-sm hover:bg-sand"
                         }
                       `}
                     >
@@ -157,4 +157,3 @@ export default function Header() {
     </>
   );
 }
-

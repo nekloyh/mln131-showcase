@@ -1,77 +1,69 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* Scientific Socialism palette - Revised */
-  --color-crimson: #DA251D; /* Flag Red */
-  --color-gold: #FFFF00; /* Flag Yellow/Gold */
-  --color-ember: #e0ac00; /* Darker Gold for text/borders */
-  --color-ink: #0f172a;
-  --color-graphite: #333333;
-  --color-sand: #fefcf5;
-  --color-bone: #fffefb;
-  --color-olive: #4b6a45;
-  --color-copper: #c77d28;
-  --color-ice: #f0f7ff;
+    /* COLORS */
+    --color-bone: #FFFDF5;
+    --color-ink: #000000;
+    --color-crimson: #FF2A2A;
+    --color-gold: #FFD700;
+    --color-ember: #FF5500;
+    --color-mint: #00FF99;
+    --color-charcoal: #1a1a1a;
+    --color-graphite: #333333;
+    --color-sand: #f0f0e0;
 
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Sora", system-ui, sans-serif;
+    /* SHADOWS (Hard Shadows) */
+    --shadow-hard: 4px 4px 0px 0px #000000;
+    --shadow-hard-lg: 8px 8px 0px 0px #000000;
+    --shadow-hard-sm: 2px 2px 0px 0px #000000;
 }
 
-html {
-  min-height: 100%;
-  scroll-behavior: smooth;
+/* BASE STYLES */
+:root {
+    font-family: monospace;
+    /* Defaulting to mono for raw feel, can override */
+    background-color: var(--color-bone);
+    color: var(--color-ink);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-body);
-  background: radial-gradient(circle at 20% 20%, rgba(218, 37, 29, 0.05), transparent 30%),
-    radial-gradient(circle at 80% 10%, rgba(255, 205, 0, 0.08), transparent 25%),
-    linear-gradient(180deg, var(--color-bone) 0%, var(--color-ice) 100%);
-  color: var(--color-graphite);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    min-height: 100vh;
 }
 
-a {
-  font-weight: 600;
-  color: var(--color-crimson);
-  text-decoration: none;
-  transition: color 0.2s ease, opacity 0.2s ease;
+/* UTILITIES */
+.border-thick {
+    border: 2px solid var(--color-ink);
 }
 
-a:hover {
-  color: var(--color-ember);
-  opacity: 0.9;
+.box-brutal {
+    background-color: var(--color-bone);
+    border: 2px solid var(--color-ink);
+    box-shadow: var(--shadow-hard);
 }
 
-@layer utilities {
-  .glass {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-  }
-
-  .panel {
-    border: 1.5px solid rgba(15, 23, 42, 0.12);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-  }
-
-  .accent-grid {
-    background-image: linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
+.btn-brutal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+    border: 2px solid var(--color-ink);
+    box-shadow: var(--shadow-hard);
+    transition: all 0.1s ease;
+    cursor: pointer;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .motion-safe {
-    animation: none !important;
-    transition: none !important;
-  }
+.btn-brutal:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px #000000;
+    background-color: var(--color-gold);
+}
+
+.btn-brutal:active {
+    transform: translate(0px, 0px);
+    box-shadow: none;
 }
