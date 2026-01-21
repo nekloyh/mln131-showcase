@@ -45,10 +45,12 @@ export default function Header() {
 
   const navItems = [
     { name: "Trang chủ", path: "/" },
-    { name: "Đảng Lãnh đạo", path: "/dang-cong-san" },
-    { name: "Nhà nước Quản lý", path: "/nha-nuoc-phap-quyen" },
+    { name: "Bộ máy Nhà nước", path: "/bo-may-nha-nuoc" },
+    { name: "Đảng & Nhân dân", path: "/dang-va-nhan-dan" },
     { name: "Trò chơi", path: "/tro-choi" },
-    { name: "Trợ lý AI", path: "/ai-chatbot" },
+    { name: "Trợ lý MLN131", path: "/ai-chatbot" },
+    { name: "Công cụ AI", path: "/ai-usage" },
+    { name: "Thông tin", path: "/informations" },
   ];
 
   const handleNavigate = (href) => {
