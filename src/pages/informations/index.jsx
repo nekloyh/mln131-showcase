@@ -11,6 +11,10 @@ import {
   Fingerprint,
   FolderOpen
 } from "lucide-react";
+import {
+  KineticHeading,
+  KineticSubline,
+} from "../../components/ui/KineticText";
 import Section from "../../components/layout/Section";
 import Card from "../../components/ui/Card";
 
@@ -124,7 +128,7 @@ const ProfileCard = ({ member }) => {
   );
 };
 
-const ReferenceCard = ({ reference, index }) => {
+const ReferenceCard = ({ reference }) => {
   const getIcon = (type) => {
     switch (type) {
       case "video": return Video;
@@ -162,21 +166,45 @@ const ReferenceCard = ({ reference, index }) => {
 const InformationsPage = () => {
   return (
     <div className="w-full bg-bone min-h-screen page-shell selection:bg-gold selection:text-ink">
-      <Section autoHeight={true} className="py-20 px-4 md:px-8">
+      <Section autoHeight={true} className="pt-32 pb-24 px-4 md:px-8">
 
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-7xl mx-auto mb-20 text-center"
-        >
-          <h1 className="text-5xl md:text-7xl font-black font-display text-ink uppercase tracking-tight leading-none mb-6">
-            HỒ SƠ DỰ ÁN
-          </h1>
-          <p className="font-body text-xl text-ink/70 max-w-2xl mx-auto">
-            Nhóm thực hiện đề tài MLN131: Chủ nghĩa xã hội khoa học <br /> & Tư tưởng Hồ Chí Minh.
-          </p>
-        </motion.div>
+        <div className="flex flex-col items-center justify-center space-y-8 max-w-5xl mx-auto w-full relative z-10 mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-orange-600 border-4 border-ink px-6 py-2 shadow-hard transform rotate-1"
+          >
+            <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-white">
+              Project Profile
+            </span>
+          </motion.div>
+
+          {/* Main Title Block */}
+          <div className="relative text-center">
+            <motion.h1
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="font-display font-black text-6xl md:text-8xl uppercase text-ink leading-[0.85] tracking-tighter drop-shadow-hard"
+            >
+              HỒ SƠ
+            </motion.h1>
+
+            <motion.h1
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="font-display font-black text-6xl md:text-8xl uppercase text-transparent text-stroke-black leading-[0.85] tracking-tighter"
+            >
+              DỰ ÁN
+            </motion.h1>
+          </div>
+
+          <KineticSubline className="max-w-2xl mx-auto text-xl text-center">
+            Nhóm thực hiện đề tài MLN131: Chủ nghĩa xã hội khoa học & Tư tưởng Hồ Chí Minh.
+          </KineticSubline>
+        </div>
 
         {/* Team Section */}
         <div className="max-w-7xl mx-auto mb-20">

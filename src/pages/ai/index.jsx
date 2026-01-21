@@ -127,14 +127,36 @@ const AIPage = () => {
         <div className="w-full max-w-screen-xl flex-1 flex flex-col overflow-hidden px-0 lg:px-8 h-full">
 
           {/* Header Section */}
-          <div className="text-center mb-6 shrink-0 space-y-4">
-            <motion.h1
+          <div className="flex flex-col items-center justify-center space-y-6 mb-8 shrink-0 relative z-10 w-full">
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black font-display text-ink uppercase"
+              className="bg-crimson border-4 border-ink px-6 py-2 shadow-hard transform rotate-1"
             >
-              Hỏi đáp cùng <span className="text-crimson">MLN131 Bot</span>
-            </motion.h1>
+              <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-bone">
+                AI Assistant
+              </span>
+            </motion.div>
+
+            <div className="relative text-center">
+              <motion.h1
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1, type: "spring" }}
+                className="font-display font-black text-6xl md:text-8xl uppercase text-ink leading-[0.85] tracking-tighter drop-shadow-hard"
+              >
+                HỎI ĐÁP CÙNG
+              </motion.h1>
+              <motion.h1
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="font-display font-black text-6xl md:text-8xl uppercase text-transparent text-stroke-black leading-[0.85] tracking-tighter"
+              >
+                MLN131 BOT
+              </motion.h1>
+            </div>
+
             <KineticSubline className="text-center max-w-3xl mx-auto pt-2">
               Đặt câu hỏi về Chủ nghĩa xã hội khoa học, lịch sử tư tưởng, thời kỳ quá độ và nhận giải thích súc tích.
             </KineticSubline>

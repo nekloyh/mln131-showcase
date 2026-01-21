@@ -91,7 +91,7 @@ const CrosswordGame = ({ onClose }) => {
     const [guess, setGuess] = useState("");
     const [openedRows, setOpenedRows] = useState([]);
     const [hostLine, setHostLine] = useState("Chào mừng đến với Ô CHỮ PHÁP QUYỀN!");
-    const [feedback, setFeedback] = useState(null);
+    const [, setFeedback] = useState(null); // Used for triggering re-renders
     const [gameState, setGameState] = useState('playing'); // playing, won
     
     // Board logic

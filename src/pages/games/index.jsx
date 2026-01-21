@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Gamepad2, ScrollText, Trophy, Zap, BookOpen, X, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Section from "../../components/layout/Section";
@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
 import RunnerQuizGame from "./runner-quiz/RunnerQuizGame";
 import CrosswordGame from "./crossword/CrosswordGame";
+import { fetchLeaderboard } from "../../services/runnerQuizApi";
 
 const GuideModal = ({ onClose }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -27,7 +28,32 @@ const GuideModal = ({ onClose }) => (
     </div>
 );
 
-const LeaderboardModal = ({ onClose }) => (
+const LeaderboardModal = ({ onClose }) => {
+    const [scores, setScores] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadScores = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchLeaderboard({ level: 1, limit: 10 });
+                setScores(data.scores || []);
+            } catch (err) {
+                console.error('[Leaderboard] Load error:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadScores();
+    }, []);
+
+    // Get top 1 player
+    const topPlayer = scores[0];
+    const otherPlayers = scores.slice(1);
+
+    return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 backdrop-blur-sm p-4 animate-in zoom-in-95 duration-200">
         <div className="w-full max-w-3xl bg-[#FFDEE2] border-4 border-black shadow-[12px_12px_0px_0px_#000] flex flex-col relative">
             
@@ -62,57 +88,82 @@ const LeaderboardModal = ({ onClose }) => (
             {/* Table Area */}
             <div className="p-6 md:p-8 bg-[#FFDEE2] overflow-y-auto max-h-[50vh] custom-scrollbar">
                 
-                {/* Table Header */}
-                <div className="grid grid-cols-12 gap-4 mb-4 text-xs font-black font-mono uppercase tracking-widest text-black/50 border-b-2 border-black/10 pb-2">
-                    <div className="col-span-2 text-center">#</div>
-                    <div className="col-span-5">Agent</div>
-                    <div className="col-span-3 text-right">Score</div>
-                    <div className="col-span-2 text-right">Dist.</div>
-                </div>
+                {/* Loading State */}
+                {loading && (
+                    <div className="text-center py-8 font-mono text-black/50 animate-pulse">
+                        Loading scores...
+                    </div>
+                )}
 
-                {/* Top 1 Highlight */}
-                <div className="relative mb-6 group">
-                     <div className="absolute inset-0 bg-yellow-400 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] translate-x-1 translate-y-1"></div>
-                     <div className="relative bg-white border-4 border-black p-4 grid grid-cols-12 gap-4 items-center hover:-translate-y-1 hover:-translate-x-1 transition-transform cursor-default">
-                        <div className="col-span-2 flex justify-center">
-                             <Trophy size={32} className="text-yellow-500 fill-yellow-500" strokeWidth={2.5} />
-                        </div>
-                        <div className="col-span-5">
-                            <div className="font-black text-xl uppercase truncate">MasterMind</div>
-                            <div className="text-xs font-mono bg-black text-white inline-block px-1">LEGEND</div>
-                        </div>
-                        <div className="col-span-3 text-right font-black text-2xl text-[#FF4757]">9999</div>
-                        <div className="col-span-2 text-right font-mono text-sm opacity-60">∞m</div>
-                     </div>
-                </div>
+                {/* Error State */}
+                {error && !loading && (
+                    <div className="text-center py-8 font-mono text-red-500">
+                        ⚠️ {error}
+                    </div>
+                )}
 
-                {/* List */}
-                <div className="space-y-3">
-                    {[
-                        { rank: 2, name: "SpeedDemon", score: 8540, dist: "4500m" },
-                        { rank: 3, name: "QuizWiz", score: 7200, dist: "3800m" },
-                        { rank: 4, name: "Newbie_01", score: 6100, dist: "2100m" },
-                        { rank: 5, name: "Runner_X", score: 5400, dist: "1500m" },
-                    ].map((player) => (
-                        <div key={player.rank} className="grid grid-cols-12 gap-4 items-center p-3 border-b-2 border-dashed border-black/20 hover:bg-white hover:border-solid hover:border-black transition-all font-mono">
-                            <div className="col-span-2 text-center font-black text-lg text-black/40">0{player.rank}</div>
-                            <div className="col-span-5 font-bold uppercase">{player.name}</div>
-                            <div className="col-span-3 text-right font-bold">{player.score}</div>
-                            <div className="col-span-2 text-right text-sm opacity-60">{player.dist}</div>
+                {/* Empty State */}
+                {!loading && !error && scores.length === 0 && (
+                    <div className="text-center py-8 font-mono text-black/50">
+                        No scores yet! Be the first to play!
+                    </div>
+                )}
+
+                {/* Has Scores */}
+                {!loading && !error && scores.length > 0 && (
+                    <>
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 gap-4 mb-4 text-xs font-black font-mono uppercase tracking-widest text-black/50 border-b-2 border-black/10 pb-2">
+                            <div className="col-span-2 text-center">#</div>
+                            <div className="col-span-6">Agent</div>
+                            <div className="col-span-4 text-right">Score</div>
                         </div>
-                    ))}
-                </div>
+
+                        {/* Top 1 Highlight */}
+                        {topPlayer && (
+                            <div className="relative mb-6 group">
+                                <div className="absolute inset-0 bg-yellow-400 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] translate-x-1 translate-y-1"></div>
+                                <div className="relative bg-white border-4 border-black p-4 grid grid-cols-12 gap-4 items-center hover:-translate-y-1 hover:-translate-x-1 transition-transform cursor-default">
+                                    <div className="col-span-2 flex justify-center">
+                                        <Trophy size={32} className="text-yellow-500 fill-yellow-500" strokeWidth={2.5} />
+                                    </div>
+                                    <div className="col-span-6">
+                                        <div className="font-black text-xl uppercase truncate">{topPlayer.playerName}</div>
+                                        <div className="text-xs font-mono bg-black text-white inline-block px-1">LEGEND</div>
+                                    </div>
+                                    <div className="col-span-4 text-right font-black text-2xl text-[#FF4757]">
+                                        {topPlayer.score.toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Rest of List */}
+                        <div className="space-y-3">
+                            {otherPlayers.map((player) => (
+                                <div key={player.id} className="grid grid-cols-12 gap-4 items-center p-3 border-b-2 border-dashed border-black/20 hover:bg-white hover:border-solid hover:border-black transition-all font-mono">
+                                    <div className="col-span-2 text-center font-black text-lg text-black/40">
+                                        {String(player.rank).padStart(2, '0')}
+                                    </div>
+                                    <div className="col-span-6 font-bold uppercase truncate">{player.playerName}</div>
+                                    <div className="col-span-4 text-right font-bold">{player.score.toLocaleString()}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
 
             </div>
             
             {/* Footer */}
             <div className="bg-black p-4 flex justify-between items-center text-white font-mono text-xs uppercase">
-                <span>Status: ONLINE</span>
+                <span>Status: {loading ? 'LOADING...' : 'ONLINE'}</span>
                 <span className="animate-pulse">Waiting for challenger...</span>
             </div>
         </div>
     </div>
-);
+    );
+};
 
 const GamesPage = () => {
     const [showRunnerQuiz, setShowRunnerQuiz] = useState(false);
@@ -126,7 +177,7 @@ const GamesPage = () => {
             title: "Runner Quiz",
             description: "Trò chơi endless runner kết hợp giải đố. Nhảy qua chướng ngại vật, trả lời câu hỏi nhanh để ghi điểm. Sai 3 lần là thua!",
             icon: <Zap size={40} className="text-crimson" />,
-            status: "Chơi được",
+            status: "Sẵn sàng",
             action: "Chơi ngay",
             color: "border-crimson",
             playable: true,
@@ -137,8 +188,8 @@ const GamesPage = () => {
             title: "Ô Chữ Pháp Quyền",
             description: "Sân khấu MC chính luận: giải 8 hàng ngang, lộ diện từ khóa PHÁP LUẬT. Đáp án đúng sẽ làm chữ dọc bừng sáng.",
             icon: <ScrollText size={40} className="text-gold" />,
-            status: "Chơi được",
-            action: "Bắt đầu",
+            status: "Sẵn sàng",
+            action: "Chơi ngay",
             color: "border-gold",
             playable: true,
             onClick: () => setShowCrossword(true)
@@ -177,23 +228,47 @@ const GamesPage = () => {
                     <Zap size={100} />
                 </div>
 
-                <div className="space-y-6 max-w-4xl mx-auto text-center mb-16 relative z-10">
-                    <div className="inline-block p-3 bg-ink text-gold font-mono font-bold uppercase tracking-widest text-sm mb-4 border-2 border-gold shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
-                        Gamification Learning
-                    </div>
-                    <KineticHeading
-                        align="center"
-                        title="Arena Trí Tuệ"
-                        size="xl"
-                    />
-                    <KineticSubline className="max-w-2xl mx-auto text-xl">
+                <div className="flex flex-col items-center justify-center space-y-8 max-w-5xl mx-auto w-full relative z-10 mb-16">
+                     {/* Top Label Box */}
+                     <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-gold border-4 border-ink px-6 py-2 shadow-hard transform rotate-1"
+                     >
+                        <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-ink">
+                           Gamification Learning
+                        </span>
+                     </motion.div>
+
+                     {/* Main Title Block */}
+                     <div className="relative text-center">
+                        <motion.h1
+                           initial={{ scale: 0.9, opacity: 0 }}
+                           animate={{ scale: 1, opacity: 1 }}
+                           transition={{ delay: 0.1, type: "spring" }}
+                           className="font-display font-black text-6xl md:text-8xl uppercase text-ink leading-[0.85] tracking-tighter drop-shadow-hard"
+                        >
+                           ARENA
+                        </motion.h1>
+
+                        <motion.h1
+                           initial={{ scale: 0.9, opacity: 0 }}
+                           animate={{ scale: 1, opacity: 1 }}
+                           transition={{ delay: 0.2, type: "spring" }}
+                           className="font-display font-black text-6xl md:text-8xl uppercase text-transparent text-stroke-red leading-[0.85] tracking-tighter"
+                        >
+                           TRÍ TUỆ
+                        </motion.h1>
+                     </div>
+
+                    <KineticSubline className="max-w-2xl mx-auto text-xl text-center">
                         Vừa chơi vừa học. Thử thách bản thân với các trò chơi tương tác, ghi điểm và leo lên bảng xếp hạng cao thủ.
                     </KineticSubline>
                 </div>
 
                 <div className="max-w-5xl mx-auto w-full relative z-10">
                     <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-                        {games.map((game, index) => (
+                        {games.map((game) => (
                             <Card
                                 key={game.id}
                                 variant="default"

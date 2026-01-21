@@ -5,6 +5,9 @@ import questionsData from '../questions.json';
 import ErrorBoundary from '../../../../components/ui/ErrorBoundary';
 import { quizController } from './QuizController';
 import { NeoFrame, NeoCard, NeoButton, NeoPill, NeoHeart, NeoProgressBar } from './NeobrutalUI';
+import EndGameDialog from './EndGameDialog';
+import Leaderboard from './Leaderboard';
+import { generateRunId } from '../../../../services/runnerQuizApi';
 
 // --- Game Logic Config ---
 const GAME_CONFIG = {
@@ -20,7 +23,7 @@ const GAME_CONFIG = {
 
 export default function RunnerQuiz3D({ onClose }) {
     // --- State ---
-    const [gameState, setGameState] = useState('RUNNING'); // RUNNING, QUESTION_GATE, RESOLVING, GAMEOVER
+    const [gameState, setGameState] = useState('RUNNING'); // RUNNING, QUESTION_GATE, RESOLVING, GAMEOVER, SAVE_DIALOG
     const [score, setScore] = useState(0);
     const [hearts, setHearts] = useState(GAME_CONFIG.MAX_HEARTS);
     const [gameKey, setGameKey] = useState(0); // Used to reset 3D scene on restart
@@ -28,6 +31,11 @@ export default function RunnerQuiz3D({ onClose }) {
     // Progression Stats
     const [questionCount, setQuestionCount] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
+
+    // Run tracking for leaderboard
+    const [runId, setRunId] = useState(() => generateRunId());
+    const [gameStartTime, setGameStartTime] = useState(() => Date.now());
+    const [leaderboardRefresh, setLeaderboardRefresh] = useState(0);
 
     // Quiz State (Synced from Controller)
     const [activeQuestion, setActiveQuestion] = useState(null);
@@ -79,6 +87,7 @@ export default function RunnerQuiz3D({ onClose }) {
         return () => {
             quizController.destroy();
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // --- Input Handling ---
@@ -115,6 +124,7 @@ export default function RunnerQuiz3D({ onClose }) {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, onClose, playerLane]); // Added playerLane dependency for manual answer
 
     // --- Action Handlers ---
@@ -181,7 +191,7 @@ export default function RunnerQuiz3D({ onClose }) {
     const handleResolveComplete = useCallback(() => { // Removed unused playerDied
         setHearts(currentHearts => {
             if (currentHearts <= 0) {
-                setGameState('GAMEOVER');
+                setGameState('SAVE_DIALOG'); // Show save dialog instead of direct game over
                 setActiveQuestion(null);
                 currentQuestionRef.current = null;
                 quizController.close('gameover');
@@ -307,7 +317,21 @@ export default function RunnerQuiz3D({ onClose }) {
         // Reset Progression
         setQuestionCount(0);
         setCorrectCount(0);
+
+        // Reset run tracking for new game
+        setRunId(generateRunId());
+        setGameStartTime(Date.now());
     };
+
+    // --- Save Dialog Handlers ---
+    const handleSaveComplete = useCallback(() => {
+        setLeaderboardRefresh(prev => prev + 1); // Refresh leaderboard
+        setGameState('GAMEOVER'); // Go to final game over screen
+    }, []);
+
+    const handleSkipSave = useCallback(() => {
+        setGameState('GAMEOVER'); // Go to final game over screen without saving
+    }, []);
 
     // --- Render ---
     return (
@@ -471,13 +495,23 @@ export default function RunnerQuiz3D({ onClose }) {
                             </div>
                         </div>
 
-                        {/* Decoration / Filler */}
-                        <div className="mt-auto opacity-20">
-                            <div className="text-[10px] font-black uppercase text-center mb-2">CONTROLS</div>
-                            <div className="grid grid-cols-3 gap-1 text-center text-xs font-bold font-mono">
+                        {/* Leaderboard - replaces decoration filler */}
+                        <div className="flex-1 flex flex-col min-h-0 border-[3px] border-black bg-white shadow-[4px_4px_0px_#000]">
+                            <Leaderboard
+                                level={1}
+                                limit={10}
+                                refreshTrigger={leaderboardRefresh}
+                                className="flex-1"
+                            />
+                        </div>
+
+                        {/* Controls hint */}
+                        <div className="opacity-30 pt-2">
+                            <div className="text-[10px] font-black uppercase text-center mb-1">CONTROLS</div>
+                            <div className="grid grid-cols-4 gap-1 text-center text-xs font-bold font-mono">
                                 <div className="border border-black p-1">←</div>
-                                <div className="border border-black p-1">↓</div>
                                 <div className="border border-black p-1">→</div>
+                                <div className="border border-black p-1 col-span-2">SPACE</div>
                             </div>
                         </div>
                     </div>
@@ -495,10 +529,23 @@ export default function RunnerQuiz3D({ onClose }) {
 
                 </div>
 
-                {/* GAME OVER OVERLAY (Inside Window context) */}
+                {/* SAVE SCORE DIALOG (Shows after game over) */}
+                {gameState === 'SAVE_DIALOG' && (
+                    <EndGameDialog
+                        isOpen={true}
+                        score={score}
+                        level={1}
+                        durationMs={Date.now() - gameStartTime}
+                        runId={runId}
+                        onClose={handleSkipSave}
+                        onSaved={handleSaveComplete}
+                    />
+                )}
+
+                {/* GAME OVER OVERLAY (Shows after save dialog) */}
                 {gameState === 'GAMEOVER' && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                        <NeoCard className="w-full max-w-md text-center bg-[#FAF7F0] p-6 flex flex-col gap-6 items-center shadow-[16px_16px_0px_#000]">
+                        <NeoCard className="w-full max-w-lg text-center bg-[#FAF7F0] p-6 flex flex-col gap-6 items-center shadow-[16px_16px_0px_#000]">
                             <div className="bg-[#FF3B30] text-white px-4 py-1 text-sm font-black uppercase tracking-widest border-[3px] border-black shadow-[4px_4px_0px_#000] rotate-2">
                                 TERMINATED
                             </div>
@@ -507,7 +554,17 @@ export default function RunnerQuiz3D({ onClose }) {
 
                             <div className="bg-black text-[#FFD400] p-6 border-[3px] border-gray-800 w-full shadow-[6px_6px_0px_#888]">
                                 <div className="text-xs text-gray-400 font-bold tracking-widest mb-1">FINAL SCORE</div>
-                                <div className="text-6xl font-black">{score}</div>
+                                <div className="text-6xl font-black">{score.toLocaleString()}</div>
+                            </div>
+
+                            {/* Mini Leaderboard in Game Over */}
+                            <div className="w-full border-[3px] border-black bg-white max-h-[200px] overflow-hidden">
+                                <Leaderboard
+                                    level={1}
+                                    limit={5}
+                                    refreshTrigger={leaderboardRefresh}
+                                    highlightRunId={runId}
+                                />
                             </div>
 
                             <NeoButton onClick={handleRestart} variant="primary" className="w-full py-4 text-xl">

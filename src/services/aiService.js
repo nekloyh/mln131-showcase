@@ -61,7 +61,11 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
             );
           } catch (geminiError) {
             console.warn("⚠️ Gemini API also failed:", geminiError.message);
-            return getMockResponse(message);
+            // Trả về thông báo rate limit nếu cả 2 API đều quá tải
+            if (isOverloadError(geminiError)) {
+              return getMockResponse(message, "rateLimit");
+            }
+            return getMockResponse(message, "apiError");
           }
         }
 
@@ -77,11 +81,18 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
             );
           } catch (geminiError) {
             console.warn("⚠️ Gemini API also failed:", geminiError.message);
-            return getMockResponse(message);
+            if (isOverloadError(geminiError)) {
+              return getMockResponse(message, "rateLimit");
+            }
+            return getMockResponse(message, "apiError");
           }
         }
 
-        return getMockResponse(message);
+        // Groq lỗi và không có Gemini
+        if (isOverloadError(groqError)) {
+          return getMockResponse(message, "rateLimit");
+        }
+        return getMockResponse(message, "apiError");
       }
     } else if (hasGeminiKey) {
       // Only Gemini key available
@@ -95,14 +106,17 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
         );
       } catch (err) {
         console.warn("⚠️ Gemini API error:", err.message);
-        return getMockResponse(message);
+        if (isOverloadError(err)) {
+          return getMockResponse(message, "rateLimit");
+        }
+        return getMockResponse(message, "apiError");
       }
     }
 
     return getMockResponse(message);
   } catch (error) {
     console.error("Error in sendMessageToAI:", error);
-    return "Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại sau. 😅";
+    return MOCK_RESPONSES.apiError;
   }
 };
 
@@ -244,32 +258,69 @@ const sendToGroq = async (messages, apiKey) => {
 /**
  * Get mock response for offline/testing mode
  */
-const getMockResponse = (message) => {
+const getMockResponse = (message, errorType = null) => {
+  // Nếu có lỗi cụ thể, trả về thông báo tương ứng
+  if (errorType === "rateLimit") {
+    return MOCK_RESPONSES.rateLimit;
+  }
+  if (errorType === "apiError") {
+    return MOCK_RESPONSES.apiError;
+  }
+
   const lowerMessage = message.toLowerCase();
 
-  // Check for keywords and return appropriate mock response
+  // Kiểm tra từ khóa và trả về mock response phù hợp
+  
+  // Lời chào
   if (
     lowerMessage.includes("chào") ||
     lowerMessage.includes("xin chào") ||
-    lowerMessage.includes("hello")
+    lowerMessage.includes("hello") ||
+    lowerMessage.includes("hi ")
   ) {
     return MOCK_RESPONSES.greeting;
   }
 
+  // Nhà nước pháp quyền
+  if (
+    lowerMessage.includes("nhà nước pháp quyền") ||
+    lowerMessage.includes("pháp quyền xhcn") ||
+    lowerMessage.includes("đặc trưng") ||
+    lowerMessage.includes("hiến pháp")
+  ) {
+    return MOCK_RESPONSES.nhanuoc;
+  }
+
+  // Mối quan hệ Đảng - Nhà nước - Nhân dân
+  if (
+    lowerMessage.includes("mối quan hệ") ||
+    lowerMessage.includes("đảng lãnh đạo") ||
+    lowerMessage.includes("nhân dân làm chủ") ||
+    lowerMessage.includes("nhà nước quản lý") ||
+    lowerMessage.includes("đảng - nhà nước")
+  ) {
+    return MOCK_RESPONSES.moiquanhe;
+  }
+
+  // Bộ máy nhà nước
+  if (
+    lowerMessage.includes("bộ máy") ||
+    lowerMessage.includes("quốc hội") ||
+    lowerMessage.includes("chính phủ") ||
+    lowerMessage.includes("chủ tịch nước") ||
+    lowerMessage.includes("tòa án") ||
+    lowerMessage.includes("viện kiểm sát")
+  ) {
+    return MOCK_RESPONSES.bomay;
+  }
+
+  // Chủ nghĩa xã hội (chung)
   if (
     lowerMessage.includes("chủ nghĩa xã hội") ||
     lowerMessage.includes("cnxh") ||
     lowerMessage.includes("xã hội chủ nghĩa")
   ) {
-    return MOCK_RESPONSES.cnxh;
-  }
-
-  if (
-    lowerMessage.includes("quá độ") ||
-    lowerMessage.includes("bỏ qua") ||
-    lowerMessage.includes("tư bản")
-  ) {
-    return MOCK_RESPONSES.quado;
+    return MOCK_RESPONSES.nhanuoc;
   }
 
   return MOCK_RESPONSES.default;

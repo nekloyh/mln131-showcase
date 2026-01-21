@@ -9,6 +9,10 @@ import {
   FileText,
   ShieldAlert
 } from "lucide-react";
+import {
+  KineticHeading,
+  KineticSubline,
+} from "../../components/ui/KineticText";
 import Section from "../../components/layout/Section";
 import Card from "../../components/ui/Card";
 
@@ -63,7 +67,7 @@ const tools = [
   }
 ];
 
-const ToolCard = ({ item, index }) => {
+const ToolCard = ({ item }) => {
   const Icon = item.icon;
 
   return (
@@ -127,26 +131,44 @@ const ToolCard = ({ item, index }) => {
 const AiUsagePage = () => {
   return (
     <div className="w-full bg-bone min-h-screen page-shell selection:bg-crimson selection:text-white">
-      <Section autoHeight={true} className="py-20 px-4 md:px-8">
+      <Section autoHeight={true} className="pt-32 pb-24 px-4 md:px-8">
 
         {/* Header Section */}
-        <div className="max-w-6xl mx-auto mb-20 text-center relative">
+        <div className="flex flex-col items-center justify-center space-y-8 max-w-5xl mx-auto w-full relative z-10 mb-20">
           <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="inline-block bg-ink text-bone px-4 py-2 font-mono text-sm uppercase font-bold tracking-widest mb-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-blue-600 border-4 border-ink px-6 py-2 shadow-hard transform rotate-1"
           >
-            Transparency Report
+            <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-white">
+              Transparency Report
+            </span>
           </motion.div>
 
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black font-display text-ink uppercase leading-[0.85] mb-8">
-            AI TOOLS <br />
-            <span className="text-crimson">USAGE</span>
-          </h1>
+          {/* Main Title Block */}
+          <div className="relative text-center">
+            <motion.h1
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="font-display font-black text-6xl md:text-8xl uppercase text-ink leading-[0.85] tracking-tighter drop-shadow-hard"
+            >
+              AI TOOLS
+            </motion.h1>
 
-          <p className="font-body text-xl md:text-2xl text-ink/80 max-w-3xl mx-auto leading-relaxed">
+            <motion.h1
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="font-display font-black text-6xl md:text-8xl uppercase text-transparent text-stroke-black leading-[0.85] tracking-tighter"
+            >
+              USAGE
+            </motion.h1>
+          </div>
+
+          <KineticSubline className="max-w-3xl mx-auto text-xl md:text-2xl text-center leading-relaxed">
             Báo cáo chi tiết về việc ứng dụng Trí tuệ nhân tạo trong quá trình phát triển dự án, đảm bảo tính minh bạch và liêm chính học thuật.
-          </p>
+          </KineticSubline>
         </div>
 
         {/* Tools Section */}
