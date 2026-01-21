@@ -1,16 +1,26 @@
 import "./style.css";
-import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight, ChevronDown, Quote } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  Quote,
+  Users,
+  Scale,
+  FileText,
+  Activity,
+} from "lucide-react";
 import TiltCard from "../../components/ui/TiltCard";
-import { KineticHeading, KineticSubline, MarqueeStrip } from "../../components/ui/KineticText";
+import {
+  KineticHeading,
+  KineticSubline,
+  MarqueeStrip,
+} from "../../components/ui/KineticText";
 import Section from "../../components/layout/Section";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 
 const HomePage = () => {
-  const navigate = useNavigate();
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ container: containerRef });
 
@@ -24,7 +34,10 @@ const HomePage = () => {
   ];
 
   return (
-    <div ref={containerRef} className="home-shell w-full bg-sand selection:bg-ink selection:text-gold snap-container h-screen overflow-y-scroll">
+    <div
+      ref={containerRef}
+      className="home-shell w-full bg-sand selection:bg-ink selection:text-gold snap-container h-screen overflow-y-scroll"
+    >
       {/* SECTION 1: HERO - Introduction */}
       <Section className="items-center justify-center pt-32 pb-20 border-b-2 border-ink bg-bone min-h-screen">
         <div className="absolute inset-0 home-hero-overlay pointer-events-none mix-blend-multiply opacity-20" />
@@ -33,7 +46,6 @@ const HomePage = () => {
         </div>
 
         <div className="max-w-screen-2xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center z-10 relative">
-
           {/* Grids/Lines decoration */}
           <div className="absolute -left-10 top-0 bottom-0 w-[2px] bg-ink/10 hidden lg:block"></div>
           <div className="absolute -right-10 top-0 bottom-0 w-[2px] bg-ink/10 hidden lg:block"></div>
@@ -44,7 +56,9 @@ const HomePage = () => {
           >
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-ink text-bone border-2 border-transparent hover:border-crimson hover:text-crimson transition-colors">
               <span className="w-2 h-2 bg-current rounded-full animate-pulse"></span>
-              <span className="font-mono text-xs uppercase tracking-widest">MLN131 Showcase</span>
+              <span className="font-mono text-xs uppercase tracking-widest">
+                MLN131 Showcase
+              </span>
             </div>
 
             <div className="relative">
@@ -79,12 +93,15 @@ const HomePage = () => {
                 transition={{ delay: 0.5 }}
                 className="absolute -top-10 -right-10 w-24 h-24 bg-gold rounded-full flex items-center justify-center border-4 border-ink shadow-hard hidden md:flex"
               >
-                <span className="font-black text-xl transform -rotate-12">2026</span>
+                <span className="font-black text-xl transform -rotate-12">
+                  2026
+                </span>
               </motion.div>
             </div>
 
             <KineticSubline className="max-w-xl text-ink/80 text-lg font-medium border-l-4 border-crimson pl-4 ml-2">
-              Hệ thống tri thức lý luận về sứ mệnh lịch sử của giai cấp công nhân và con đường đi lên chủ nghĩa xã hội.
+              Hệ thống tri thức lý luận về sứ mệnh lịch sử của giai cấp công
+              nhân và con đường đi lên chủ nghĩa xã hội.
             </KineticSubline>
 
             <div className="flex flex-wrap gap-3 pt-4">
@@ -105,7 +122,11 @@ const HomePage = () => {
               <Button
                 variant="danger"
                 size="lg"
-                onClick={() => document.getElementById("quote-section")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() =>
+                  document
+                    .getElementById("quote-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="gap-2 shadow-hard hover:shadow-hard-lg hover:translate-x-1 transition-all"
               >
                 Bắt đầu khám phá <ArrowRight size={20} strokeWidth={3} />
@@ -138,10 +159,15 @@ const HomePage = () => {
 
                 {/* Text Overlay */}
                 <div className="absolute bottom-6 left-6 right-6 z-10">
-                  <p className="text-gold font-mono text-sm uppercase tracking-widest mb-1">Since 1930</p>
+                  <p className="text-gold font-mono text-sm uppercase tracking-widest mb-1">
+                    Since 1930
+                  </p>
                   <p className="text-white font-display text-4xl font-black uppercase leading-none drop-shadow-md">
                     Độc lập <br />
-                    <span className="text-transparent text-stroke-white">Tự do</span> <br />
+                    <span className="text-transparent text-stroke-white">
+                      Tự do
+                    </span>{" "}
+                    <br />
                     Hạnh phúc
                   </p>
                 </div>
@@ -154,7 +180,9 @@ const HomePage = () => {
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-8 -left-8 bg-paper border-2 border-ink p-4 shadow-hard flex items-center gap-3 max-w-xs z-30"
             >
-              <div className="w-10 h-10 bg-crimson rounded-full flex items-center justify-center text-white font-bold">!</div>
+              <div className="w-10 h-10 bg-crimson rounded-full flex items-center justify-center text-white font-bold">
+                !
+              </div>
               <p className="font-mono text-xs font-bold leading-tight">
                 TRIẾT HỌC MÁC - LÊNIN <br /> CHO THỜI ĐẠI MỚI
               </p>
@@ -168,7 +196,14 @@ const HomePage = () => {
         id="quote-section"
         className="items-center justify-center bg-ink text-sand border-b-2 border-bone"
       >
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "linear-gradient(#F0F0E0 1px, transparent 1px), linear-gradient(to right, #F0F0E0 1px, transparent 1px)", backgroundSize: "40px 40px" }}></div>
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "linear-gradient(#F0F0E0 1px, transparent 1px), linear-gradient(to right, #F0F0E0 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        ></div>
 
         <div className="max-w-screen-lg mx-auto text-center relative z-10 space-y-12">
           <div className="w-16 h-16 bg-crimson mx-auto flex items-center justify-center border-2 border-sand shadow-[4px_4px_0px_0px_#F0F0E0]">
@@ -181,7 +216,11 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="font-display text-3xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight uppercase"
           >
-            "Quyền lực nhà nước là <span className="text-ink bg-crimson px-2 box-decoration-clone">thống nhất</span>, có sự phân công, phối hợp và kiểm soát giữa các cơ quan nhà nước."
+            "Quyền lực nhà nước là{" "}
+            <span className="text-ink bg-crimson px-2 box-decoration-clone">
+              thống nhất
+            </span>
+            , có sự phân công, phối hợp và kiểm soát giữa các cơ quan nhà nước."
           </motion.blockquote>
 
           <div className="py-8">
@@ -195,78 +234,148 @@ const HomePage = () => {
         </div>
       </Section>
 
-      {/* SECTION 3: NAVIGATION / PROBLEM STATEMENT */}
-      <Section className="justify-center bg-bg-default">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-20">
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-mono text-crimson font-bold uppercase tracking-widest mb-2">Lộ trình nghiên cứu</h2>
-              <KineticHeading
-                title="Khám phá chi tiết"
-                size="lg"
-              />
-            </div>
-
-            <KineticSubline>
-              Để hiểu rõ cách vận hành bộ máy nhà nước và mối quan hệ giữa Đảng, Nhà nước, Nhân dân, hãy đi theo từng chặng dưới đây.
+      {/* SECTION 3: PEOPLE'S MASTERSHIP (Topic 4) */}
+      <Section
+        scrollable={true}
+        className="items-center justify-center px-4 md:px-10 bg-sand"
+      >
+        <div className="max-w-screen-2xl mx-auto w-full py-16">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-3xl md:text-5xl font-display font-black text-ink uppercase">
+              QUYỀN LÀM CHỦ <br />
+              <span className="text-crimson">CỦA NHÂN DÂN</span>
+            </h2>
+            <KineticSubline className="text-center max-w-3xl mx-auto">
+              Nhà nước là công cụ thực hiện quyền làm chủ của Nhân dân.
             </KineticSubline>
-
-            <div className="space-y-6 pt-4">
-              {[
-                "Cơ cấu tổ chức Quốc hội, Chính phủ, Tòa án",
-                "Phương thức lãnh đạo của Đảng",
-                "Cơ chế giám sát và phản biện xã hội",
-              ].map((text, idx) => (
-                <div key={text} className="flex items-center gap-4 group cursor-default">
-                  <div className="w-8 h-8 border-2 border-ink flex items-center justify-center font-bold text-xs bg-bone group-hover:bg-crimson group-hover:text-bone transition-colors">
-                    {idx + 1}
-                  </div>
-                  <p className="font-display text-xl uppercase text-ink group-hover:text-crimson transition-colors">{text}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <div className="grid gap-6 content-center">
+          {/* Infographic Style Layout */}
+          <div className="grid md:grid-cols-3 gap-8">
             <Card
+              variant="flat"
               hoverEffect
-              onClick={() => navigate("/bo-may-nha-nuoc")}
-              className="cursor-pointer group hover:border-crimson"
+              className="p-8 border-t-8 border-t-blue-600 flex flex-col"
             >
-              <div className="flex justify-between items-center mb-4 border-b-2 border-ink/10 pb-4">
-                <span className="text-sm font-mono font-bold text-crimson uppercase tracking-wider">Phần II</span>
-                <ArrowRight className="text-ink group-hover:translate-x-1 transition-transform" />
+              <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-6 border-2 border-blue-600 shadow-[4px_4px_0px_0px_#2563EB]">
+                <Users size={32} strokeWidth={2.5} />
               </div>
-              <h3 className="font-display text-3xl font-bold text-ink mb-2 group-hover:text-crimson transition-colors uppercase">Cơ cấu tổ chức & Vận hành</h3>
-              <p className="text-base text-graphite">Quốc hội, Chính phủ, Tòa án và Viện kiểm sát.</p>
+              <h3 className="font-display text-2xl font-bold mb-4 uppercase">
+                Nhà nước phục vụ
+              </h3>
+              <p className="text-lg text-graphite/80 mb-6 flex-grow">
+                Nhà nước sinh ra không phải để cai trị mà để phục vụ lợi ích của
+                Nhân dân.
+              </p>
+              <div className="h-2 w-16 bg-blue-600"></div>
             </Card>
 
             <Card
+              variant="flat"
               hoverEffect
-              onClick={() => navigate("/dang-va-nhan-dan")}
-              className="cursor-pointer group hover:border-crimson"
+              className="p-8 border-t-8 border-t-ember flex flex-col"
             >
-              <div className="flex justify-between items-center mb-4 border-b-2 border-ink/10 pb-4">
-                <span className="text-sm font-mono font-bold text-crimson uppercase tracking-wider">Phần III, IV, V</span>
-                <ArrowRight className="text-ink group-hover:translate-x-1 transition-transform" />
+              <div className="w-16 h-16 bg-ember/20 rounded-lg flex items-center justify-center text-ember mb-6 border-2 border-ember shadow-[4px_4px_0px_0px_#FF5500]">
+                <FileText size={32} strokeWidth={2.5} />
               </div>
-              <h3 className="font-display text-3xl font-bold text-ink mb-2 group-hover:text-crimson transition-colors uppercase">Đảng lãnh đạo & Nhân dân làm chủ</h3>
-              <p className="text-base text-graphite">Mối quan hệ biện chứng và cơ chế giải trình.</p>
+              <h3 className="font-display text-2xl font-bold mb-4 uppercase">
+                Nhân dân làm chủ
+              </h3>
+              <p className="text-lg text-graphite/80 mb-6 flex-grow">
+                Nhân dân thực hiện quyền làm chủ trực tiếp và gián tiếp đối với
+                Nhà nước.
+              </p>
+              <div className="h-2 w-16 bg-ember"></div>
             </Card>
 
-            <div
-              onClick={() => navigate("/tro-choi")}
-              className="cursor-pointer group relative overflow-hidden p-8 border-2 border-ink text-bone shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all"
+            <Card
+              variant="flat"
+              hoverEffect
+              className="p-8 border-t-8 border-t-purple-600 flex flex-col"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-crimson to-ember"></div>
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-
-              <div className="relative z-10 flex justify-between items-center mb-4 border-b-2 border-white/20 pb-4">
-                <span className="text-sm font-mono font-bold text-white/90 uppercase tracking-wider">Giải trí</span>
-                <ArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
+              <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-6 border-2 border-purple-600 shadow-[4px_4px_0px_0px_#9333EA]">
+                <Scale size={32} strokeWidth={2.5} />
               </div>
-              <h3 className="relative z-10 font-display text-3xl font-bold mb-2 uppercase">Thử thách kiến thức</h3>
-              <p className="relative z-10 text-base text-white/90">Ôn tập qua các trò chơi trắc nghiệm thú vị.</p>
+              <h3 className="font-display text-2xl font-bold mb-4 uppercase">
+                Quyền & Nghĩa vụ
+              </h3>
+              <p className="text-lg text-graphite/80 mb-6 flex-grow">
+                Mối quan hệ pháp lý 2 chiều: Công dân được hưởng quyền và phải
+                thực hiện nghĩa vụ đối với Nhà nước.
+              </p>
+              <div className="h-2 w-16 bg-purple-600"></div>
+            </Card>
+          </div>
+
+          <div className="mt-16">
+            <MarqueeStrip
+              text="MỐI LIÊN HỆ CÔNG DÂN - NHÀ NƯỚC • QUYỀN LỢI ĐI ĐÔI VỚI NGHĨA VỤ"
+              speed={26}
+              tone="dark"
+              className="font-display font-bold uppercase tracking-widest text-xl border-2 border-ink shadow-hard"
+            />
+          </div>
+        </div>
+      </Section>
+
+      {/* SECTION 4: STUDENT RESPONSIBILITY (Topic 5) */}
+      <Section className="items-center justify-center px-4 md:px-10 bg-white">
+        <div className="max-w-screen-2xl mx-auto w-full py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-display font-black text-ink uppercase mb-6">
+              Trách nhiệm <span className="text-crimson">Sinh viên</span>
+            </h2>
+            <p className="text-xl italic text-graphite/60 font-body">
+              "Chúng ta cần làm gì?"
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Responsibility 1 */}
+            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
+              <div className="text-4xl mb-4">🧠</div>
+              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
+                1. Hiểu đúng
+              </h3>
+              <p className="text-graphite">
+                Tìm hiểu kỹ về Hiến pháp, pháp luật để có nhận thức đúng đắn.
+              </p>
+            </div>
+
+            {/* Responsibility 2 */}
+            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
+              <div className="text-4xl mb-4">✅</div>
+              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
+                2. Làm đúng
+              </h3>
+              <p className="text-graphite">
+                Tuân thủ nội quy nhà trường, quy định địa phương, luật giao
+                thông, an ninh mạng...
+              </p>
+            </div>
+
+            {/* Responsibility 3 */}
+            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
+              <div className="text-4xl mb-4">💬</div>
+              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
+                3. Phản biện đúng
+              </h3>
+              <p className="text-graphite">
+                Góp ý xây dựng văn minh, tỉnh táo trước các luận điệu xuyên tạc
+                của thế lực thù địch.
+              </p>
+            </div>
+
+            {/* Responsibility 4 */}
+            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
+                4. Hành động
+              </h3>
+              <p className="text-graphite">
+                Rèn luyện đạo đức, tri thức. Sinh viên là rường cột của quốc gia
+                trong tương lai.
+              </p>
             </div>
           </div>
         </div>
@@ -276,4 +385,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-

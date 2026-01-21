@@ -19,8 +19,13 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/trang-chu" element={<HomePage />} />
-        <Route path="/bo-may-nha-nuoc" element={<GovermentPage />} />
-        <Route path="/dang-va-nhan-dan" element={<PopularPage />} />
+        <Route path="/nhan-dan-lam-chu" element={<HomePage />} />
+        <Route path="/dang-cong-san" element={<GovermentPage />} />
+        <Route path="/bo-may-nha-nuoc" element={<GovermentPage />} />{" "}
+        {/* Keep legacy for safe measure or remove? Better to redirect conceptually, but here we just alias */}
+        <Route path="/nha-nuoc-phap-quyen" element={<PopularPage />} />
+        <Route path="/dang-va-nhan-dan" element={<PopularPage />} />{" "}
+        {/* Legacy alias */}
         <Route path="/tro-choi" element={<GamesPage />} />
         <Route path="/ai-chatbot" element={<AIChatboxPage />} />
         <Route path="/ai-usage" element={<AiUsagePage />} />

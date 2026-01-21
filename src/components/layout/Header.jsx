@@ -15,7 +15,7 @@ export default function Header() {
     let cleanupContainer = null;
 
     const setupScrollListener = () => {
-      const container = document.querySelector('.snap-container');
+      const container = document.querySelector(".snap-container");
 
       const handleScroll = () => {
         const scrollTop = container ? container.scrollTop : window.scrollY;
@@ -24,12 +24,14 @@ export default function Header() {
 
       if (container) {
         container.addEventListener("scroll", handleScroll, { passive: true });
-        cleanupContainer = () => container.removeEventListener("scroll", handleScroll);
+        cleanupContainer = () =>
+          container.removeEventListener("scroll", handleScroll);
         // Initial check
         handleScroll();
       } else {
         window.addEventListener("scroll", handleScroll, { passive: true });
-        cleanupContainer = () => window.removeEventListener("scroll", handleScroll);
+        cleanupContainer = () =>
+          window.removeEventListener("scroll", handleScroll);
       }
     };
 
@@ -43,12 +45,10 @@ export default function Header() {
 
   const navItems = [
     { name: "Trang chủ", path: "/" },
-    { name: "Bộ máy Nhà nước", path: "/bo-may-nha-nuoc" },
-    { name: "Đảng & Nhân dân", path: "/dang-va-nhan-dan" },
+    { name: "Đảng Lãnh đạo", path: "/dang-cong-san" },
+    { name: "Nhà nước Quản lý", path: "/nha-nuoc-phap-quyen" },
     { name: "Trò chơi", path: "/tro-choi" },
-    { name: "Trợ lý MLN131", path: "/ai-chatbot" },
-    { name: "Công cụ AI", path: "/ai-usage" },
-    { name: "Thông tin", path: "/informations" },
+    { name: "Trợ lý AI", path: "/ai-chatbot" },
   ];
 
   const handleNavigate = (href) => {
@@ -91,7 +91,11 @@ export default function Header() {
                   variant={isActive ? "danger" : "ghost"}
                   onClick={() => handleNavigate(item.path)}
                   size="sm"
-                  className={isActive ? "" : "hover:bg-gold hover:text-ink hover:border-ink hover:shadow-hard"}
+                  className={
+                    isActive
+                      ? ""
+                      : "hover:bg-gold hover:text-ink hover:border-ink hover:shadow-hard"
+                  }
                 >
                   {item.name}
                 </Button>
@@ -138,7 +142,9 @@ export default function Header() {
             >
               <div className="flex flex-col gap-4">
                 <div className="border-b-2 border-ink pb-4 mb-4">
-                  <h3 className="font-display text-2xl text-ink uppercase">Điều hướng</h3>
+                  <h3 className="font-display text-2xl text-ink uppercase">
+                    Điều hướng
+                  </h3>
                 </div>
 
                 {navItems.map((item, index) => {
@@ -171,4 +177,3 @@ export default function Header() {
     </>
   );
 }
-
