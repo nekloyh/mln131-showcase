@@ -1,93 +1,109 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { PerspectiveCamera, Environment, Text, Float, Stars, Trail } from '@react-three/drei';
+import { PerspectiveCamera, Environment, Text, Float, Outlines } from '@react-three/drei';
 import * as THREE from 'three';
 
 // --- Constants & Config ---
-// 4 Lanes: -6 (A), -2 (B), 2 (C), 6 (D) - Wider spacing for clarity
-const LANE_WIDTH = 4.0;
-const LANES = [-6, -2, 2, 6];
+// 4 Lanes: -12 (A), -4 (B), 4 (C), 12 (D) - Based on 32-unit width
+const LANE_WIDTH = 8.0;
+const LANES = [-12, -4, 4, 12];
 const SEGMENT_LENGTH = 100;
 const VIEW_DISTANCE = 300;
 const BASE_SPEED = 30;
 
-// Colors (Ice Canyon Premium)
+// Neobrutal Palette
 const COLORS = {
-    FOG: '#D4E4ED',           // Brighter, premium cold fog
-    GROUND: '#EBF5FB',        // Clean ice
-    GROUND_ACCENT: '#AED6F1', // Light blue accents
-    CANYON_NEAR: '#85C1E9',   // Light ice blue
-    CANYON_MID: '#3498DB',    // Stronger blue
-    CANYON_FAR: '#21618C',    // Deep ocean blue
-    OBSTACLE_FRAME: '#2E86C1',
-    OBSTACLE_GLOW: '#5DADE2',
-    LANE_DIVIDER: '#D6EAF8',
-    PLAYER_BODY: '#2ECC71',   // Bright Green
-    PLAYER_TRAIL: '#2ECC71',
+    BG: '#FAF7F0',            // Paper White
+    GROUND: '#FFFFFF',        // Pure White
+    GROUND_LINES: '#000000',  // Black Lines
+    WALL_BASE: '#4D9DE0',     // Blue Wall
+    WALL_STRIPES: '#000000',  // Black Stripes
+    PLAYER: '#FF4D6D',        // Pink
+    OBSTACLE: '#FFD400',      // Yellow
+    TEXT: '#000000',
+    OUTLINE: '#000000',
 };
 
 // --- Components ---
 
-// Player Component (No Jump, Tilt + Dash feel)
+// Chibi Player: Simple Capsule + Head Block with Outline
 function Player({ laneIndex }) {
-    const mesh = useRef();
+    const group = useRef();
+    const body = useRef();
     const [currentX, setCurrentX] = useState(LANES[1]);
 
     useFrame((state, delta) => {
-        if (!mesh.current) return;
+        if (!group.current) return;
 
         // Lane Lerp
         const targetX = LANES[laneIndex] !== undefined ? LANES[laneIndex] : LANES[1];
-        const diff = targetX - currentX;
 
-        // Smoother, snappier movement
-        setCurrentX(prev => THREE.MathUtils.lerp(prev, targetX, 10 * delta));
+        // Snappier movement
+        setCurrentX(prev => THREE.MathUtils.lerp(prev, targetX, 15 * delta));
 
-        mesh.current.position.x = currentX;
-        mesh.current.position.y = 1; // Fixed on ground
+        group.current.position.x = currentX;
+        group.current.position.y = 0; // Ground level
 
-        // Tilt (Banking)
-        const tilt = (targetX - currentX) * -0.15;
-        mesh.current.rotation.z = THREE.MathUtils.lerp(mesh.current.rotation.z, tilt, 10 * delta);
+        // Procedural Animation: Squash & Stretch
+        const time = state.clock.elapsedTime;
+        const bounce = Math.abs(Math.sin(time * 15)); // Fast feet
 
-        // Forward "Speed" Bob
-        mesh.current.position.z = 4 + Math.sin(state.clock.elapsedTime * 20) * 0.2;
+        if (body.current) {
+            // Bounce up/down
+            body.current.position.y = 1.5 + bounce * 0.5;
+            // Squash when landing
+            const scaleY = 1 + (bounce * 0.1);
+            const scaleXZ = 1 - (bounce * 0.05);
+            body.current.scale.set(scaleXZ, scaleY, scaleXZ);
+
+            // Tilt forward slightly when running
+            body.current.rotation.x = 0.2;
+            // Tilt sideways when moving lanes
+            const tilt = (targetX - currentX) * -0.1;
+            body.current.rotation.z = THREE.MathUtils.lerp(body.current.rotation.z, tilt, 10 * delta);
+        }
     });
 
     return (
-        <group ref={mesh} position={[0, 1, 4]}>
-            <Float speed={5} rotationIntensity={0.2} floatIntensity={0.2}>
-                <Trail width={1.5} length={6} color={COLORS.PLAYER_TRAIL} attenuation={(t) => t * t}>
-                    {/* Sci-fi Runner Body */}
-                    <mesh castShadow receiveShadow>
-                        <boxGeometry args={[1.2, 1.2, 1.8]} />
-                        <meshStandardMaterial color={COLORS.PLAYER_BODY} roughness={0.2} metalness={0.8} />
-                    </mesh>
-                </Trail>
-                {/* Engine/Jetpack Glow */}
-                <mesh position={[0, 0, -0.9]}>
-                    <planeGeometry args={[0.8, 0.8]} />
-                    <meshBasicMaterial color="#00FF00" transparent opacity={0.8} side={THREE.DoubleSide} />
+        <group ref={group} position={[0, 0, 4]}>
+            <group ref={body}>
+                {/* Body Block */}
+                <mesh castShadow receiveShadow position={[0, 0, 0]}>
+                    <capsuleGeometry args={[0.8, 1.2, 4, 8]} />
+                    <meshStandardMaterial color={COLORS.PLAYER} toneMapped={false} />
+                    <Outlines thickness={0.05} color="black" />
                 </mesh>
-            </Float>
+
+                {/* Head / Visor (Simple Geometric) */}
+                <mesh position={[0, 0.8, 0.5]}>
+                    <boxGeometry args={[1.0, 0.4, 0.4]} />
+                    <meshBasicMaterial color="black" />
+                </mesh>
+            </group>
+
+            {/* Shadow Blob */}
+            <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[1, 32]} />
+                <meshBasicMaterial color="black" opacity={0.3} transparent />
+            </mesh>
         </group>
     );
 }
 
-// Answer Wall (Hero Object - Spans 4 Lanes)
-const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, playerLane, questionData }) => {
+// Answer Wall: Blocky, Solid Colors, Black Borders
+const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, playerLane }) => {
     const ref = useRef();
     const hasHit = useRef(false);
-    const [spawnAnim, setSpawnAnim] = useState(0);
+    // Use ref to always have fresh playerLane value in animation callback
+    const playerLaneRef = useRef(playerLane);
+
+    // Update ref whenever playerLane prop changes
+    useEffect(() => {
+        playerLaneRef.current = playerLane;
+    }, [playerLane]);
 
     useFrame((state, delta) => {
         if (!ref.current) return;
-
-        // Spawn Animation (Slide Up)
-        if (spawnAnim < 1) {
-            setSpawnAnim(prev => Math.min(prev + delta * 2, 1));
-            ref.current.position.y = THREE.MathUtils.lerp(-10, 0, spawnAnim);
-        }
 
         // Move
         ref.current.position.z += speed * delta;
@@ -97,7 +113,8 @@ const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, player
         if (!hasHit.current) {
             if (Math.abs(currentZ - 4) < 1.0) {
                 hasHit.current = true;
-                onCollide(id, playerLane);
+                // Use ref to get current playerLane value, not stale closure value
+                onCollide(id, playerLaneRef.current);
             }
         }
 
@@ -108,45 +125,33 @@ const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, player
     });
 
     return (
-        <group ref={ref} position={[0, -10, startZ]}>
-            {/* Main Arch Structure */}
-            <mesh position={[0, 6, 0]}>
-                <boxGeometry args={[26, 1, 1]} /> {/* Top Bar */}
-                <meshStandardMaterial color={COLORS.OBSTACLE_FRAME} metalness={0.8} roughness={0.2} />
+        <group ref={ref} position={[0, 0, startZ]}>
+            {/* Top Bar Label */}
+            <mesh position={[0, 7, 0]}>
+                <boxGeometry args={[34, 1.5, 1]} />
+                <meshStandardMaterial color="black" />
             </mesh>
 
-            {/* Lane Panels */}
+            {/* Lane Gates */}
             {LANES.map((laneX, i) => (
                 <group key={i} position={[laneX, 3, 0]}>
-                    {/* Glass Panel */}
-                    <mesh>
-                        <boxGeometry args={[3.8, 5, 0.2]} />
-                        <meshPhysicalMaterial
-                            color={COLORS.OBSTACLE_GLOW}
-                            transmission={0.6}
-                            opacity={0.8}
-                            transparent
-                            roughness={0}
-                            thickness={1}
-                        />
+                    {/* The Gate Block - Widened for new lanes */}
+                    <mesh position={[0, 0, 0]}>
+                        <boxGeometry args={[7, 6, 1.5]} /> {/* Thicker block */}
+                        <meshStandardMaterial color={COLORS.BG} />
+                        <Outlines thickness={0.15} color="black" />
                     </mesh>
 
-                    {/* Border Glow */}
-                    <mesh position={[0, 0, 0.05]}>
-                        <ringGeometry args={[1.5, 1.6, 32]} />
-                        <meshBasicMaterial color="white" />
-                    </mesh>
-
-                    {/* Option Label (World Space UI) */}
+                    {/* Option Text - BIGGER and BOLDER */}
                     <Text
-                        position={[0, 0, 0.2]}
-                        fontSize={2.5}
-                        color="white"
-                        font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" // Default font
+                        position={[0, 0, 0.9]} // Pushed out slightly
+                        fontSize={4.5} // Bigger Font
+                        color="black"
+                        font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff"
                         anchorX="center"
                         anchorY="middle"
-                        outlineWidth={0.05}
-                        outlineColor={COLORS.CANYON_DARK}
+                        outlineWidth={0.1}
+                        outlineColor="white"
                     >
                         {['A', 'B', 'C', 'D'][i]}
                     </Text>
@@ -156,112 +161,114 @@ const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, player
     );
 });
 
-// Environment with Parallax Layers
-function CanyonEnvironment({ speed }) {
-    const layer1 = useRef();
-    const layer2 = useRef();
-    const layer3 = useRef();
+// Neobrutal Environment
+function NeobrutalEnvironment({ speed }) {
+    // Procedural Road Texture (Dashed Lines + Curbs)
+    const roadTexture = useMemo(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        // ... (content matches exactly, just removing floorRef)
 
-    useFrame((state, delta) => {
-        // Parallax scrolling
-        if (layer1.current) layer1.current.position.z = (layer1.current.position.z + speed * delta * 0.8) % 200;
-        if (layer2.current) layer2.current.position.z = (layer2.current.position.z + speed * delta * 0.4) % 200;
-        if (layer3.current) layer3.current.position.z = (layer3.current.position.z + speed * delta * 0.1) % 200;
-    });
+        canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
 
-    const CanyonSide = ({ xOffset, color, scaleY }) => (
-        <group>
-            {[-1, 1].map(side => (
-                <mesh key={side} position={[side * xOffset, 10, -100]} rotation={[0, 0, side * 0.1]} scale={[1, scaleY, 1]}>
-                    <cylinderGeometry args={[10, 20, 400, 8]} />
-                    <meshStandardMaterial color={color} flatShading />
-                </mesh>
-            ))}
-        </group>
-    );
+        // 1. Base Ground
+        ctx.fillStyle = COLORS.GROUND; // White
+        ctx.fillRect(0, 0, 1024, 1024);
 
-    return (
-        <group>
-            {/* Near Layer */}
-            <group ref={layer1}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <group key={i} position={[0, 0, -i * 40]}>
-                        <CanyonSide xOffset={35} color={COLORS.CANYON_NEAR} scaleY={1} />
-                    </group>
-                ))}
-            </group>
-            {/* Mid Layer */}
-            <group ref={layer2}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <group key={i} position={[0, 5, -i * 60]}>
-                        <CanyonSide xOffset={50} color={COLORS.CANYON_MID} scaleY={2} />
-                    </group>
-                ))}
-            </group>
-            {/* Far Layer */}
-            <group ref={layer3}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <group key={i} position={[0, 10, -i * 100]}>
-                        <CanyonSide xOffset={80} color={COLORS.CANYON_FAR} scaleY={5} />
-                    </group>
-                ))}
-            </group>
-        </group>
-    );
-}
+        // 2. Center Lane Markers (3 lines for 4 lanes)
+        // Lanes are roughly split into 4 quarters. 
+        // 25%, 50%, 75% width.
+        ctx.fillStyle = '#1a1a1a'; // Dark Grey for contrast, not pure black
 
-function MovingTrack({ speed }) {
-    const group = useRef();
-
-    useFrame((state, delta) => {
-        if (group.current) {
-            group.current.position.z += speed * delta;
-            if (group.current.position.z >= SEGMENT_LENGTH * 2) {
-                group.current.position.z -= SEGMENT_LENGTH * 2;
+        const drawDashedLine = (x) => {
+            const dashHeight = 120;
+            const gapHeight = 100;
+            for (let y = 0; y < 1024; y += (dashHeight + gapHeight)) {
+                ctx.fillRect(x - 6, y, 12, dashHeight); // 12px wide dash
             }
+        };
+
+        drawDashedLine(256); // 25%
+        drawDashedLine(512); // 50%
+        drawDashedLine(768); // 75%
+
+        // 3. Side Curbs (Warning Stripes)
+        // Left Curb
+        ctx.fillStyle = COLORS.WALL_BASE; // Blue accent
+        ctx.fillRect(0, 0, 64, 1024);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(64, 0, 8, 1024); // Inner border
+
+        // Right Curb
+        ctx.fillStyle = COLORS.WALL_BASE;
+        ctx.fillRect(1024 - 64, 0, 64, 1024);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(1024 - 72, 0, 8, 1024); // Inner border
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        // Anisotropy helps dashed lines look sharp at distance
+        tex.anisotropy = 16;
+        return tex;
+    }, []);
+
+    useFrame((state, delta) => {
+        // Scroll texture logic
+        // scale of speed needs to be adjusted for texture UV (0-1)
+        // speed ~30 units/sec. Segment length ~100? 
+        // Let's just scroll based on arbitrary visual feel.
+        if (roadTexture) {
+            // Negative Y moves "forward" visually on a floor plane mapped this way usually
+            roadTexture.offset.y -= (speed * delta) * 0.05;
         }
     });
 
     return (
-        <group ref={group}>
-            {[0, 1, 2, 3].map(i => (
-                <group key={i} position={[0, -0.1, -i * SEGMENT_LENGTH]}>
-                    {/* Main Road */}
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-                        <planeGeometry args={[30, SEGMENT_LENGTH]} />
-                        <meshStandardMaterial color={COLORS.GROUND} roughness={0.1} metalness={0.1} />
-                    </mesh>
+        <group>
+            {/* The Road Plane */}
+            {/* Width: 24 units (covers -12 to 12). Height: 400 (depth) */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, -50]} receiveShadow>
+                {/* 
+                  Plane args: [width, height, widthSegments, heightSegments] 
+                  Using 32 width covers our 4 lanes (-6, -2, 0, 2, 6) broadly 
+                */}
+                <planeGeometry args={[32, 400]} />
+                <meshStandardMaterial
+                    map={roadTexture}
+                    roughness={0.8}
+                    metalness={0.1}
+                />
+            </mesh>
 
-                    {/* Lane Separators (Lines) */}
-                    {[-4, 0, 4].map((x, idx) => (
-                        <mesh key={idx} position={[x, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                            <planeGeometry args={[0.2, SEGMENT_LENGTH]} />
-                            <meshBasicMaterial color={COLORS.LANE_DIVIDER} opacity={0.6} transparent />
-                        </mesh>
-                    ))}
-
-                    {/* Edge Rails */}
-                    {[-8, 8].map((x, idx) => (
-                        <mesh key={idx} position={[x, 1, 0]}>
-                            <boxGeometry args={[1, 2, SEGMENT_LENGTH]} />
-                            <meshStandardMaterial color={COLORS.CANYON_NEAR} />
-                        </mesh>
-                    ))}
-                </group>
+            {/* Distant Decoration / Walls (Simplified for new road look) */}
+            {[-1, 1].map(side => (
+                <mesh key={side} position={[side * 28, 10, -50]} rotation={[0, 0, 0]}>
+                    <boxGeometry args={[20, 40, 400]} />
+                    <meshStandardMaterial color={COLORS.BG} />
+                    {/* Just simple big blocks to frame the fog */}
+                    <Outlines thickness={0.1} color="black" />
+                </mesh>
             ))}
         </group>
     );
 }
 
-export default function Runner3DScene({ isQuizActive, activeQuestion, onWallHit, playerAction, playerLane, gameSpeed = 1, spawnSignal }) {
+export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, gameSpeed = 1, spawnSignal }) {
     const [walls, setWalls] = useState([]);
+    const lastSpawnedQuestionRef = useRef(null);
 
     useEffect(() => {
-        if (spawnSignal && activeQuestion) {
+        // Check if we have a new spawn signal and a valid question
+        // Also ensure we don't spawn duplicate walls for the same question
+        if (spawnSignal && activeQuestion && activeQuestion.id !== lastSpawnedQuestionRef.current) {
             const id = Date.now();
+            lastSpawnedQuestionRef.current = activeQuestion.id;
+            console.log('[Runner3DScene] Spawning wall for question:', activeQuestion.id);
             setWalls(prev => [
                 ...prev,
-                { id, startZ: -150, question: activeQuestion } // Spawn further away because of larger scale
+                { id, startZ: -150, question: activeQuestion }
             ]);
         }
     }, [spawnSignal, activeQuestion]);
@@ -272,20 +279,16 @@ export default function Runner3DScene({ isQuizActive, activeQuestion, onWallHit,
 
     return (
         <>
-            <PerspectiveCamera makeDefault position={[0, 8, 16]} fov={50} rotation={[-0.2, 0, 0]} />
+            <PerspectiveCamera makeDefault position={[0, 12, 22]} fov={50} rotation={[-0.4, 0, 0]} />
 
-            <color attach="background" args={[COLORS.FOG]} />
-            <fog attach="fog" args={[COLORS.FOG, 40, VIEW_DISTANCE]} />
+            {/* Flat Lighting for Neobrutal check */}
+            <ambientLight intensity={1.2} />
+            <directionalLight position={[10, 20, 10]} intensity={1.5} castShadow />
+            <color attach="background" args={[COLORS.BG]} />
+            <fog attach="fog" args={[COLORS.BG, 100, 290]} />
 
-            <ambientLight intensity={0.8} />
-            <directionalLight position={[50, 50, 20]} intensity={1.5} castShadow shadow-mapSize={[2048, 2048]} />
+            <NeobrutalEnvironment speed={BASE_SPEED * gameSpeed} />
 
-            <Stars radius={200} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
-
-            <CanyonEnvironment speed={BASE_SPEED * gameSpeed} />
-            <MovingTrack speed={BASE_SPEED * gameSpeed} />
-
-            {/* Note: playerAction is mostly for visual effects now, no jump */}
             <Player laneIndex={playerLane} />
 
             {walls.map(wall => (
@@ -297,11 +300,8 @@ export default function Runner3DScene({ isQuizActive, activeQuestion, onWallHit,
                     onCollide={onWallHit}
                     onDespawn={handleDespawn}
                     playerLane={playerLane}
-                    questionData={wall.question}
                 />
             ))}
-
-            <Environment preset="city" blur={0.8} />
         </>
     );
 }
