@@ -1,16 +1,21 @@
 {
   "name": "mln131_website",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
+    "dev": "vite --mode development",
+    "build": "vite build --mode production",
+    "build:dev": "vite build --mode development",
     "preview": "vite preview",
-    "server": "cd server && npm run dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "server:dev": "cd server && npm run dev",
+    "server:start": "cd server && npm start",
     "server:install": "cd server && npm install",
-    "dev:full": "concurrently \"npm run dev\" \"npm run server\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run server:dev\"",
+    "clean": "rm -rf dist node_modules/.vite",
+    "clean:all": "rm -rf dist node_modules server/node_modules"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

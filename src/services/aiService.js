@@ -4,6 +4,12 @@ import {
   MOCK_RESPONSES,
 } from "../data/aiConfig";
 
+// Debug logging helper - only logs in development
+const isDev = import.meta.env.VITE_NODE_ENV === 'development' || import.meta.env.DEV;
+const debug = (...args) => isDev && console.log(...args);
+const debugWarn = (...args) => isDev && console.warn(...args);
+const debugError = (...args) => console.error(...args); // Always log errors
+
 /**
  * Sends a message to the configured AI service and gets a response
  * Uses Groq as primary provider and Gemini as backup when Groq is overloaded
@@ -16,8 +22,8 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
     const { groqApiKey, geminiApiKey, systemPrompt } = AI_CONFIG;
 
     // Debug logging
-    console.log("Groq API key available:", groqApiKey ? "Yes" : "No");
-    console.log("Gemini API key available:", geminiApiKey ? "Yes" : "No");
+    debug("Groq API key available:", groqApiKey ? "Yes" : "No");
+    debug("Gemini API key available:", geminiApiKey ? "Yes" : "No");
 
     // Check if any API key is available
     const hasGroqKey = groqApiKey && groqApiKey.trim() !== "";
@@ -39,7 +45,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
     // Strategy: Groq first, Gemini as backup
     if (hasGroqKey) {
       try {
-        console.log("🚀 Trying Groq API (primary)...");
+        debug("🚀 Trying Groq API (primary)...");
         const messages = [
           { role: "system", content: systemPrompt },
           ...formattedMessages,
@@ -47,11 +53,11 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
         ];
         return await sendToGroq(messages, groqApiKey);
       } catch (groqError) {
-        console.warn("⚠️ Groq API error:", groqError.message);
+        debugWarn("⚠️ Groq API error:", groqError.message);
 
         // Check if it's a rate limit/overload error
         if (isOverloadError(groqError) && hasGeminiKey) {
-          console.log("🔄 Switching to Gemini API (backup)...");
+          debug("🔄 Switching to Gemini API (backup)...");
           try {
             return await sendToGemini(
               message,
@@ -60,7 +66,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
               systemPrompt
             );
           } catch (geminiError) {
-            console.warn("⚠️ Gemini API also failed:", geminiError.message);
+            debugWarn("⚠️ Gemini API also failed:", geminiError.message);
             // Trả về thông báo rate limit nếu cả 2 API đều quá tải
             if (isOverloadError(geminiError)) {
               return getMockResponse(message, "rateLimit");
@@ -71,7 +77,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
 
         // If not overload error or no Gemini key, fallback to mock
         if (hasGeminiKey) {
-          console.log("🔄 Trying Gemini API as fallback...");
+          debug("🔄 Trying Gemini API as fallback...");
           try {
             return await sendToGemini(
               message,
@@ -80,7 +86,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
               systemPrompt
             );
           } catch (geminiError) {
-            console.warn("⚠️ Gemini API also failed:", geminiError.message);
+            debugWarn("⚠️ Gemini API also failed:", geminiError.message);
             if (isOverloadError(geminiError)) {
               return getMockResponse(message, "rateLimit");
             }
@@ -96,7 +102,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
       }
     } else if (hasGeminiKey) {
       // Only Gemini key available
-      console.log("🚀 Using Gemini API (no Groq key)...");
+      debug("🚀 Using Gemini API (no Groq key)...");
       try {
         return await sendToGemini(
           message,
@@ -105,7 +111,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
           systemPrompt
         );
       } catch (err) {
-        console.warn("⚠️ Gemini API error:", err.message);
+        debugWarn("⚠️ Gemini API error:", err.message);
         if (isOverloadError(err)) {
           return getMockResponse(message, "rateLimit");
         }
@@ -115,7 +121,7 @@ export const sendMessageToAI = async (message, previousMessages = []) => {
 
     return getMockResponse(message);
   } catch (error) {
-    console.error("Error in sendMessageToAI:", error);
+    debugError("Error in sendMessageToAI:", error);
     return MOCK_RESPONSES.apiError;
   }
 };
@@ -143,7 +149,7 @@ const isOverloadError = (error) => {
  * Send message to Google Gemini API
  */
 const sendToGemini = async (message, previousMessages, apiKey, systemPrompt) => {
-  console.log("Sending request to Gemini API...");
+  debug("Sending request to Gemini API...");
   const config = PROVIDER_CONFIGS.gemini;
 
   // Build conversation history for Gemini format
@@ -206,12 +212,12 @@ const sendToGemini = async (message, previousMessages, apiKey, systemPrompt) => 
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "Unknown error");
-    console.error(`Gemini API error (${res.status}): ${errorText}`);
+    debugError(`Gemini API error (${res.status}): ${errorText}`);
     throw new Error(`Gemini API error (${res.status}): ${errorText}`);
   }
 
   const data = await res.json();
-  console.log("Gemini response:", data);
+  debug("Gemini response:", data);
 
   // Extract text from Gemini response
   const responseText =
@@ -225,7 +231,7 @@ const sendToGemini = async (message, previousMessages, apiKey, systemPrompt) => 
  * Send message to Groq API (backup provider)
  */
 const sendToGroq = async (messages, apiKey) => {
-  console.log("Sending request to Groq API...");
+  debug("Sending request to Groq API...");
   const config = PROVIDER_CONFIGS.groq;
 
   const requestBody = {
@@ -246,12 +252,12 @@ const sendToGroq = async (messages, apiKey) => {
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "Unknown error");
-    console.error(`Groq API error (${res.status}): ${errorText}`);
+    debugError(`Groq API error (${res.status}): ${errorText}`);
     throw new Error(`Groq API error (${res.status}): ${errorText}`);
   }
 
   const data = await res.json();
-  console.log("Groq response:", data);
+  debug("Groq response:", data);
   return data.choices?.[0]?.message?.content || "Không có nội dung trả về.";
 };
 

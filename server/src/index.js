@@ -8,29 +8,46 @@ import rateLimit from 'express-rate-limit';
 import { connectDB } from './db/mongoose.js';
 import scoresRouter from './routes/scores.js';
 
+// ========== Configuration ==========
+const config = {
+  port: parseInt(process.env.PORT, 10) || 4000,
+  nodeEnv: process.env.NODE_ENV || 'development',
+  isDev: process.env.NODE_ENV !== 'production',
+  isProd: process.env.NODE_ENV === 'production',
+  
+  // Rate limiting
+  rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60000,
+  rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 60,
+  scoreLimitMaxRequests: parseInt(process.env.SCORE_LIMIT_MAX_REQUESTS, 10) || 10,
+  
+  // CORS
+  corsOrigins: process.env.CORS_ORIGIN?.split(',').map(o => o.trim()) || [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+  ],
+  
+  // Logging
+  logLevel: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'error' : 'debug'),
+};
+
 const app = express();
-const PORT = process.env.PORT || 4000;
 
 // --- Connect to MongoDB ---
 await connectDB();
 
 // --- CORS Configuration ---
-const corsOrigins = process.env.CORS_ORIGIN?.split(',').map(o => o.trim()) || [
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    if (corsOrigins.includes(origin)) {
+    if (config.corsOrigins.includes(origin)) {
       return callback(null, true);
     }
     
     // In development, be more permissive
-    if (process.env.NODE_ENV === 'development') {
+    if (config.isDev) {
       return callback(null, true);
     }
     
@@ -45,8 +62,8 @@ app.use(express.json({ limit: '10kb' }));
 // --- Rate Limiting ---
 // General API rate limit
 const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 60, // 60 requests per minute
+  windowMs: config.rateLimitWindowMs,
+  max: config.rateLimitMaxRequests,
   message: {
     error: 'Too many requests',
     message: 'Please try again later',
@@ -57,8 +74,8 @@ const apiLimiter = rateLimit({
 
 // Stricter limit for score submission (anti-spam)
 const scoreLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 score submissions per minute
+  windowMs: config.rateLimitWindowMs,
+  max: config.scoreLimitMaxRequests,
   message: {
     error: 'Too many submissions',
     message: 'Please wait before submitting another score',
@@ -80,6 +97,7 @@ app.get('/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    environment: config.nodeEnv,
   });
 });
 
@@ -96,10 +114,13 @@ app.use((req, res) => {
 
 // --- Global Error Handler ---
 app.use((err, req, res, next) => {
-  console.error('[Server Error]', err);
+  // Only log errors in development or if log level allows
+  if (config.isDev || config.logLevel !== 'error') {
+    console.error('[Server Error]', err);
+  }
 
   // Don't expose internal errors in production
-  const message = process.env.NODE_ENV === 'production'
+  const message = config.isProd
     ? 'Internal server error'
     : err.message;
 
@@ -110,15 +131,15 @@ app.use((err, req, res, next) => {
 });
 
 // --- Start Server ---
-app.listen(PORT, () => {
+app.listen(config.port, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════╗
 ║     🎮 Runner Quiz Backend Server                 ║
 ╠═══════════════════════════════════════════════════╣
 ║  Status:  RUNNING                                 ║
-║  Port:    ${PORT.toString().padEnd(38)}║
-║  Env:     ${(process.env.NODE_ENV || 'development').padEnd(38)}║
-║  CORS:    ${corsOrigins[0]?.substring(0, 35).padEnd(38)}║
+║  Port:    ${config.port.toString().padEnd(38)}║
+║  Env:     ${config.nodeEnv.padEnd(38)}║
+║  CORS:    ${config.corsOrigins[0]?.substring(0, 35).padEnd(38)}║
 ╚═══════════════════════════════════════════════════╝
   `);
 });

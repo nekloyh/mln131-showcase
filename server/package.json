@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "dev": "NODE_ENV=development node --watch src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "start:dev": "NODE_ENV=development node src/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

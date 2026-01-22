@@ -1,205 +1,147 @@
 # MLN131 Showcase
 
-Website học tập môn Chủ nghĩa xã hội khoa học với AI chatbot và mini games.
+Website học tập môn Chủ nghĩa xã hội khoa học - Nhà nước pháp quyền XHCN Việt Nam.
 
-## 🏗️ Cấu trúc dự án
+## 🚀 Quick Start
 
-```
-mln131-showcase/
-├── src/                    # Frontend (Vite + React)
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   └── data/
-├── server/                 # Backend (Express + MongoDB)
-│   └── src/
-├── .env                    # Environment variables cho Frontend
-├── .env.example            # Mẫu env cho Frontend
-└── server/.env             # Environment variables cho Backend
-```
+### Prerequisites
+- Node.js >= 18.0.0
+- npm or pnpm
+- MongoDB (local or Atlas)
 
----
-
-## 🚀 KHỞI ĐỘNG ỨNG DỤNG (Development)
-
-### Bước 1: Cài đặt dependencies
+### Installation
 
 ```bash
-# Cài đặt cho Frontend
+# Clone repository
+git clone https://github.com/nekloyh/mln131-showcase.git
+cd mln131-showcase
+
+# Install frontend dependencies
 npm install
 
-# Cài đặt cho Backend
+# Install server dependencies
 npm run server:install
 ```
 
-### Bước 2: Cấu hình Environment Variables
+### Environment Setup
 
-#### Frontend (`.env` hoặc `.env.local` ở thư mục gốc):
+#### Frontend (`.env.development`)
+```bash
+# Copy example and update with your values
+cp .env.example .env.development
 
-```env
-# Bắt buộc - URL của Backend API
+# Required variables:
 VITE_API_URL=http://localhost:4000/api
-
-# Tùy chọn - AI Chatbot (để trống nếu không dùng)
-VITE_GROQ_API_KEY=your_groq_key_here
-VITE_GEMINI_API_KEY=your_gemini_key_here
+GROQ_API_KEY=your_groq_key      # Get from https://console.groq.com/keys
+GEMINI_API_KEY=your_gemini_key  # Get from https://aistudio.google.com/apikey
 ```
 
-#### Backend (`server/.env`):
+#### Backend (`server/.env`)
+```bash
+# Copy example and update with your values
+cp server/.env.example server/.env
 
-```env
-# Bắt buộc - MongoDB connection string
-MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster0.xxxxx.mongodb.net/runner_quiz
-
-# Server config
+# Required variables:
+MONGODB_URI=mongodb://localhost:27017/runner_quiz  # or MongoDB Atlas URI
 PORT=4000
+CORS_ORIGIN=http://localhost:5173
 NODE_ENV=development
-
-# CORS - domains được phép truy cập
-CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 ```
 
-### Bước 3: Chạy ứng dụng
+## 💻 Development
 
 ```bash
-# Chạy cả Frontend + Backend cùng lúc (Khuyến nghị)
+# Run frontend only
+npm run dev
+
+# Run backend only
+npm run server:dev
+
+# Run both frontend and backend concurrently
 npm run dev:full
-
-# Hoặc chạy riêng từng phần:
-npm run dev          # Chỉ Frontend (http://localhost:5173)
-npm run server       # Chỉ Backend  (http://localhost:4000)
 ```
 
-### Kiểm tra ứng dụng:
-- 🌐 Frontend: http://localhost:5173
-- 🔌 Backend API: http://localhost:4000/health
-- 📊 Leaderboard API: http://localhost:4000/api/scores
+Frontend: http://localhost:5173
+Backend API: http://localhost:4000
 
----
+## 🏭 Production
 
-## 🌍 DEPLOY ỨNG DỤNG (Production)
-
-### Architecture
-
-```
-┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│     Vercel      │ ───► │  Render/Railway │ ───► │   MongoDB Atlas │
-│   (Frontend)    │      │    (Backend)    │      │   (Database)    │
-└─────────────────┘      └─────────────────┘      └─────────────────┘
-```
-
-### Bước 1: Setup MongoDB Atlas (Database)
-
-1. Truy cập https://cloud.mongodb.com
-2. Tạo tài khoản free → Create Cluster (M0 Free tier)
-3. Database Access → Add Database User (ghi nhớ username/password)
-4. Network Access → Add IP Address → `0.0.0.0/0` (Allow from anywhere)
-5. Clusters → Connect → Get connection string
-6. Copy connection string: `mongodb+srv://USER:PASS@cluster.xxxxx.mongodb.net/runner_quiz`
-
-### Bước 2: Deploy Backend (Render.com - Miễn phí)
-
-1. Truy cập https://render.com → Sign up with GitHub
-2. New → Web Service → Connect repository
-3. Cấu hình:
-   - **Name**: `mln131-api`
-   - **Root Directory**: `server`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-4. Environment Variables (thêm trong dashboard):
-   ```
-   NODE_ENV=production
-   MONGODB_URI=mongodb+srv://...your_connection_string...
-   CORS_ORIGIN=https://your-frontend.vercel.app
-   ```
-5. Click **Deploy** → Đợi build xong
-6. Copy URL backend: `https://mln131-api.onrender.com`
-
-### Bước 3: Deploy Frontend (Vercel - Miễn phí)
-
-1. Truy cập https://vercel.com → Sign up with GitHub
-2. Import repository
-3. Cấu hình:
-   - **Framework Preset**: Vite
-   - **Root Directory**: `.` (mặc định)
-4. Environment Variables:
-   ```
-   VITE_API_URL=https://mln131-api.onrender.com/api
-   VITE_GROQ_API_KEY=your_key (tùy chọn)
-   VITE_GEMINI_API_KEY=your_key (tùy chọn)
-   ```
-5. Click **Deploy**
-
-### Bước 4: Cập nhật CORS cho Backend
-
-Sau khi có URL frontend từ Vercel, quay lại Render:
-1. Dashboard → mln131-api → Environment
-2. Sửa `CORS_ORIGIN` thành URL frontend thực:
-   ```
-   CORS_ORIGIN=https://mln131-showcase.vercel.app
-   ```
-3. Save → Render sẽ tự động redeploy
-
----
-
-## 📋 Checklist Deploy
-
-### Backend (Render/Railway):
-- [ ] MongoDB Atlas đã setup và có connection string
-- [ ] `MONGODB_URI` đã cấu hình đúng
-- [ ] `CORS_ORIGIN` chứa URL frontend production
-- [ ] `NODE_ENV=production`
-- [ ] Health check: `https://your-api.onrender.com/health` trả về `{"status":"ok"}`
-
-### Frontend (Vercel):
-- [ ] `VITE_API_URL` trỏ đến backend production
-- [ ] Build thành công (không lỗi)
-- [ ] Test tính năng Leaderboard hoạt động
-
----
-
-## 🛠️ Các lệnh hữu ích
-
+### Build Frontend
 ```bash
-# Development
-npm run dev           # Chạy frontend
-npm run server        # Chạy backend
-npm run dev:full      # Chạy cả hai
-
-# Build
-npm run build         # Build frontend cho production
-npm run preview       # Preview bản build
-
-# Linting
-npm run lint          # Kiểm tra code style
+npm run build
 ```
 
----
+### Run Production Server
+```bash
+cd server
+npm start
+```
 
-## ⚠️ Lưu ý bảo mật
+### Environment Variables for Production
 
-1. **KHÔNG BAO GIỜ** commit file `.env` chứa secrets lên Git
-2. API keys AI ở frontend có thể bị lộ - chỉ dùng cho demo/development
-3. Production nên proxy AI calls qua backend để bảo vệ API keys
-4. Luôn sử dụng HTTPS cho production
+Set these in your hosting platform (Vercel, Netlify, Render, etc.):
 
----
+**Frontend (Vercel/Netlify):**
+- `VITE_API_URL` - Your backend API URL
+- `GROQ_API_KEY` - Groq API key
+- `GEMINI_API_KEY` - Gemini API key (backup)
 
-## 📚 Tech Stack
+**Backend (Render/Railway):**
+- `MONGODB_URI` - MongoDB Atlas connection string
+- `PORT` - Server port (usually auto-assigned)
+- `CORS_ORIGIN` - Your frontend URL
+- `NODE_ENV=production`
+
+## 📁 Project Structure
+
+```
+mln131-showcase/
+├── src/                    # Frontend source code
+│   ├── components/         # Reusable UI components
+│   ├── config/            # App configuration
+│   ├── data/              # Static data & AI config
+│   ├── pages/             # Page components
+│   ├── services/          # API services
+│   └── utils/             # Utility functions
+├── server/                 # Backend source code
+│   └── src/
+│       ├── db/            # Database connection
+│       ├── models/        # Mongoose models
+│       ├── routes/        # API routes
+│       └── validation/    # Request validation
+├── public/                 # Static assets
+└── dist/                   # Build output (gitignored)
+```
+
+## 🔧 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start frontend dev server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run server:dev` | Start backend dev server |
+| `npm run server:start` | Start backend prod server |
+| `npm run dev:full` | Start both frontend & backend |
+| `npm run lint` | Run ESLint |
+| `npm run lint:fix` | Fix ESLint errors |
+| `npm run clean` | Clean build cache |
+| `npm run clean:all` | Clean all node_modules |
+
+## 🛠 Tech Stack
 
 **Frontend:**
-- React 19 + Vite
+- React 19 + Vite 7
 - TailwindCSS 4
+- Material UI 7
 - Three.js + React Three Fiber
 - Framer Motion + GSAP
-- Material UI
 
 **Backend:**
-- Node.js + Express
+- Express.js
 - MongoDB + Mongoose
-- Zod (validation)
+- Zod validation
 
-**Deploy:**
-- Frontend: Vercel
-- Backend: Render / Railway
-- Database: MongoDB Atlas
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) for details.

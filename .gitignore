@@ -1,3 +1,6 @@
+# ================================================
+# Logs
+# ================================================
 logs
 *.log
 npm-debug.log*
@@ -6,22 +9,76 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ================================================
+# Lock files (optional - keep if you want consistent installs)
+# ================================================
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
 
+# ================================================
+# Dependencies
+# ================================================
 node_modules/
-dist/
-dist-ssr
-*.local
 
-# Environment files (NEVER commit these!)
-.env
+# ================================================
+# Build outputs
+# ================================================
+dist/
+dist-ssr/
+build/
+
+# ================================================
+# Environment files (NEVER commit real values!)
+# ================================================
+# Local overrides
+*.local
 .env.local
-.env.production
+.env.*.local
+
+# Development & Production configs with real values
+.env
 .env.development
+.env.production
+
+# Server environment files
 server/.env
 server/.env.local
+server/.env.development
 server/.env.production
 
+# ================================================
+# IDE & Editor
+# ================================================
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
 ws.code-workspace
+
+# ================================================
+# OS generated files
+# ================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ================================================
+# Testing
+# ================================================
+coverage/
+.nyc_output/
+
+# ================================================
+# Misc
+# ================================================
+*.pem
+.cache/
+.temp/
