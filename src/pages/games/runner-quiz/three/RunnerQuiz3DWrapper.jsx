@@ -8,18 +8,7 @@ import { NeoFrame, NeoCard, NeoButton, NeoPill, NeoHeart, NeoProgressBar } from 
 import EndGameDialog from './EndGameDialog';
 import Leaderboard from './Leaderboard';
 import { generateRunId } from '../../../../services/runnerQuizApi';
-
-// --- Game Logic Config ---
-const GAME_CONFIG = {
-    MAX_HEARTS: 3,
-    SPAWN_INTERVAL: 8000,
-    BASE_SCORE: 100,
-    BASE_TIME_LIMIT: 10000, // 10 seconds base
-    MIN_TIME_LIMIT: 4000,   // Minimum 4 seconds
-    SPEED_SCALING: 0.1,     // 10% speed up per correct answer
-    SPEED_NORMAL: 1.0,
-    SPEED_FAST: 1.3,
-};
+import { GAME_CONFIG } from '../gameConfig';
 
 export default function RunnerQuiz3D({ onClose }) {
     // --- State ---
@@ -42,12 +31,22 @@ export default function RunnerQuiz3D({ onClose }) {
     const [spawnSignal, setSpawnSignal] = useState(false);
     const [feedback, setFeedback] = useState(null); // 'CORRECT', 'WRONG' (+ details)
     const [quizProgress, setQuizProgress] = useState(1.0);
+    
+    // NEW: Current question score (displayed in UI - updates in real-time)
+    const [currentQuestionScore, setCurrentQuestionScore] = useState(0);
+    
+    // NEW: Current time limit for display
+    const [currentTimeLimit, setCurrentTimeLimit] = useState(GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT);
+    
+    // Ref to store currentTimeLimit for use in callbacks (avoids stale closure)
+    const currentTimeLimitRef = useRef(GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT);
 
     // Keep a ref to the current question for immediate access
     const currentQuestionRef = useRef(null);
 
     // Player State
-    const [gameSpeed, setGameSpeed] = useState(GAME_CONFIG.SPEED_NORMAL);
+    const [gameSpeed, setGameSpeed] = useState(GAME_CONFIG.SPEED.NORMAL);
+    const [wallBoost, setWallBoost] = useState(1); // NEW: Wall boost for early answers
     const [playerLane, setPlayerLane] = useState(1); // 0 (A), 1 (B), 2 (C), 3 (D)
 
     // --- Quiz Controller Sync ---
@@ -58,6 +57,8 @@ export default function RunnerQuiz3D({ onClose }) {
                 console.log('[RunnerQuiz] Controller State OPEN:', state.question.id);
                 // Don't set activeQuestion here - it's already set directly in triggerSpawn
                 setQuizProgress(1.0);
+                // Reset score display when new question opens
+                setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE);
             } else {
                 console.log('[RunnerQuiz] Controller State CLOSED');
                 // Don't clear activeQuestion here - let the game flow handle it
@@ -67,20 +68,25 @@ export default function RunnerQuiz3D({ onClose }) {
 
         quizController.onTick = (remaining, progress) => {
             setQuizProgress(progress);
+            // Update real-time score display based on remaining time (use ref for fresh value)
+            const potentialScore = GAME_CONFIG.SCORING.calculateScore(remaining, currentTimeLimitRef.current);
+            setCurrentQuestionScore(potentialScore);
         };
 
         quizController.onTimeOut = () => {
             // Handle Timeout: Deduct heart, show feedback
             console.log('[RunnerQuiz] Question Timeout!');
             setHearts(prev => prev - 1);
-            setFeedback({ type: 'WRONG' });
+            setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.TIMEOUT_SCORE });
+            setCurrentQuestionScore(0);
             setGameState('RESOLVING');
-            setGameSpeed(0.5);
+            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO);
+            setWallBoost(1); // Reset wall boost
 
             // Close quiz logic after delay
             setTimeout(() => {
                 handleResolveComplete(false);
-            }, 1500);
+            }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
         };
 
         // Cleanup on unmount
@@ -146,13 +152,18 @@ export default function RunnerQuiz3D({ onClose }) {
                 console.log('[RunnerQuiz] Trigger Spawn:', randomQ.id, randomQ.question);
 
                 // Calculate Dynamic Time Limit based on Correct Answers
-                const speedMultiplier = 1 + (correctCount * GAME_CONFIG.SPEED_SCALING);
+                const difficultyMultiplier = 1 + (correctCount * GAME_CONFIG.DIFFICULTY.TIME_REDUCTION_PER_CORRECT);
+                const clampedMultiplier = Math.min(difficultyMultiplier, GAME_CONFIG.DIFFICULTY.MAX_DIFFICULTY_MULTIPLIER);
                 const dynamicTimeLimit = Math.max(
-                    GAME_CONFIG.MIN_TIME_LIMIT,
-                    GAME_CONFIG.BASE_TIME_LIMIT / speedMultiplier
+                    GAME_CONFIG.TIMING.MIN_TIME_LIMIT,
+                    GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT / clampedMultiplier
                 );
 
-                console.log(`[Difficulty] correct=${correctCount}, multiplier=${speedMultiplier.toFixed(2)}, time=${dynamicTimeLimit.toFixed(0)}ms`);
+                console.log(`[Difficulty] correct=${correctCount}, multiplier=${clampedMultiplier.toFixed(2)}, time=${dynamicTimeLimit.toFixed(0)}ms`);
+
+                // Store time limit for score calculation and display
+                setCurrentTimeLimit(dynamicTimeLimit);
+                currentTimeLimitRef.current = dynamicTimeLimit;
 
                 // Store question in ref IMMEDIATELY for render access
                 pendingQuestionRef.current = randomQ;
@@ -166,7 +177,9 @@ export default function RunnerQuiz3D({ onClose }) {
                 setActiveQuestion(randomQ);
                 setGameState('QUESTION_GATE');
                 setSpawnSignal(true);
-                setGameSpeed(GAME_CONFIG.SPEED_FAST); // Accelerate!
+                setWallBoost(1); // Reset wall boost for new question
+                setGameSpeed(GAME_CONFIG.SPEED.QUESTION_ACTIVE); // Accelerate!
+                setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE); // Start with max score
 
                 console.log('[RunnerQuiz] States updated, question:', randomQ.question);
 
@@ -176,10 +189,10 @@ export default function RunnerQuiz3D({ onClose }) {
             // Spawn first question after a short delay (let player get ready)
             if (!hasSpawnedFirstRef.current) {
                 hasSpawnedFirstRef.current = true;
-                firstSpawnTimeout = setTimeout(triggerSpawn, 2000); // First question after 2 seconds
+                firstSpawnTimeout = setTimeout(triggerSpawn, GAME_CONFIG.TIMING.FIRST_QUESTION_DELAY);
             }
 
-            interval = setInterval(triggerSpawn, GAME_CONFIG.SPAWN_INTERVAL);
+            interval = setInterval(triggerSpawn, GAME_CONFIG.TIMING.QUESTION_INTERVAL);
         }
         return () => {
             clearInterval(interval);
@@ -194,6 +207,8 @@ export default function RunnerQuiz3D({ onClose }) {
                 setGameState('SAVE_DIALOG'); // Show save dialog instead of direct game over
                 setActiveQuestion(null);
                 currentQuestionRef.current = null;
+                setCurrentQuestionScore(0);
+                setWallBoost(1); // Reset wall boost
                 quizController.close('gameover');
                 return 0;
             } else {
@@ -201,7 +216,9 @@ export default function RunnerQuiz3D({ onClose }) {
                 setFeedback(null);
                 setActiveQuestion(null); // Clear question when returning to running
                 currentQuestionRef.current = null;
-                setGameSpeed(GAME_CONFIG.SPEED_NORMAL);
+                setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
+                setWallBoost(1); // Reset wall boost
+                setCurrentQuestionScore(0); // Reset score display
                 quizController.close('resolved');
                 return currentHearts;
             }
@@ -222,30 +239,39 @@ export default function RunnerQuiz3D({ onClose }) {
         quizController.close('answered');
 
         setGameState('RESOLVING');
-        setGameSpeed(0.5); // Slow mo impact
+        
+        // If answered early (manual), boost wall speed to reach player faster
+        if (isManual) {
+            setWallBoost(GAME_CONFIG.SPEED.WALL_BOOST_MULTIPLIER);
+            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO); // Slight slow-mo for visual effect
+        } else {
+            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO); // Slow mo impact
+            setWallBoost(1);
+        }
 
         if (isCorrect) {
-            // Difficulty Calculation for Score
             // Increment Difficulty Stat
             setCorrectCount(prev => prev + 1);
 
-            const timeBonus = Math.floor((timeLeft / GAME_CONFIG.BASE_TIME_LIMIT) * 500);
-            const totalScore = GAME_CONFIG.BASE_SCORE + timeBonus;
+            // Calculate score using new formula (200-500 range)
+            const totalScore = GAME_CONFIG.SCORING.calculateScore(timeLeft, currentTimeLimitRef.current);
 
-            console.log(`[RunnerQuiz] Correct! Base: ${GAME_CONFIG.BASE_SCORE}, Bonus: ${timeBonus}`);
+            console.log(`[RunnerQuiz] Correct! TimeLeft: ${timeLeft}ms, Score: ${totalScore}`);
 
             setScore(prev => prev + totalScore);
+            setCurrentQuestionScore(totalScore);
             setFeedback({ type: 'CORRECT', score: totalScore });
         } else {
             console.log('[RunnerQuiz] Wrong!');
             setHearts(prev => prev - 1);
-            setFeedback({ type: 'WRONG' });
+            setCurrentQuestionScore(GAME_CONFIG.SCORING.WRONG_SCORE);
+            setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.WRONG_SCORE });
         }
 
         // Cleanup Delay
         setTimeout(() => {
             handleResolveComplete();
-        }, 1500);
+        }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
     }, [handleResolveComplete]); // Added dependency
 
     const handleManualAnswer = useCallback(() => {
@@ -302,13 +328,17 @@ export default function RunnerQuiz3D({ onClose }) {
         quizController.close('restart');
         setScore(0);
         setHearts(GAME_CONFIG.MAX_HEARTS);
-        setGameSpeed(GAME_CONFIG.SPEED_NORMAL);
+        setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
+        setWallBoost(1); // Reset wall boost
         setPlayerLane(1);
         setActiveQuestion(null);
         currentQuestionRef.current = null;
+        setCurrentTimeLimit(GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT);
+        currentTimeLimitRef.current = GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT;
         setSpawnSignal(false);
         setFeedback(null);
         setQuizProgress(1.0);
+        setCurrentQuestionScore(0); // Reset score display
         pendingQuestionRef.current = null;
         hasSpawnedFirstRef.current = false; // Reset first spawn flag
         setGameKey(prev => prev + 1); // Force 3D scene to remount and reset walls
@@ -347,17 +377,45 @@ export default function RunnerQuiz3D({ onClose }) {
                     {/* (A) QUIZ PANEL (Top Section) */}
                     {/* Persistent Container: ALWAYS VISIBLE - No Slide Logic */}
                     <div className="flex flex-col bg-[#FAF7F0] border-b-[4px] border-black z-20 shrink-0">
-                        {/* Quiz Header Bar */}
-                        <div className="flex bg-[#FFD400] text-black border-b-[3px] border-black px-4 py-2 justify-between items-center">
-                            <span className="font-black uppercase tracking-widest text-sm">
+                        {/* Quiz Header Bar with Score Display */}
+                        <div className="flex bg-[#FFD400] text-black border-b-[3px] border-black px-4 py-2 justify-between items-center gap-3">
+                            <span className="font-black uppercase tracking-widest text-sm shrink-0">
                                 {activeQuestion ? `QUESTION ${questionCount.toString().padStart(2, '0')}` : "CHECKPOINT AHEAD"}
                             </span>
-                            {/* Timer Bar */}
-                            <div className="w-1/2 h-3 border-[2px] border-black bg-white relative">
+                            
+                            {/* Score Display - Shows potential score in real-time */}
+                            <div className={`flex items-center gap-2 border-[2px] border-black px-3 py-1 font-mono font-black text-sm shrink-0 transition-colors ${
+                                activeQuestion 
+                                    ? (quizProgress > 0.5 ? 'bg-[#00C853] text-white' : quizProgress > 0.25 ? 'bg-[#FFD400] text-black' : 'bg-[#FF3B30] text-white')
+                                    : 'bg-white text-gray-400'
+                            }`}>
+                                <span className="text-[10px] uppercase opacity-70">PTS</span>
+                                <span className="tabular-nums">
+                                    {activeQuestion && gameState === 'QUESTION_GATE' ? `+${currentQuestionScore}` : '---'}
+                                </span>
+                            </div>
+                            
+                            {/* Timer Bar - Fixed logic */}
+                            <div className="flex-1 h-4 border-[2px] border-black bg-white relative overflow-hidden">
                                 <div
-                                    className={`h-full border-r-[2px] border-black ${quizProgress < 0.3 ? "bg-[#FF3B30]" : "bg-[#00C853]"}`}
-                                    style={{ width: `${Math.max(0, Math.min(100, (activeQuestion ? quizProgress : 0) * 100))}%`, transition: 'width 0.1s linear' }}
+                                    className={`h-full transition-all duration-100 ease-linear ${
+                                        !activeQuestion ? 'bg-gray-200' :
+                                        quizProgress > 0.5 ? 'bg-[#00C853]' : 
+                                        quizProgress > 0.25 ? 'bg-[#FFD400]' : 
+                                        'bg-[#FF3B30]'
+                                    }`}
+                                    style={{ 
+                                        width: `${activeQuestion && gameState === 'QUESTION_GATE' ? Math.max(0, Math.min(100, quizProgress * 100)) : 0}%`,
+                                    }}
                                 />
+                                {/* Time indicator overlay */}
+                                {activeQuestion && gameState === 'QUESTION_GATE' && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-[10px] font-black text-black/60">
+                                            {Math.ceil((quizProgress * currentTimeLimit) / 1000)}s
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -430,6 +488,7 @@ export default function RunnerQuiz3D({ onClose }) {
                                         onWallHit={handleWallHit}
                                         playerLane={playerLane}
                                         gameSpeed={gameSpeed}
+                                        wallBoost={wallBoost}
                                         isQuizActive={gameState === 'QUESTION_GATE'}
                                     />
                                 </Suspense>
@@ -447,9 +506,14 @@ export default function RunnerQuiz3D({ onClose }) {
                                     <div className="text-8xl font-black italic text-white drop-shadow-[8px_8px_0px_#000] whitespace-nowrap tracking-tighter">
                                         {feedback.type === 'CORRECT' ? 'PERFECT!' : 'WRONG!'}
                                     </div>
-                                    {feedback.score && (
+                                    {feedback.score !== undefined && feedback.type === 'CORRECT' && (
                                         <div className="mt-4 text-center text-white font-mono font-black text-4xl drop-shadow-[4px_4px_0px_#000]">
                                             +{feedback.score} PTS
+                                        </div>
+                                    )}
+                                    {feedback.type === 'WRONG' && (
+                                        <div className="mt-4 text-center text-white font-mono font-black text-2xl drop-shadow-[4px_4px_0px_#000] opacity-80">
+                                            0 PTS
                                         </div>
                                     )}
                                 </div>

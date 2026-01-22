@@ -2,14 +2,14 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { PerspectiveCamera, Environment, Text, Float, Outlines } from '@react-three/drei';
 import * as THREE from 'three';
+import { GAME_CONFIG } from '../gameConfig';
 
-// --- Constants & Config ---
-// 4 Lanes: -12 (A), -4 (B), 4 (C), 12 (D) - Based on 32-unit width
-const LANE_WIDTH = 8.0;
-const LANES = [-12, -4, 4, 12];
-const SEGMENT_LENGTH = 100;
-const VIEW_DISTANCE = 300;
-const BASE_SPEED = 30;
+// --- Constants & Config (from centralized config) ---
+const LANE_WIDTH = GAME_CONFIG.VISUAL.LANE_WIDTH;
+const LANES = GAME_CONFIG.VISUAL.LANES;
+const SEGMENT_LENGTH = GAME_CONFIG.VISUAL.SEGMENT_LENGTH;
+const VIEW_DISTANCE = GAME_CONFIG.VISUAL.VIEW_DISTANCE;
+const BASE_SPEED = GAME_CONFIG.WALL.BASE_SPEED;
 
 // Neobrutal Palette
 const COLORS = {
@@ -91,7 +91,8 @@ function Player({ laneIndex }) {
 }
 
 // Answer Wall: Blocky, Solid Colors, Black Borders
-const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, playerLane }) => {
+// Now supports wallBoost prop for early answer acceleration
+const AnswerWall = React.memo(({ id, startZ, speed, wallBoost = 1, onCollide, onDespawn, playerLane }) => {
     const ref = useRef();
     const hasHit = useRef(false);
     // Use ref to always have fresh playerLane value in animation callback
@@ -105,13 +106,14 @@ const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, player
     useFrame((state, delta) => {
         if (!ref.current) return;
 
-        // Move
-        ref.current.position.z += speed * delta;
+        // Move - apply wallBoost multiplier for early answer acceleration
+        const effectiveSpeed = speed * wallBoost;
+        ref.current.position.z += effectiveSpeed * delta;
         const currentZ = ref.current.position.z;
 
-        // Collision Check (Player at Z=4)
+        // Collision Check (Player at Z=PLAYER_Z from config)
         if (!hasHit.current) {
-            if (Math.abs(currentZ - 4) < 1.0) {
+            if (Math.abs(currentZ - GAME_CONFIG.WALL.PLAYER_Z) < GAME_CONFIG.WALL.COLLISION_THRESHOLD) {
                 hasHit.current = true;
                 // Use ref to get current playerLane value, not stale closure value
                 onCollide(id, playerLaneRef.current);
@@ -119,7 +121,7 @@ const AnswerWall = React.memo(({ id, startZ, speed, onCollide, onDespawn, player
         }
 
         // Despawn
-        if (currentZ > 20) {
+        if (currentZ > GAME_CONFIG.WALL.DESPAWN_Z) {
             onDespawn(id);
         }
     });
@@ -255,7 +257,7 @@ function NeobrutalEnvironment({ speed }) {
     );
 }
 
-export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, gameSpeed = 1, spawnSignal }) {
+export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, gameSpeed = 1, wallBoost = 1, spawnSignal }) {
     const [walls, setWalls] = useState([]);
     const lastSpawnedQuestionRef = useRef(null);
 
@@ -268,7 +270,7 @@ export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, g
             console.log('[Runner3DScene] Spawning wall for question:', activeQuestion.id);
             setWalls(prev => [
                 ...prev,
-                { id, startZ: -150, question: activeQuestion }
+                { id, startZ: GAME_CONFIG.WALL.SPAWN_Z, question: activeQuestion }
             ]);
         }
     }, [spawnSignal, activeQuestion]);
@@ -297,6 +299,7 @@ export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, g
                     id={wall.id}
                     startZ={wall.startZ}
                     speed={BASE_SPEED * gameSpeed}
+                    wallBoost={wallBoost}
                     onCollide={onWallHit}
                     onDespawn={handleDespawn}
                     playerLane={playerLane}
