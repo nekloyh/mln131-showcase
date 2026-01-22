@@ -1,64 +1,80 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Mic2, ScrollText, X, HelpCircle, Send, Check } from "lucide-react";
+import { Mic2, ScrollText, X, HelpCircle, Send, Check, Lightbulb } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../../../components/ui/Button";
 
-const VERTICAL_WORD = "PHÁP LUẬT";
+const VERTICAL_WORD = "ĐOÀN KẾT";
+
+// Vertical word alignment:
+// 1. Đ Ả N G C Ộ N G S Ả N  -> Đ (index 0)
+// 2. K I Ể M S O Á T       -> O (index 5)  
+// 3. P H Á P L U Ậ T       -> A (index 2, but Á)
+// 4. N H Â N D Â N         -> N (index 4)
+// 5. K I Ể M T R A         -> K (index 0)
+// 6. H I Ế N P H Á P       -> Ế (index 2)
+// 7. T H Ố N G N H Ấ T     -> T (index 0)
 
 const CROSSWORD_ROWS = [
     {
         id: 1,
-        answer: "PHÁP QUYỀN",
-        clue: "Điền vào chỗ trống: \"Nhà nước Cộng hòa XHCN Việt Nam là nhà nước ... xã hội chủ nghĩa của Nhân dân, do Nhân dân, vì Nhân dân\".",
+        answer: "ĐẢNG CỘNG SẢN",
+        hint1: "Định hướng cho Nhà nước đi lên chủ nghĩa xã hội.",
+        hint2: "Đây là tổ chức chính trị mang bản chất giai cấp công nhân.",
+        clue: "Tổ chức chính trị nào đóng vai trò lãnh đạo đối với Nhà nước pháp quyền XHCN Việt Nam, phù hợp với Điều 4 Hiến pháp năm 2013? (11 chữ cái)",
         verticalIndex: 0,
-        anchor: "Chữ P ở vị trí 1"
+        anchor: "Chữ Đ ở vị trí 1"
     },
     {
         id: 2,
-        answer: "HIẾN PHÁP",
-        clue: "Văn bản pháp luật có hiệu lực pháp lý cao nhất trong hệ thống pháp luật Việt Nam.",
-        verticalIndex: 0,
-        anchor: "Chữ H ở vị trí 1"
+        answer: "KIỂM SOÁT",
+        hint1: "Giữa các cơ quan lập pháp, hành pháp và tư pháp cần phải có sự tác động qua lại này.",
+        hint2: "Đảm bảo quyền lực nhà nước được thực thi đúng đắn và hiệu quả.",
+        clue: "Theo quan niệm về Nhà nước pháp quyền XHCN ở Việt Nam, giữa các cơ quan lập pháp, hành pháp và tư pháp phải có sự phân công, phối hợp và hành động này lẫn nhau. (8 chữ cái)",
+        verticalIndex: 5,
+        anchor: "Chữ O ở vị trí 6"
     },
     {
         id: 3,
-        answer: "TÒA ÁN",
-        clue: "Cơ quan xét xử của nước ta, thực hiện quyền tư pháp, bảo vệ công lý.",
-        verticalIndex: 3,
-        anchor: "Chữ Á ở vị trí 4"
+        answer: "PHÁP LUẬT",
+        hint1: "Công cụ đảm bảo tính tối thượng trong việc điều chỉnh các quan hệ xã hội.",
+        hint2: "Dân chủ xã hội chủ nghĩa muốn thực hiện được phải gắn liền với kỷ cương và được thể chế hóa bằng yếu tố này.",
+        clue: "Nhà nước pháp quyền XHCN Việt Nam quản lý xã hội chủ yếu bằng công cụ gì? (8 chữ cái)",
+        verticalIndex: 2,
+        anchor: "Chữ Á ở vị trí 3"
     },
     {
         id: 4,
-        answer: "TIÊN PHONG",
-        clue: "Đảng Cộng sản Việt Nam là đội ... của giai cấp công nhân và nhân dân lao động.",
+        answer: "NHÂN DÂN",
+        hint1: "Theo quan điểm của Hồ Chí Minh và Đảng ta, trong chế độ xã hội chủ nghĩa, bao nhiêu quyền hạn đều là của đối tượng này.",
+        hint2: "Đây là chủ thể tối cao của quyền lực nhà nước; Nhà nước pháp quyền XHCN Việt Nam được xây dựng là nhà nước của ai, do ai và vì ai?",
+        clue: "Trong đặc điểm của Nhà nước pháp quyền XHCN Việt Nam, đây là chủ thể làm chủ đất nước; Nhà nước được xây dựng là của chủ thể này, do chủ thể này và vì chủ thể này. (7 chữ cái)",
         verticalIndex: 4,
-        anchor: "Chữ P ở vị trí 5"
+        anchor: "Chữ N ở vị trí 5"
     },
     {
         id: 5,
-        answer: "LÃNH ĐẠO",
-        clue: "Đây là vai trò của Đảng Cộng sản Việt Nam đối với Nhà nước và xã hội, được quy định tại Điều 4 Hiến pháp.",
+        answer: "KIỂM TRA",
+        hint1: "Đây là hoạt động mà công dân có thể thực hiện (cùng với giám sát) thông qua các tổ chức hoặc Ban thanh tra nhân dân để phòng, chống tham nhũng.",
+        hint2: "Phương châm \"Dân biết, dân bàn, dân làm, dân ...\" thể hiện quyền giám sát của nhân dân.",
+        clue: "Phương châm để nhân dân thực hiện quyền giám sát hoạt động của Nhà nước là: \"Dân biết, dân bàn, dân làm, dân ...\". (7 chữ cái)",
         verticalIndex: 0,
-        anchor: "Chữ L ở vị trí 1"
+        anchor: "Chữ K ở vị trí 1"
     },
     {
         id: 6,
-        answer: "QUỐC HỘI",
-        clue: "Cơ quan đại biểu cao nhất của Nhân dân, cơ quan quyền lực nhà nước cao nhất.",
-        verticalIndex: 1,
-        anchor: "Chữ U ở vị trí 2"
+        answer: "HIẾN PHÁP",
+        hint1: "Nhà nước và các tổ chức phải hoạt động dựa trên cơ sở của pháp luật và văn bản đạo luật cơ bản này.",
+        hint2: "Mọi cơ quan, tổ chức, cán bộ, công chức và công dân đều có nghĩa vụ chấp hành nghiêm chỉnh pháp luật và văn bản này.",
+        clue: "Trong Nhà nước pháp quyền, văn bản pháp lý nào được đặt ở vị trí tối thượng để điều chỉnh các quan hệ xã hội? (8 chữ cái)",
+        verticalIndex: 2,
+        anchor: "Chữ Ế ở vị trí 3"
     },
     {
         id: 7,
-        answer: "ĐỘC LẬP",
-        clue: "Giá trị thiêng liêng của dân tộc, thường đi liền với cụm từ \"Tự do - Hạnh phúc\".",
-        verticalIndex: 4,
-        anchor: "Chữ Ậ ở vị trí 5"
-    },
-    {
-        id: 8,
-        answer: "TỰ DO",
-        clue: "Một trong những quyền cơ bản của con người và công dân được Hiến pháp bảo vệ.",
+        answer: "THỐNG NHẤT",
+        hint1: "Đây là đặc điểm cơ bản nhất về tính chất của quyền lực nhà nước ở Việt Nam: Quyền lực nhà nước là..., có sự phân công, phối hợp và kiểm soát giữa các cơ quan nhà nước.",
+        hint2: "Nguyên tắc tổ chức quyền lực này đảm bảo sự chỉ đạo xuyên suốt của Nhà nước, khác biệt với cơ chế \"tam quyền phân lập\" của các nhà nước tư sản.",
+        clue: "Đây là tính chất cơ bản của quyền lực nhà nước trong Nhà nước pháp quyền XHCN Việt Nam. Dù có sự phân công, phối hợp nhưng quyền lực nhà nước phải luôn đảm bảo yếu tố này. (8 chữ cái)",
         verticalIndex: 0,
         anchor: "Chữ T ở vị trí 1"
     }
@@ -90,9 +106,10 @@ const CrosswordGame = ({ onClose }) => {
     const [activeRow, setActiveRow] = useState(null);
     const [guess, setGuess] = useState("");
     const [openedRows, setOpenedRows] = useState([]);
-    const [hostLine, setHostLine] = useState("Chào mừng đến với Ô CHỮ PHÁP QUYỀN!");
+    const [hostLine, setHostLine] = useState("Chào mừng đến với Ô CHỮ PHÁP QUYỀN XHCN!");
     const [, setFeedback] = useState(null); // Used for triggering re-renders
     const [gameState, setGameState] = useState('playing'); // playing, won
+    const [hintLevel, setHintLevel] = useState({}); // Track which hint level each row is on (1 or 2)
     
     // Board logic
     const maxOffset = useMemo(getMaxLeftOffset, []);
@@ -105,12 +122,19 @@ const CrosswordGame = ({ onClose }) => {
         }
     }, [activeRow]);
 
+    // Get current hint for a row based on hint level
+    const getCurrentHint = (row) => {
+        const level = hintLevel[row.id] || 1;
+        return level === 1 ? row.hint1 : row.hint2;
+    };
+
     const handleRowSelect = (row) => {
         if (openedRows.includes(row.id)) return;
         setActiveRow(row);
         setGuess("");
         setFeedback(null);
-        setHostLine(`Gợi ý Hàng ${row.id}: ${row.clue}`);
+        const currentHint = getCurrentHint(row);
+        setHostLine(`Gợi ý Hàng ${row.id}: ${row.clue}\n\n💡 ${currentHint}`);
     };
 
     const handleSubmit = (e) => {
@@ -137,9 +161,22 @@ const CrosswordGame = ({ onClose }) => {
             }
         } else {
             setFeedback({ type: "error", text: "SAI RỒI!" });
-            setHostLine(`Sai rồi! Hãy thử lại: ${activeRow.clue}`);
             
-            // Shake effect logic could be added here
+            // Check current hint level and upgrade to hint 2 if on hint 1
+            const currentLevel = hintLevel[activeRow.id] || 1;
+            if (currentLevel === 1) {
+                // Show hint 2
+                setHintLevel(prev => ({ ...prev, [activeRow.id]: 2 }));
+                setHostLine(`Sai rồi! Đây là gợi ý thứ 2:\n\n💡 ${activeRow.hint2}`);
+            } else {
+                // Already on hint 2, just show error
+                setHostLine(`Sai rồi! Hãy thử lại.\n\n💡 ${activeRow.hint2}`);
+            }
+            
+            // Clear the input
+            setGuess("");
+            
+            // Shake effect logic
             const form = document.getElementById('answer-form');
             if(form) {
                 form.classList.add('animate-shake');
@@ -158,14 +195,14 @@ const CrosswordGame = ({ onClose }) => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/20 backdrop-blur-sm p-4 animate-in fade-in duration-200">
         {/* Main Window */}
-        <div className="w-full max-w-[65vw] h-[90vh] bg-[#FFF8E7] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col relative overflow-hidden">
+        <div className="w-full max-w-[80vw] h-[90vh] bg-[#FFF8E7] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col relative overflow-hidden">
           {/* Title Bar */}
           <div className="h-14 bg-[#FF6B6B] border-b-4 border-black flex items-center justify-between px-4 select-none">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded-full border-2 border-black bg-white" />
               <div className="w-4 h-4 rounded-full border-2 border-black bg-black" />
               <h2 className="font-display font-black text-xl text-black ml-2 uppercase tracking-wide">
-                GAME.EXE: Ô CHỮ PHÁP QUYỀN
+                GAME.EXE: Ô CHỮ - MÔ HÌNH NHÀ NƯỚC PHÁP QUYỀN
               </h2>
             </div>
             <button
@@ -322,7 +359,7 @@ const CrosswordGame = ({ onClose }) => {
                       Tiến trình
                     </div>
                     <div className="text-3xl font-black">
-                      {openedRows.length}/8
+                      {openedRows.length}/7
                     </div>
                   </div>
                   <div className="flex-1 bg-[#FACC15] border-4 border-black p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -349,18 +386,31 @@ const CrosswordGame = ({ onClose }) => {
                         <span className="bg-black text-white px-2 py-1 font-mono text-sm font-bold transform -rotate-1">
                           HÀNG {activeRow.id}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => setActiveRow(null)}
-                          className="p-1 hover:bg-black hover:text-white rounded-full border-2 border-black transition-colors bg-white"
-                        >
-                          <X size={16} strokeWidth={3} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 text-xs font-bold border-2 border-black ${(hintLevel[activeRow.id] || 1) === 2 ? 'bg-[#FACC15]' : 'bg-white'}`}>
+                            <Lightbulb size={12} className="inline mr-1" />
+                            Gợi ý {hintLevel[activeRow.id] || 1}/2
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActiveRow(null)}
+                            className="p-1 hover:bg-black hover:text-white rounded-full border-2 border-black transition-colors bg-white"
+                          >
+                            <X size={16} strokeWidth={3} />
+                          </button>
+                        </div>
                       </div>
 
-                      <p className="font-bold text-lg mb-6 flex-grow leading-snug bg-white/50 p-2 border-2 border-black/20 rounded">
+                      <p className="font-bold text-base mb-3 leading-snug bg-white/50 p-2 border-2 border-black/20 rounded">
                         {activeRow.clue}
                       </p>
+                      
+                      <div className="bg-[#FACC15] border-2 border-black p-2 mb-4 rounded">
+                        <p className="font-medium text-sm">
+                          <Lightbulb size={14} className="inline mr-1" />
+                          {getCurrentHint(activeRow)}
+                        </p>
+                      </div>
 
                       <div className="relative mb-4">
                         <input

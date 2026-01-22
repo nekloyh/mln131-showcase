@@ -31,25 +31,27 @@ class QuizController {
     /**
      * Open a new quiz session.
      * Safely closes any existing session first.
+     * Note: Callbacks are preserved between questions - they're set once by the component.
      */
     open(question, timeLimitMs, callbacks = {}) {
         // Enforce: Always close previous if open
         if (this.isOpen) {
             console.warn('[QuizController] Force closing previous quiz to open new one.');
-            this.close();
+            this._stopTimer(); // Stop timer only, don't clear callbacks
+            this.isOpen = false;
         }
 
-        this.resetInternalState(); // Clear old state
-
+        // Reset state but preserve callbacks
         this.isOpen = true;
         this.activeQuestion = question;
         this.timeLimit = timeLimitMs;
         this.timeLeft = timeLimitMs;
+        this.timerStartTimestamp = 0;
 
-        // Bind callbacks
-        this.onTick = callbacks.onTick || null;
-        this.onTimeOut = callbacks.onTimeOut || null;
-        this.onStateChange = callbacks.onStateChange || null;
+        // Only bind callbacks if provided (allows component to set them once)
+        if (callbacks.onTick) this.onTick = callbacks.onTick;
+        if (callbacks.onTimeOut) this.onTimeOut = callbacks.onTimeOut;
+        if (callbacks.onStateChange) this.onStateChange = callbacks.onStateChange;
 
         this._startTimer();
 
@@ -59,7 +61,7 @@ class QuizController {
 
     /**
      * Close the current quiz session.
-     * Clears timers and listeners immediately.
+     * Clears timers but PRESERVES callbacks for next question.
      */
     close(reason = 'manual') {
         if (!this.isOpen) return;
@@ -72,10 +74,11 @@ class QuizController {
 
         if (this.onStateChange) this.onStateChange({ isOpen: false });
 
-        // Remove references to callbacks to prevent leaks
-        this.onTick = null;
-        this.onTimeOut = null;
-        this.onStateChange = null;
+        // NOTE: Do NOT clear callbacks here - they are set once by the component
+        // and should persist across multiple questions
+        // this.onTick = null;
+        // this.onTimeOut = null;
+        // this.onStateChange = null;
     }
 
     /**

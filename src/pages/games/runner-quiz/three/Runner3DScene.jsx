@@ -257,9 +257,22 @@ function NeobrutalEnvironment({ speed }) {
     );
 }
 
-export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, gameSpeed = 1, wallBoost = 1, spawnSignal }) {
+export default function Runner3DScene({ 
+    activeQuestion, 
+    onWallHit, 
+    playerLane, 
+    gameSpeed = 1, 
+    wallBoost = 1, 
+    spawnSignal,
+    questionTimeLimit = GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT 
+}) {
     const [walls, setWalls] = useState([]);
     const lastSpawnedQuestionRef = useRef(null);
+
+    // Calculate dynamic wall speed based on question time limit
+    const wallSpeed = useMemo(() => {
+        return GAME_CONFIG.WALL.calculateSpeed(questionTimeLimit);
+    }, [questionTimeLimit]);
 
     useEffect(() => {
         // Check if we have a new spawn signal and a valid question
@@ -267,13 +280,13 @@ export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, g
         if (spawnSignal && activeQuestion && activeQuestion.id !== lastSpawnedQuestionRef.current) {
             const id = Date.now();
             lastSpawnedQuestionRef.current = activeQuestion.id;
-            console.log('[Runner3DScene] Spawning wall for question:', activeQuestion.id);
+            console.log('[Runner3DScene] Spawning wall for question:', activeQuestion.id, 'speed:', wallSpeed.toFixed(2));
             setWalls(prev => [
                 ...prev,
-                { id, startZ: GAME_CONFIG.WALL.SPAWN_Z, question: activeQuestion }
+                { id, startZ: GAME_CONFIG.WALL.SPAWN_Z, question: activeQuestion, speed: wallSpeed }
             ]);
         }
-    }, [spawnSignal, activeQuestion]);
+    }, [spawnSignal, activeQuestion, wallSpeed]);
 
     const handleDespawn = (id) => {
         setWalls(prev => prev.filter(w => w.id !== id));
@@ -298,7 +311,7 @@ export default function Runner3DScene({ activeQuestion, onWallHit, playerLane, g
                     key={wall.id}
                     id={wall.id}
                     startZ={wall.startZ}
-                    speed={BASE_SPEED * gameSpeed}
+                    speed={wall.speed * gameSpeed}
                     wallBoost={wallBoost}
                     onCollide={onWallHit}
                     onDespawn={handleDespawn}

@@ -1,202 +1,332 @@
 [
   {
-    "id": "math_001",
-    "question": "15 + 23 = ?",
-    "choices": ["36", "37", "38", "39"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_01",
+    "question": "Dân chủ là gì?",
+    "choices": [
+      "Là quyền lực thuộc về nhân dân",
+      "Là quyền của con người",
+      "Là quyền tự do của mỗi người",
+      "Là quyền lực thuộc về công nhân"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_002",
-    "question": "48 - 19 = ?",
-    "choices": ["27", "28", "29", "30"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_02",
+    "question": "Mục đích cuối cùng của nhà nước xã hội chủ nghĩa là gì?",
+    "choices": [
+      "Xây dựng thành công xã hội mới",
+      "Cải tạo xã hội cũ, xây dựng xã hội cộng sản chủ nghĩa",
+      "Cải tạo xã hội cũ, xây dựng xã hội xã hội chủ nghĩa thành công",
+      "Xây dựng thành công một nhà nước của dân, do dân, vì dân"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_003",
-    "question": "67 + 28 = ?",
-    "choices": ["93", "94", "95", "96"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_03",
+    "question": "Nếu xem xét dân chủ với tư cách là một chế độ dân chủ, thì nhân loại đã và đang trải qua bao nhiêu chế độ dân chủ?",
+    "choices": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_004",
-    "question": "82 - 35 = ?",
-    "choices": ["45", "46", "47", "48"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_04",
+    "question": "Nhà nước xã hội chủ nghĩa đại diện cho lợi ích của ai?",
+    "choices": [
+      "Giai cấp công nhân, nông dân và tầng lớp trí thức",
+      "Giai cấp công nhân và nông dân",
+      "Đại đa số nhân dân lao động",
+      "Toàn thể nhân dân lao động"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_005",
-    "question": "34 + 57 = ?",
-    "choices": ["89", "90", "91", "92"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_05",
+    "question": "Nguyên tắc tổ chức và hoạt động của Nhà nước pháp quyền xã hội chủ nghĩa Việt Nam là gì?",
+    "choices": [
+      "Nguyên tắc kiểm tra giám sát",
+      "Nguyên tắc tập trung dân chủ",
+      "Nguyên tắc dân chủ và thống nhất quyền lực",
+      "Nguyên tắc tổ chức xây dựng"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_006",
-    "question": "100 - 43 = ?",
-    "choices": ["55", "56", "57", "58"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_06",
+    "question": "So với các nền dân chủ trước đây, tính ưu việt của nền dân chủ xã hội chủ nghĩa được thể hiện ở điểm nào?",
+    "choices": [
+      "Là nền dân chủ không còn mang tính giai cấp",
+      "Là nền dân chủ cho tất cả các giai cấp, tầng lớp",
+      "Là nền dân chủ cho tất cả nhân dân lao động",
+      "Là nền dân chủ rộng rãi cho giai cấp công nhân và nhân dân lao động"
+    ],
+    "answerIndex": 3
   },
   {
-    "id": "math_007",
-    "question": "29 + 46 = ?",
-    "choices": ["73", "74", "75", "76"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_07",
+    "question": "Dân chủ với tư cách là một chế độ chính trị ra đời khi nào?",
+    "choices": [
+      "Khi Cách mạng Tháng Mười Nga thành công",
+      "Khi xã hội có sự phân chia về giai cấp",
+      "Khi nhà nước xã hội chủ nghĩa được thiết lập",
+      "Khi mâu thuẫn giữa giai cấp tư sản và vô sản ngày càng gay gắt"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_008",
-    "question": "71 - 28 = ?",
-    "choices": ["41", "42", "43", "44"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_08",
+    "question": "Trong thời kỳ quá độ lên chủ nghĩa xã hội, chức năng nào của nhà nước xã hội chủ nghĩa sẽ chiếm ưu thế?",
+    "choices": [
+      "Chức năng trấn áp",
+      "Chức năng tổ chức và xây dựng",
+      "Cả A, B đều đúng",
+      "Cả A, B đều sai"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_009",
-    "question": "55 + 38 = ?",
-    "choices": ["91", "92", "93", "94"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_09",
+    "question": "Nhà nước xã hội chủ nghĩa mang bản chất của giai cấp nào?",
+    "choices": [
+      "Mang bản chất của giai cấp công nhân",
+      "Mang bản chất của đa số nhân dân lao động",
+      "Mang bản chất của giai cấp nông dân",
+      "Vừa mang bản chất của giai cấp công nhân, vừa mang bản chất của nhân dân lao động và tính dân tộc sâu sắc"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_010",
-    "question": "96 - 47 = ?",
-    "choices": ["47", "48", "49", "50"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_10",
+    "question": "Bản chất kinh tế của nền dân chủ xã hội chủ nghĩa dựa trên cơ sở nào?",
+    "choices": [
+      "Chế độ chính trị của giai cấp công nhân",
+      "Cơ chế quản lý kinh tế xã hội chủ nghĩa",
+      "Bản chất chính trị của chế độ xã hội chủ nghĩa",
+      "Chế độ công hữu về tư liệu sản xuất chủ yếu"
+    ],
+    "answerIndex": 3
   },
   {
-    "id": "math_011",
-    "question": "18 + 64 = ?",
-    "choices": ["80", "81", "82", "83"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_11",
+    "question": "Chế độ dân chủ nhân dân ở Việt Nam được xác lập trong thời gian nào?",
+    "choices": [
+      "Sau Cách mạng Tháng Tám năm 1945",
+      "Sau khi đất nước đổi tên thành Cộng hoà xã hội chủ nghĩa Việt Nam năm 1976",
+      "Sau Đại hội VI năm 1986",
+      "Sau khi kháng chiến chống thực dân Pháp thành công năm 1954 tại miền Bắc"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_012",
-    "question": "85 - 56 = ?",
-    "choices": ["27", "28", "29", "30"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_12",
+    "question": "Phương châm thực hiện quy chế dân chủ xã hội chủ nghĩa ở Việt Nam là gì?",
+    "choices": [
+      "Dân bàn, dân làm, dân biết, dân kiểm tra",
+      "Dân biết, dân làm, dân bàn, dân kiểm tra",
+      "Dân biết, dân bàn, dân làm, dân kiểm tra",
+      "Dân biết, dân bàn, dân kiểm tra, dân làm"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_013",
-    "question": "42 + 39 = ?",
-    "choices": ["79", "80", "81", "82"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_13",
+    "question": "Căn cứ vào tính chất của quyền lực, nhà nước xã hội chủ nghĩa có những chức năng nào?",
+    "choices": [
+      "Chức năng đối nội và chức năng đối ngoại",
+      "Chức năng trấn áp và chức năng chính trị",
+      "Chức năng giai cấp và chức năng xây dựng",
+      "Chức năng giai cấp và chức năng xã hội"
+    ],
+    "answerIndex": 3
   },
   {
-    "id": "math_014",
-    "question": "63 - 27 = ?",
-    "choices": ["34", "35", "36", "37"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_14",
+    "question": "Nhà nước pháp quyền xã hội chủ nghĩa và nhà nước pháp trị có điểm gì giống nhau?",
+    "choices": [
+      "Dùng pháp luật để quản lý xã hội",
+      "Khẳng định quyền lực tốt cao của pháp luật",
+      "Đại biểu nhà nước do nhân dân bầu ra",
+      "Tất cả A, B, C đều đúng"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_015",
-    "question": "76 + 18 = ?",
-    "choices": ["92", "93", "94", "95"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_15",
+    "question": "Nhà nước pháp quyền tư bản chủ nghĩa sử dụng chủ yếu phương pháp nào để quản lý đời sống xã hội?",
+    "choices": [
+      "Giáo dục và thuyết phục",
+      "Cưỡng chế",
+      "Thuyết phục và cưỡng chế",
+      "Thuyết phục"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_016",
-    "question": "54 - 19 = ?",
-    "choices": ["33", "34", "35", "36"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_16",
+    "question": "Theo chủ nghĩa Mác - Lênin, dân chủ là một phạm trù vĩnh viễn khi được xem xét trên phương diện nào?",
+    "choices": [
+      "Một nguyên tắc tổ chức và quản lý xã hội",
+      "Một chế độ xã hội",
+      "Một giá trị xã hội",
+      "Một hình thái nhà nước"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_017",
-    "question": "87 + 9 = ?",
-    "choices": ["94", "95", "96", "97"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_17",
+    "question": "Nhân tố nào là điều kiện cho dân chủ nghĩa ra đời, tồn tại và phát triển?",
+    "choices": [
+      "Đảng Cộng sản",
+      "Nhà nước xã hội chủ nghĩa",
+      "Tinh thần tự giác của nhân dân",
+      "Sự thành công của cách mạng xã hội chủ nghĩa"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_018",
-    "question": "100 - 68 = ?",
-    "choices": ["30", "31", "32", "33"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_18",
+    "question": "Chế độ dân chủ đầu tiên gắn liền với hình thái kinh tế - xã hội nào?",
+    "choices": [
+      "Cộng sản nguyên thuỷ",
+      "Chiếm hữu nô lệ",
+      "Phong kiến",
+      "Tư bản chủ nghĩa"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_019",
-    "question": "33 + 49 = ?",
-    "choices": ["80", "81", "82", "83"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_19",
+    "question": "Chức năng của Nhà nước xã hội chủ nghĩa là gì?",
+    "choices": [
+      "Tổ chức xây dựng chủ nghĩa xã hội",
+      "Thiết lập khối đại đoàn kết dân tộc, thực hiện sự nghiệp công nghiệp hoá",
+      "Tổ chức xây dựng xã hội và trấn áp những lực lượng chống phá sự nghiệp xây dựng chủ nghĩa xã hội",
+      "Đề ra chủ trương, chính sách để xây dựng xã hội chủ nghĩa"
+    ],
+    "answerIndex": 2
   },
   {
-    "id": "math_020",
-    "question": "91 - 34 = ?",
-    "choices": ["55", "56", "57", "58"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_20",
+    "question": "Dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa có mối quan hệ như thế nào?",
+    "choices": [
+      "Dân chủ là cơ sở, nền tảng cho hoạt động của nhà nước xã hội chủ nghĩa",
+      "Dân chủ xã hội chủ nghĩa là yếu tố quyết định sự tồn tại của nhà nước xã hội chủ nghĩa",
+      "Nhà nước xã hội chủ nghĩa là công cụ quan trọng cho việc thực thi quyền làm chủ của nhân dân",
+      "Nhà nước xã hội chủ nghĩa và dân chủ xã hội chủ nghĩa có mối quan hệ biện chứng, tác động qua lại lẫn nhau."
+    ],
+    "answerIndex": 3
   },
   {
-    "id": "math_021",
-    "question": "26 + 58 = ?",
-    "choices": ["82", "83", "84", "85"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_21",
+    "question": "Hình thức dân chủ gián tiếp được thực hiện như thế nào trong việc thực thi dân chủ ở nước ta hiện nay?",
+    "choices": [
+      "Nhân dân trực tiếp thực hiện quyền làm chủ của mình đối với các hoạt động của nhà nước và xã hội",
+      "Thông qua hình thức trưng cầu dân ý trong nhân dân",
+      "Nhân dân được bàn bạc các công việc của nhà nước và cộng đồng dân cư",
+      "Nhân dân uỷ thác quyền lực của mình cho các đại biểu do mình bầu ra"
+    ],
+    "answerIndex": 3
   },
   {
-    "id": "math_022",
-    "question": "79 - 42 = ?",
-    "choices": ["35", "36", "37", "38"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_22",
+    "question": "Theo chủ nghĩa Mác - Lênin, dân chủ là một phạm trù lịch sử khi được xem xét trên phương diện nào? (trung bình)",
+    "choices": [
+      "Là một hình thái nhà nước",
+      "Là một giá trị chung của nhân loại",
+      "Là một giá trị xã hội",
+      "Là quyền lực thuộc về nhân dân"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_023",
-    "question": "45 + 47 = ?",
-    "choices": ["90", "91", "92", "93"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_23",
+    "question": "Tổ chức nào quan trọng để thực thi quyền lực của nhân dân?",
+    "choices": [
+      "Đảng Cộng sản",
+      "Nhà nước xã hội chủ nghĩa",
+      "Mặt trận tổ quốc",
+      "Các tổ chức chính trị -xã hội và đoàn thể nhân dân"
+    ],
+    "answerIndex": 1
   },
   {
-    "id": "math_024",
-    "question": "88 - 59 = ?",
-    "choices": ["27", "28", "29", "30"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_24",
+    "question": "Dân chủ xã hội chủ nghĩa mang bản chất của giai cấp nào?",
+    "choices": [
+      "Giai cấp công nhân",
+      "Giai cấp nông dân",
+      "Tầng lớp trí thức",
+      "Tầng lớp doanh nhân"
+    ],
+    "answerIndex": 0
   },
   {
-    "id": "math_025",
-    "question": "61 + 32 = ?",
-    "choices": ["91", "92", "93", "94"],
-    "answerIndex": 2,
-    "topic": "math",
-    "difficulty": 1
+    "id": "quiz_25",
+    "question": "Nhà nước xã hội chủ nghĩa dùng công cụ chủ yếu nào để quản lý xã hội?",
+    "choices": [
+      "Kế hoạch",
+      "Giáo dục",
+      "Chính sách",
+      "Pháp luật"
+    ],
+    "answerIndex": 3
+  },
+  {
+    "id": "quiz_26",
+    "question": "Bản chất tốt đẹp và tính ưu việt của nền dân chủ xã hội chủ nghĩa ở Việt Nam được thể hiện ở điểm nào?",
+    "choices": [
+      "Đề cao tinh thần thượng tôn pháp luật",
+      "Lấy dân làm gốc",
+      "Đường lối lãnh đạo của Đảng",
+      "Chính sách pháp luật của Nhà nước"
+    ],
+    "answerIndex": 1
+  },
+  {
+    "id": "quiz_27",
+    "question": "\"Dân chủ xã hội chủ nghĩa là bản chất của chế độ ta, vừa là mục tiêu, vừa là động lực của sự phát triển đất nước\". Điền vào chỗ trống (...) để hoàn thiện quan điểm của Đảng ta về xây dựng nền dân chủ xã hội chủ nghĩa.",
+    "choices": [
+      "bản chất/động lực",
+      "cơ sở/nền tảng",
+      "bản chất/nền tảng",
+      "cơ sở/động lực"
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "quiz_28",
+    "question": "\"Chế độ dân chủ vô sản so với bất cứ chế độ dân chủ tư sản nào, cũng dân chủ hơn gấp triệu lần\". Đây là luận điểm của ai?",
+    "choices": [
+      "C. Mác",
+      "C. Mác và Ph. Ăngghen",
+      "V.I. Lênin",
+      "Hồ Chí Minh"
+    ],
+    "answerIndex": 2
+  },
+  {
+    "id": "quiz_29",
+    "question": "Kiểu nhà nước nào được Lênin gọi là \"nhà nước nửa nhà nước\"?",
+    "choices": [
+      "Nhà nước chủ nô",
+      "Nhà nước phong kiến",
+      "Nhà nước tư sản",
+      "Nhà nước xã hội chủ nghĩa"
+    ],
+    "answerIndex": 3
+  },
+  {
+    "id": "quiz_30",
+    "question": "Căn cứ vào phạm vi tác động của quyền lực, nhà nước xã hội chủ nghĩa có những chức năng nào?",
+    "choices": [
+      "Chức năng đối nội và chức năng đối ngoại",
+      "Chức năng trấn áp và chức năng chính trị",
+      "Chức năng giai cấp và chức năng xây dựng",
+      "Chức năng giai cấp và chức năng xã hội"
+    ],
+    "answerIndex": 0
   }
 ]

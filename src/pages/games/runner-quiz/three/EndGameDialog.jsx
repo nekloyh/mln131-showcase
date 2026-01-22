@@ -25,6 +25,7 @@ export default function EndGameDialog({
   runId,
   onClose,
   onSaved,
+  isVictory = false, // NEW: Victory mode flag
 }) {
   const [playerName, setPlayerName] = useState('');
   const [saveState, setSaveState] = useState('idle'); // idle, saving, saved, error
@@ -104,9 +105,9 @@ export default function EndGameDialog({
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <NeoCard className="w-full max-w-md text-center bg-[#FAF7F0] p-6 flex flex-col gap-5 items-center shadow-[16px_16px_0px_#000]">
-        {/* Header */}
-        <div className="bg-[#FF3B30] text-white px-4 py-1 text-sm font-black uppercase tracking-widest border-[3px] border-black shadow-[4px_4px_0px_#000] rotate-2">
-          GAME OVER
+        {/* Header - Different for Victory vs Game Over */}
+        <div className={`${isVictory ? 'bg-[#00C853]' : 'bg-[#FF3B30]'} text-white px-4 py-1 text-sm font-black uppercase tracking-widest border-[3px] border-black shadow-[4px_4px_0px_#000] ${isVictory ? '-rotate-2' : 'rotate-2'}`}>
+          {isVictory ? '🏆 VICTORY! 🏆' : 'GAME OVER'}
         </div>
 
         <h2 className="text-4xl font-black uppercase text-black leading-none">
@@ -114,8 +115,10 @@ export default function EndGameDialog({
         </h2>
 
         {/* Score Display */}
-        <div className="bg-black text-[#FFD400] p-5 border-[3px] border-gray-800 w-full shadow-[6px_6px_0px_#888]">
-          <div className="text-xs text-gray-400 font-bold tracking-widest mb-1">FINAL SCORE</div>
+        <div className={`${isVictory ? 'bg-[#00C853]' : 'bg-black'} text-${isVictory ? 'white' : '[#FFD400]'} p-5 border-[3px] border-${isVictory ? 'black' : 'gray-800'} w-full shadow-[6px_6px_0px_#888]`}>
+          <div className={`text-xs ${isVictory ? 'text-white/70' : 'text-gray-400'} font-bold tracking-widest mb-1`}>
+            {isVictory ? 'CHAMPION SCORE' : 'FINAL SCORE'}
+          </div>
           <div className="text-5xl font-black">{score.toLocaleString()}</div>
         </div>
 

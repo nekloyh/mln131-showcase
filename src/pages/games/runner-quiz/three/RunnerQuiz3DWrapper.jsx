@@ -9,10 +9,18 @@ import EndGameDialog from './EndGameDialog';
 import Leaderboard from './Leaderboard';
 import { generateRunId } from '../../../../services/runnerQuizApi';
 import { GAME_CONFIG } from '../gameConfig';
+import { QuestionPoolManager } from '../questionUtils';
 
 export default function RunnerQuiz3D({ onClose }) {
+    // --- Question Pool Manager (shuffles questions and choices) ---
+    const questionPoolRef = useRef(null);
+    if (!questionPoolRef.current) {
+        questionPoolRef.current = new QuestionPoolManager(questionsData);
+    }
+
     // --- State ---
-    const [gameState, setGameState] = useState('RUNNING'); // RUNNING, QUESTION_GATE, RESOLVING, GAMEOVER, SAVE_DIALOG
+    // RUNNING, QUESTION_GATE, RESOLVING, GAMEOVER, SAVE_DIALOG, VICTORY_SAVE, VICTORY
+    const [gameState, setGameState] = useState('RUNNING');
     const [score, setScore] = useState(0);
     const [hearts, setHearts] = useState(GAME_CONFIG.MAX_HEARTS);
     const [gameKey, setGameKey] = useState(0); // Used to reset 3D scene on restart
@@ -44,94 +52,98 @@ export default function RunnerQuiz3D({ onClose }) {
     // Keep a ref to the current question for immediate access
     const currentQuestionRef = useRef(null);
 
+    // NEW: Pending answer result (for manual answer - wait for wall collision)
+    const pendingAnswerRef = useRef(null); // { isCorrect, score, timeLeft }
+
     // Player State
     const [gameSpeed, setGameSpeed] = useState(GAME_CONFIG.SPEED.NORMAL);
     const [wallBoost, setWallBoost] = useState(1); // NEW: Wall boost for early answers
     const [playerLane, setPlayerLane] = useState(1); // 0 (A), 1 (B), 2 (C), 3 (D)
 
+    // --- Completion Handler (MOVED UP for callback dependencies) ---
+    const handleResolveComplete = useCallback(() => {
+        setHearts(currentHearts => {
+            if (currentHearts <= 0) {
+                setGameState('SAVE_DIALOG');
+                setActiveQuestion(null);
+                currentQuestionRef.current = null;
+                pendingAnswerRef.current = null; // Clear pending answer
+                setCurrentQuestionScore(0);
+                setWallBoost(1);
+                quizController.close('gameover');
+                return 0;
+            } else {
+                setGameState('RUNNING');
+                setFeedback(null);
+                setActiveQuestion(null);
+                currentQuestionRef.current = null;
+                pendingAnswerRef.current = null; // Clear pending answer
+                setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
+                setWallBoost(1);
+                setCurrentQuestionScore(0);
+                quizController.close('resolved');
+                return currentHearts;
+            }
+        });
+    }, []);
+
+    // --- Quiz Controller Callbacks (Stable references) ---
+    const onTickCallback = useCallback((remaining, progress) => {
+        // Don't update if there's a pending manual answer
+        if (pendingAnswerRef.current) return;
+        
+        setQuizProgress(progress);
+        // Update real-time score display based on remaining time (use ref for fresh value)
+        const potentialScore = GAME_CONFIG.SCORING.calculateScore(remaining, currentTimeLimitRef.current);
+        setCurrentQuestionScore(potentialScore);
+    }, []);
+
+    const onTimeOutCallback = useCallback(() => {
+        // Handle Timeout: Deduct heart, show feedback
+        console.log('[RunnerQuiz] Question Timeout!');
+        
+        // IMPORTANT: Close quiz controller first to prevent handleWallHit from processing again
+        quizController.close('timeout');
+        
+        setHearts(prev => prev - 1);
+        setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.TIMEOUT_SCORE });
+        setCurrentQuestionScore(0);
+        setGameState('RESOLVING');
+        setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO);
+        setWallBoost(1); // Reset wall boost
+
+        // Close quiz logic after delay
+        setTimeout(() => {
+            handleResolveComplete();
+        }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
+    }, [handleResolveComplete]);
+
+    const onStateChangeCallback = useCallback((state) => {
+        if (state.isOpen) {
+            console.log('[RunnerQuiz] Controller State OPEN:', state.question.id);
+            // Don't set activeQuestion here - it's already set directly in triggerSpawn
+            setQuizProgress(1.0);
+            // Reset score display when new question opens
+            setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE);
+        } else {
+            console.log('[RunnerQuiz] Controller State CLOSED');
+            // Don't clear activeQuestion here - let the game flow handle it
+            // This prevents the question from disappearing while showing feedback
+        }
+    }, []);
+
     // --- Quiz Controller Sync ---
     useEffect(() => {
-        // Subscribe to Controller updates
-        quizController.onStateChange = (state) => {
-            if (state.isOpen) {
-                console.log('[RunnerQuiz] Controller State OPEN:', state.question.id);
-                // Don't set activeQuestion here - it's already set directly in triggerSpawn
-                setQuizProgress(1.0);
-                // Reset score display when new question opens
-                setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE);
-            } else {
-                console.log('[RunnerQuiz] Controller State CLOSED');
-                // Don't clear activeQuestion here - let the game flow handle it
-                // This prevents the question from disappearing while showing feedback
-            }
-        };
-
-        quizController.onTick = (remaining, progress) => {
-            setQuizProgress(progress);
-            // Update real-time score display based on remaining time (use ref for fresh value)
-            const potentialScore = GAME_CONFIG.SCORING.calculateScore(remaining, currentTimeLimitRef.current);
-            setCurrentQuestionScore(potentialScore);
-        };
-
-        quizController.onTimeOut = () => {
-            // Handle Timeout: Deduct heart, show feedback
-            console.log('[RunnerQuiz] Question Timeout!');
-            setHearts(prev => prev - 1);
-            setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.TIMEOUT_SCORE });
-            setCurrentQuestionScore(0);
-            setGameState('RESOLVING');
-            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO);
-            setWallBoost(1); // Reset wall boost
-
-            // Close quiz logic after delay
-            setTimeout(() => {
-                handleResolveComplete(false);
-            }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
-        };
+        // Subscribe to Controller updates with stable callbacks
+        quizController.onStateChange = onStateChangeCallback;
+        quizController.onTick = onTickCallback;
+        quizController.onTimeOut = onTimeOutCallback;
 
         // Cleanup on unmount
         return () => {
             quizController.destroy();
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // --- Input Handling ---
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (gameState === 'GAMEOVER' || gameState === 'RESOLVING') return;
-
-            switch (e.key) {
-                // Left
-                case 'ArrowLeft':
-                case 'a':
-                case 'A':
-                    setPlayerLane(prev => Math.max(0, prev - 1));
-                    break;
-                // Right
-                case 'ArrowRight':
-                case 'd':
-                case 'D':
-                    setPlayerLane(prev => Math.min(3, prev + 1));
-                    break;
-                // Manual Answer (Space / Enter)
-                case ' ':
-                case 'Enter':
-                    handleManualAnswer();
-                    break;
-                // Close / Escape
-                case 'Escape':
-                    onClose();
-                    break;
-                default:
-                    break;
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, onClose, playerLane]); // Added playerLane dependency for manual answer
+    }, [onStateChangeCallback, onTickCallback, onTimeOutCallback]);
 
     // --- Action Handlers ---
     // (Moved to useCallback below)
@@ -147,9 +159,28 @@ export default function RunnerQuiz3D({ onClose }) {
 
         if (gameState === 'RUNNING') {
             const triggerSpawn = () => {
-                const randomQ = questionsData[Math.floor(Math.random() * questionsData.length)];
+                // Check if all questions have been answered - VICTORY!
+                if (!questionPoolRef.current.hasRemaining) {
+                    console.log('[RunnerQuiz] 🎉 ALL QUESTIONS COMPLETED! VICTORY!');
+                    quizController.close('victory');
+                    setActiveQuestion(null);
+                    currentQuestionRef.current = null;
+                    setGameState('VICTORY_SAVE'); // Show victory save dialog
+                    return;
+                }
+
+                // Get shuffled question from pool (includes shuffled choices)
+                const randomQ = questionPoolRef.current.getRandom();
+
+                // Safety check - should not happen but just in case
+                if (!randomQ) {
+                    console.log('[RunnerQuiz] No more questions available - VICTORY!');
+                    setGameState('VICTORY_SAVE');
+                    return;
+                }
 
                 console.log('[RunnerQuiz] Trigger Spawn:', randomQ.id, randomQ.question);
+                console.log(`[RunnerQuiz] Questions remaining: ${questionPoolRef.current.remaining}/${questionPoolRef.current.total}`);
 
                 // Calculate Dynamic Time Limit based on Correct Answers
                 const difficultyMultiplier = 1 + (correctCount * GAME_CONFIG.DIFFICULTY.TIME_REDUCTION_PER_CORRECT);
@@ -168,6 +199,12 @@ export default function RunnerQuiz3D({ onClose }) {
                 // Store question in ref IMMEDIATELY for render access
                 pendingQuestionRef.current = randomQ;
                 currentQuestionRef.current = randomQ;
+
+                // DEBUG: Log question details to verify answerIndex
+                console.log('[DEBUG] Question:', randomQ.question);
+                console.log('[DEBUG] Choices:', randomQ.choices);
+                console.log('[DEBUG] AnswerIndex:', randomQ.answerIndex);
+                console.log('[DEBUG] Correct Answer:', randomQ.choices[randomQ.answerIndex]);
 
                 // 1. Open Quiz in Controller (Starts Timer)
                 quizController.open(randomQ, dynamicTimeLimit);
@@ -200,55 +237,13 @@ export default function RunnerQuiz3D({ onClose }) {
         };
     }, [gameState, correctCount]); // Added correctCount dependency
 
-    // --- Completion Handler ---
-    const handleResolveComplete = useCallback(() => { // Removed unused playerDied
-        setHearts(currentHearts => {
-            if (currentHearts <= 0) {
-                setGameState('SAVE_DIALOG'); // Show save dialog instead of direct game over
-                setActiveQuestion(null);
-                currentQuestionRef.current = null;
-                setCurrentQuestionScore(0);
-                setWallBoost(1); // Reset wall boost
-                quizController.close('gameover');
-                return 0;
-            } else {
-                setGameState('RUNNING');
-                setFeedback(null);
-                setActiveQuestion(null); // Clear question when returning to running
-                currentQuestionRef.current = null;
-                setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
-                setWallBoost(1); // Reset wall boost
-                setCurrentQuestionScore(0); // Reset score display
-                quizController.close('resolved');
-                return currentHearts;
-            }
-        });
-    }, []);
-
     // --- Action Handlers ---
 
-    // Shared "Check Answer" Logic
-    const resolveAnswer = useCallback((isManual, laneIndex) => {
-        if (!quizController.activeQuestion) return;
-
-        // Valid Check
-        const result = quizController.checkAnswer(laneIndex);
-        const { isCorrect, timeLeft } = result;
-
-        // IMMEDIATE CLOSE to prevent double triggers (wall + key)
-        quizController.close('answered');
-
-        setGameState('RESOLVING');
-        
-        // If answered early (manual), boost wall speed to reach player faster
-        if (isManual) {
-            setWallBoost(GAME_CONFIG.SPEED.WALL_BOOST_MULTIPLIER);
-            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO); // Slight slow-mo for visual effect
-        } else {
-            setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO); // Slow mo impact
-            setWallBoost(1);
-        }
-
+    /**
+     * Process the actual result (called when wall hits player)
+     * This is where score/hearts are updated and feedback is shown
+     */
+    const processAnswerResult = useCallback((isCorrect, timeLeft) => {
         if (isCorrect) {
             // Increment Difficulty Stat
             setCorrectCount(prev => prev + 1);
@@ -268,18 +263,87 @@ export default function RunnerQuiz3D({ onClose }) {
             setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.WRONG_SCORE });
         }
 
+        setGameState('RESOLVING');
+        setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO);
+
         // Cleanup Delay
         setTimeout(() => {
             handleResolveComplete();
         }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
-    }, [handleResolveComplete]); // Added dependency
+    }, [handleResolveComplete]);
 
+    /**
+     * Handle manual answer (Space key)
+     * - Lock in the answer
+     * - Boost wall speed
+     * - Wait for wall collision to process result
+     */
     const handleManualAnswer = useCallback(() => {
-        // Only allow manual answer if quiz is active
+        // Only allow manual answer if quiz is active and no pending answer
         if (gameState !== 'QUESTION_GATE') return;
+        if (pendingAnswerRef.current) return; // Already answered
+        if (!quizController.activeQuestion) return;
+
         console.log('[RunnerQuiz] Manual Answer Triggered at Lane:', playerLane);
-        resolveAnswer(true, playerLane);
-    }, [gameState, playerLane, resolveAnswer]);
+
+        // DEBUG: Log answer check details
+        console.log('[DEBUG] ActiveQuestion answerIndex:', quizController.activeQuestion.answerIndex);
+        console.log('[DEBUG] Player selected lane:', playerLane);
+        console.log('[DEBUG] Selected answer:', quizController.activeQuestion.choices[playerLane]);
+        console.log('[DEBUG] Correct answer:', quizController.activeQuestion.choices[quizController.activeQuestion.answerIndex]);
+
+        // Check answer and store result
+        const result = quizController.checkAnswer(playerLane);
+        const { isCorrect, timeLeft } = result;
+        
+        console.log('[DEBUG] Check result - isCorrect:', isCorrect);
+
+        // Store pending result (will be processed when wall hits)
+        pendingAnswerRef.current = { isCorrect, timeLeft };
+
+        // Close quiz timer to prevent timeout
+        quizController.close('manual-answer');
+
+        // Boost wall speed to reach player quickly
+        setWallBoost(GAME_CONFIG.SPEED.WALL_BOOST_MULTIPLIER);
+        
+        // Show which answer was locked in (visual feedback)
+        setCurrentQuestionScore(
+            isCorrect 
+                ? GAME_CONFIG.SCORING.calculateScore(timeLeft, currentTimeLimitRef.current)
+                : GAME_CONFIG.SCORING.WRONG_SCORE
+        );
+
+        console.log('[RunnerQuiz] Answer locked, waiting for wall collision...');
+    }, [gameState, playerLane]);
+
+    /**
+     * Handle wall collision (wall hits player)
+     * - If pending answer exists: process it
+     * - Otherwise: check answer at collision time
+     */
+    const handleWallHit = useCallback((wallId, laneIndex) => {
+        console.log('[RunnerQuiz] Wall Hit at Lane:', laneIndex);
+
+        // Check if there's a pending manual answer
+        if (pendingAnswerRef.current) {
+            const { isCorrect, timeLeft } = pendingAnswerRef.current;
+            pendingAnswerRef.current = null; // Clear pending
+            setWallBoost(1); // Reset wall boost
+            processAnswerResult(isCorrect, timeLeft);
+            return;
+        }
+
+        // No pending answer - wall hit is the answer (timeout or natural collision)
+        if (!quizController.activeQuestion) return;
+
+        const result = quizController.checkAnswer(laneIndex);
+        const { isCorrect, timeLeft } = result;
+
+        quizController.close('wall-hit');
+        setWallBoost(1);
+        processAnswerResult(isCorrect, timeLeft);
+    }, [processAnswerResult]);
 
     // --- Input Handling ---
     useEffect(() => {
@@ -316,20 +380,14 @@ export default function RunnerQuiz3D({ onClose }) {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [gameState, onClose, playerLane, handleManualAnswer]); // Added handleManualAnswer dependency
-
-    // --- Callbacks ---
-    const handleWallHit = useCallback((wallId, laneIndex) => {
-        // Wall hit only triggers if Controller is still open.
-        // If Manual Answer happened first, Controller is closed, so this is ignored.
-        console.log('[RunnerQuiz] Wall Hit Triggered at Lane:', laneIndex);
-        resolveAnswer(false, laneIndex);
-    }, [resolveAnswer]); // Added resolveAnswer dependency
+    
     const handleRestart = () => {
         quizController.close('restart');
         setScore(0);
         setHearts(GAME_CONFIG.MAX_HEARTS);
         setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
         setWallBoost(1); // Reset wall boost
+        pendingAnswerRef.current = null; // Clear any pending answer
         setPlayerLane(1);
         setActiveQuestion(null);
         currentQuestionRef.current = null;
@@ -348,12 +406,15 @@ export default function RunnerQuiz3D({ onClose }) {
         setQuestionCount(0);
         setCorrectCount(0);
 
+        // Reset question pool for new game (reshuffles all questions and choices)
+        questionPoolRef.current.reset();
+
         // Reset run tracking for new game
         setRunId(generateRunId());
         setGameStartTime(Date.now());
     };
 
-    // --- Save Dialog Handlers ---
+    // --- Save Dialog Handlers (Game Over) ---
     const handleSaveComplete = useCallback(() => {
         setLeaderboardRefresh(prev => prev + 1); // Refresh leaderboard
         setGameState('GAMEOVER'); // Go to final game over screen
@@ -363,6 +424,15 @@ export default function RunnerQuiz3D({ onClose }) {
         setGameState('GAMEOVER'); // Go to final game over screen without saving
     }, []);
 
+    // --- Victory Save Handlers ---
+    const handleVictorySaveComplete = useCallback(() => {
+        setLeaderboardRefresh(prev => prev + 1); // Refresh leaderboard
+        setGameState('VICTORY'); // Go to final victory screen
+    }, []);
+
+    const handleVictorySkipSave = useCallback(() => {
+        setGameState('VICTORY'); // Go to final victory screen without saving
+    }, []);
     // --- Render ---
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans select-none">
@@ -490,6 +560,7 @@ export default function RunnerQuiz3D({ onClose }) {
                                         gameSpeed={gameSpeed}
                                         wallBoost={wallBoost}
                                         isQuizActive={gameState === 'QUESTION_GATE'}
+                                        questionTimeLimit={currentTimeLimit}
                                     />
                                 </Suspense>
                             </Canvas>
@@ -606,6 +677,20 @@ export default function RunnerQuiz3D({ onClose }) {
                     />
                 )}
 
+                {/* VICTORY SAVE DIALOG (Shows after completing all questions) */}
+                {gameState === 'VICTORY_SAVE' && (
+                    <EndGameDialog
+                        isOpen={true}
+                        score={score}
+                        level={1}
+                        durationMs={Date.now() - gameStartTime}
+                        runId={runId}
+                        onClose={handleVictorySkipSave}
+                        onSaved={handleVictorySaveComplete}
+                        isVictory={true}
+                    />
+                )}
+
                 {/* GAME OVER OVERLAY (Shows after save dialog) */}
                 {gameState === 'GAMEOVER' && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -634,6 +719,67 @@ export default function RunnerQuiz3D({ onClose }) {
                             <NeoButton onClick={handleRestart} variant="primary" className="w-full py-4 text-xl">
                                 TRY AGAIN
                             </NeoButton>
+                        </NeoCard>
+                    </div>
+                )}
+
+                {/* VICTORY OVERLAY (Shows after completing all questions) */}
+                {gameState === 'VICTORY' && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                        <NeoCard className="w-full max-w-lg text-center bg-[#FAF7F0] p-6 flex flex-col gap-6 items-center shadow-[16px_16px_0px_#000]">
+                            {/* Victory Badge */}
+                            <div className="bg-[#00C853] text-white px-6 py-2 text-lg font-black uppercase tracking-widest border-[3px] border-black shadow-[4px_4px_0px_#000] -rotate-2 animate-pulse">
+                                🏆 CHAMPION 🏆
+                            </div>
+
+                            <h2 className="text-5xl font-black uppercase text-black leading-none mt-2">
+                                VICTORY!
+                            </h2>
+
+                            <p className="text-gray-600 font-bold">
+                                Bạn đã hoàn thành tất cả {questionPoolRef.current?.total || 30} câu hỏi!
+                            </p>
+
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 gap-4 w-full">
+                                <div className="bg-[#FFD400] border-[3px] border-black p-4 shadow-[4px_4px_0px_#000]">
+                                    <div className="text-xs font-bold uppercase tracking-widest text-black/60 mb-1">Tổng Điểm</div>
+                                    <div className="text-3xl font-black text-black">{score.toLocaleString()}</div>
+                                </div>
+                                <div className="bg-[#4D9DE0] border-[3px] border-black p-4 shadow-[4px_4px_0px_#000]">
+                                    <div className="text-xs font-bold uppercase tracking-widest text-white/80 mb-1">Trả Lời Đúng</div>
+                                    <div className="text-3xl font-black text-white">{correctCount}/{questionPoolRef.current?.total || 30}</div>
+                                </div>
+                                <div className="bg-[#FF4D6D] border-[3px] border-black p-4 shadow-[4px_4px_0px_#000]">
+                                    <div className="text-xs font-bold uppercase tracking-widest text-white/80 mb-1">Mạng Còn</div>
+                                    <div className="text-3xl font-black text-white">{hearts}/{GAME_CONFIG.MAX_HEARTS}</div>
+                                </div>
+                                <div className="bg-white border-[3px] border-black p-4 shadow-[4px_4px_0px_#000]">
+                                    <div className="text-xs font-bold uppercase tracking-widest text-black/60 mb-1">Thời Gian</div>
+                                    <div className="text-3xl font-black text-black">
+                                        {Math.floor((Date.now() - gameStartTime) / 1000)}s
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Leaderboard */}
+                            <div className="w-full border-[3px] border-black bg-white max-h-[180px] overflow-hidden">
+                                <Leaderboard
+                                    level={1}
+                                    limit={5}
+                                    refreshTrigger={leaderboardRefresh}
+                                    highlightRunId={runId}
+                                />
+                            </div>
+
+                            <div className="flex gap-4 w-full">
+                                <NeoButton onClick={handleRestart} variant="success" className="flex-1 py-4 text-lg">
+                                    CHƠI LẠI
+                                </NeoButton>
+                                <NeoButton onClick={onClose} variant="neutral" className="flex-1 py-4 text-lg">
+                                    THOÁT
+                                </NeoButton>
+                            </div>
                         </NeoCard>
                     </div>
                 )}
