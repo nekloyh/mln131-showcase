@@ -53,6 +53,9 @@ export default function RunnerQuiz3D({ onClose }) {
     // Keep a ref to the current question for immediate access
     const currentQuestionRef = useRef(null);
 
+    // NEW: Store question for timeout handling (when quiz controller closes but wall still needs to check answer)
+    const timeoutQuestionRef = useRef(null);
+
     // NEW: Pending answer result (for manual answer - wait for wall collision)
     const pendingAnswerRef = useRef(null); // { isCorrect, score, timeLeft }
 
@@ -60,6 +63,7 @@ export default function RunnerQuiz3D({ onClose }) {
     const [gameSpeed, setGameSpeed] = useState(GAME_CONFIG.SPEED.NORMAL);
     const [wallBoost, setWallBoost] = useState(1); // NEW: Wall boost for early answers
     const [playerLane, setPlayerLane] = useState(1); // 0 (A), 1 (B), 2 (C), 3 (D)
+    const [answerLocked, setAnswerLocked] = useState(false); // Lock lane changes after manual answer
     
     // Sound State
     const [isMuted, setIsMuted] = useState(() => soundManager.isMuted());
@@ -85,9 +89,11 @@ export default function RunnerQuiz3D({ onClose }) {
                 setGameState('SAVE_DIALOG');
                 setActiveQuestion(null);
                 currentQuestionRef.current = null;
+                timeoutQuestionRef.current = null; // Clear timeout question
                 pendingAnswerRef.current = null; // Clear pending answer
                 setCurrentQuestionScore(0);
                 setWallBoost(1);
+                setAnswerLocked(false); // Reset for next game
                 quizController.close('gameover');
                 return 0;
             } else {
@@ -95,10 +101,12 @@ export default function RunnerQuiz3D({ onClose }) {
                 setFeedback(null);
                 setActiveQuestion(null);
                 currentQuestionRef.current = null;
+                timeoutQuestionRef.current = null; // Clear timeout question
                 pendingAnswerRef.current = null; // Clear pending answer
                 setGameSpeed(GAME_CONFIG.SPEED.NORMAL);
                 setWallBoost(1);
                 setCurrentQuestionScore(0);
+                setAnswerLocked(false); // Unlock for next question
                 quizController.close('resolved');
                 return currentHearts;
             }
@@ -117,23 +125,14 @@ export default function RunnerQuiz3D({ onClose }) {
     }, []);
 
     const onTimeOutCallback = useCallback(() => {
-        // Handle Timeout: Deduct heart, show feedback
+        // Handle Timeout: Store current question for wall collision to check answer
+        timeoutQuestionRef.current = currentQuestionRef.current;
         
-        // IMPORTANT: Close quiz controller first to prevent handleWallHit from processing again
         quizController.close('timeout');
         
-        setHearts(prev => prev - 1);
-        setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.TIMEOUT_SCORE });
-        setCurrentQuestionScore(0);
-        setGameState('RESOLVING');
-        setGameSpeed(GAME_CONFIG.SPEED.SLOW_MO);
-        setWallBoost(1); // Reset wall boost
-
-        // Close quiz logic after delay
-        setTimeout(() => {
-            handleResolveComplete();
-        }, GAME_CONFIG.TIMING.FEEDBACK_DURATION);
-    }, [handleResolveComplete]);
+        // Note: Wall will still hit player, and handleWallHit will check the answer based on current lane
+        // If player is in correct lane, they get MIN_SCORE (200 points), otherwise WRONG
+    }, []);
 
     const onStateChangeCallback = useCallback((state) => {
         if (state.isOpen) {
@@ -297,6 +296,9 @@ export default function RunnerQuiz3D({ onClose }) {
         // Store pending result (will be processed when wall hits)
         pendingAnswerRef.current = { isCorrect, timeLeft };
 
+        // Lock lane changes - player cannot change answer after manual submission
+        setAnswerLocked(true);
+
         // Close quiz timer to prevent timeout
         quizController.close('manual-answer');
 
@@ -314,7 +316,7 @@ export default function RunnerQuiz3D({ onClose }) {
     /**
      * Handle wall collision (wall hits player)
      * - If pending answer exists: process it
-     * - Otherwise: check answer at collision time
+     * - Otherwise: check answer at collision time (including timeout case)
      */
     const handleWallHit = useCallback((wallId, laneIndex) => {
         // Check if there's a pending manual answer
@@ -322,17 +324,29 @@ export default function RunnerQuiz3D({ onClose }) {
             const { isCorrect, timeLeft } = pendingAnswerRef.current;
             pendingAnswerRef.current = null; // Clear pending
             setWallBoost(1); // Reset wall boost
+            setAnswerLocked(false); // Unlock lane changes for next question
             processAnswerResult(isCorrect, timeLeft);
             return;
         }
 
         // No pending answer - wall hit is the answer (timeout or natural collision)
-        if (!quizController.activeQuestion) return;
+        const questionToCheck = quizController.activeQuestion || timeoutQuestionRef.current;
+        if (!questionToCheck) return;
 
-        const result = quizController.checkAnswer(laneIndex);
-        const { isCorrect, timeLeft } = result;
+        // For timeout case, timeLeft is 0
+        const isTimeout = !quizController.activeQuestion && timeoutQuestionRef.current;
+        const timeLeft = isTimeout ? 0 : quizController.timeLeft;
 
-        quizController.close('wall-hit');
+        // Check answer based on lane
+        const isCorrect = questionToCheck.answerIndex === laneIndex;
+
+        // Clear timeout question after use
+        if (isTimeout) {
+            timeoutQuestionRef.current = null;
+        } else {
+            quizController.close('wall-hit');
+        }
+
         setWallBoost(1);
         processAnswerResult(isCorrect, timeLeft);
     }, [processAnswerResult]);
@@ -341,6 +355,7 @@ export default function RunnerQuiz3D({ onClose }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (gameState === 'GAMEOVER' || gameState === 'RESOLVING') return;
+            if (answerLocked) return; // Block lane changes when answer is locked
 
             switch (e.key) {
                 // Left
@@ -379,7 +394,7 @@ export default function RunnerQuiz3D({ onClose }) {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [gameState, onClose, playerLane, handleManualAnswer]); // Added handleManualAnswer dependency
+    }, [gameState, onClose, playerLane, handleManualAnswer, answerLocked]); // Added answerLocked dependency
     
     const handleRestart = () => {
         quizController.close('restart');
@@ -398,6 +413,7 @@ export default function RunnerQuiz3D({ onClose }) {
         setQuizProgress(1.0);
         setCurrentQuestionScore(0); // Reset score display
         pendingQuestionRef.current = null;
+        timeoutQuestionRef.current = null; // Clear timeout question
         hasSpawnedFirstRef.current = false; // Reset first spawn flag
         setGameKey(prev => prev + 1); // Force 3D scene to remount and reset walls
         setGameState('RUNNING');
@@ -529,7 +545,7 @@ export default function RunnerQuiz3D({ onClose }) {
                                                 key={i}
                                                 // Clicking also sets lane for mobile/mouse users
                                                 onClick={() => {
-                                                    if (gameState === 'QUESTION_GATE') {
+                                                    if (gameState === 'QUESTION_GATE' && !answerLocked) {
                                                         if (playerLane !== i) soundManager.play(SOUNDS.SLIDE);
                                                         setPlayerLane(i);
                                                     }

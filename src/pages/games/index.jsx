@@ -50,7 +50,7 @@ const GuideModal = ({ gameId, onClose }) => {
                     content: [
                         "Giải 7 hàng ngang để tìm ra từ khóa dọc bí ẩn",
                         "Mỗi hàng ngang là một câu hỏi về Nhà nước pháp quyền XHCN",
-                        "Nhập đáp án vào ô trống (không dấu, viết liền)"
+                        "Nhập đáp án vào ô trống (có dấu, có khoảng cách)"
                     ]
                 },
                 {
