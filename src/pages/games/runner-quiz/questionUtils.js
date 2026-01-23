@@ -26,10 +26,6 @@ export function shuffleArray(array) {
 export function shuffleQuestionChoices(question) {
     const { choices, answerIndex, ...rest } = question;
     
-    // DEBUG: Log original answer
-    console.log('[SHUFFLE DEBUG] Original answerIndex:', answerIndex);
-    console.log('[SHUFFLE DEBUG] Original correct answer:', choices[answerIndex]);
-    
     // Create array of { choice, isCorrect } to track correct answer
     const choicesWithFlag = choices.map((choice, index) => ({
         choice,
@@ -41,10 +37,6 @@ export function shuffleQuestionChoices(question) {
     
     // Find new index of correct answer
     const newAnswerIndex = shuffledChoices.findIndex(c => c.isCorrect);
-    
-    // DEBUG: Log new answer
-    console.log('[SHUFFLE DEBUG] New answerIndex:', newAnswerIndex);
-    console.log('[SHUFFLE DEBUG] New correct answer:', shuffledChoices[newAnswerIndex].choice);
     
     return {
         ...rest,

@@ -280,7 +280,6 @@ export default function Runner3DScene({
         if (spawnSignal && activeQuestion && activeQuestion.id !== lastSpawnedQuestionRef.current) {
             const id = Date.now();
             lastSpawnedQuestionRef.current = activeQuestion.id;
-            console.log('[Runner3DScene] Spawning wall for question:', activeQuestion.id, 'speed:', wallSpeed.toFixed(2));
             setWalls(prev => [
                 ...prev,
                 { id, startZ: GAME_CONFIG.WALL.SPAWN_Z, question: activeQuestion, speed: wallSpeed }

@@ -169,7 +169,7 @@ export default function EndGameDialog({
         {/* Success Message */}
         {saveState === 'saved' && (
           <div className="w-full px-3 py-2 bg-green-100 border-[2px] border-green-500 text-green-700 text-sm font-bold">
-            ✅ Score saved to leaderboard!
+            Score saved to leaderboard!
           </div>
         )}
 
@@ -191,7 +191,7 @@ export default function EndGameDialog({
                     <span className="animate-spin">⏳</span> Saving...
                   </span>
                 ) : (
-                  '💾 Save Score'
+                  'Save Score'
                 )}
               </NeoButton>
 

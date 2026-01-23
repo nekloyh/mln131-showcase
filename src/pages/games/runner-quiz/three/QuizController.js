@@ -36,7 +36,6 @@ class QuizController {
     open(question, timeLimitMs, callbacks = {}) {
         // Enforce: Always close previous if open
         if (this.isOpen) {
-            console.warn('[QuizController] Force closing previous quiz to open new one.');
             this._stopTimer(); // Stop timer only, don't clear callbacks
             this.isOpen = false;
         }
@@ -55,7 +54,6 @@ class QuizController {
 
         this._startTimer();
 
-        console.log(`[QuizController] OPEN id=${question.id || 'unknown'}`);
         if (this.onStateChange) this.onStateChange({ isOpen: true, question });
     }
 
@@ -69,8 +67,6 @@ class QuizController {
         this._stopTimer();
         this.isOpen = false;
         this.activeQuestion = null;
-
-        console.log(`[QuizController] CLOSE reason=${reason}`);
 
         if (this.onStateChange) this.onStateChange({ isOpen: false });
 
@@ -137,7 +133,6 @@ class QuizController {
 
     _handleTimeout() {
         this._stopTimer();
-        console.log('[QuizController] TIMEOUT');
         if (this.onTimeOut) this.onTimeOut();
         // Note: Controller doesn't close itself automatically on timeout 
         // because the UI might want to show "Time's Up" animation first.

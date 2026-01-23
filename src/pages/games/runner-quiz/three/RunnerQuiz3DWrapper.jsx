@@ -10,6 +10,7 @@ import Leaderboard from './Leaderboard';
 import { generateRunId } from '../../../../services/runnerQuizApi';
 import { GAME_CONFIG } from '../gameConfig';
 import { QuestionPoolManager } from '../questionUtils';
+import { soundManager, SOUNDS } from '../../../../services/soundManager';
 
 export default function RunnerQuiz3D({ onClose }) {
     // --- Question Pool Manager (shuffles questions and choices) ---
@@ -59,11 +60,28 @@ export default function RunnerQuiz3D({ onClose }) {
     const [gameSpeed, setGameSpeed] = useState(GAME_CONFIG.SPEED.NORMAL);
     const [wallBoost, setWallBoost] = useState(1); // NEW: Wall boost for early answers
     const [playerLane, setPlayerLane] = useState(1); // 0 (A), 1 (B), 2 (C), 3 (D)
+    
+    // Sound State
+    const [isMuted, setIsMuted] = useState(() => soundManager.isMuted());
+    
+    // Initialize sound on mount
+    useEffect(() => {
+        soundManager.init();
+    }, []);
+
+    // Play slide sound when player moves left/right
+    const handleLaneChange = useCallback((newLane) => {
+        setPlayerLane(newLane);
+        soundManager.play(SOUNDS.SLIDE);
+    }, []);
 
     // --- Completion Handler (MOVED UP for callback dependencies) ---
     const handleResolveComplete = useCallback(() => {
         setHearts(currentHearts => {
             if (currentHearts <= 0) {
+                // Play game over sound
+                soundManager.play(SOUNDS.GAMEOVER);
+                
                 setGameState('SAVE_DIALOG');
                 setActiveQuestion(null);
                 currentQuestionRef.current = null;
@@ -100,7 +118,6 @@ export default function RunnerQuiz3D({ onClose }) {
 
     const onTimeOutCallback = useCallback(() => {
         // Handle Timeout: Deduct heart, show feedback
-        console.log('[RunnerQuiz] Question Timeout!');
         
         // IMPORTANT: Close quiz controller first to prevent handleWallHit from processing again
         quizController.close('timeout');
@@ -120,13 +137,11 @@ export default function RunnerQuiz3D({ onClose }) {
 
     const onStateChangeCallback = useCallback((state) => {
         if (state.isOpen) {
-            console.log('[RunnerQuiz] Controller State OPEN:', state.question.id);
             // Don't set activeQuestion here - it's already set directly in triggerSpawn
             setQuizProgress(1.0);
             // Reset score display when new question opens
             setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE);
         } else {
-            console.log('[RunnerQuiz] Controller State CLOSED');
             // Don't clear activeQuestion here - let the game flow handle it
             // This prevents the question from disappearing while showing feedback
         }
@@ -161,7 +176,9 @@ export default function RunnerQuiz3D({ onClose }) {
             const triggerSpawn = () => {
                 // Check if all questions have been answered - VICTORY!
                 if (!questionPoolRef.current.hasRemaining) {
-                    console.log('[RunnerQuiz] 🎉 ALL QUESTIONS COMPLETED! VICTORY!');
+                    // Play victory sound
+                    soundManager.play(SOUNDS.VICTORY);
+                    
                     quizController.close('victory');
                     setActiveQuestion(null);
                     currentQuestionRef.current = null;
@@ -174,13 +191,9 @@ export default function RunnerQuiz3D({ onClose }) {
 
                 // Safety check - should not happen but just in case
                 if (!randomQ) {
-                    console.log('[RunnerQuiz] No more questions available - VICTORY!');
                     setGameState('VICTORY_SAVE');
                     return;
                 }
-
-                console.log('[RunnerQuiz] Trigger Spawn:', randomQ.id, randomQ.question);
-                console.log(`[RunnerQuiz] Questions remaining: ${questionPoolRef.current.remaining}/${questionPoolRef.current.total}`);
 
                 // Calculate Dynamic Time Limit based on Correct Answers
                 const difficultyMultiplier = 1 + (correctCount * GAME_CONFIG.DIFFICULTY.TIME_REDUCTION_PER_CORRECT);
@@ -190,8 +203,6 @@ export default function RunnerQuiz3D({ onClose }) {
                     GAME_CONFIG.TIMING.QUESTION_TIME_LIMIT / clampedMultiplier
                 );
 
-                console.log(`[Difficulty] correct=${correctCount}, multiplier=${clampedMultiplier.toFixed(2)}, time=${dynamicTimeLimit.toFixed(0)}ms`);
-
                 // Store time limit for score calculation and display
                 setCurrentTimeLimit(dynamicTimeLimit);
                 currentTimeLimitRef.current = dynamicTimeLimit;
@@ -199,12 +210,6 @@ export default function RunnerQuiz3D({ onClose }) {
                 // Store question in ref IMMEDIATELY for render access
                 pendingQuestionRef.current = randomQ;
                 currentQuestionRef.current = randomQ;
-
-                // DEBUG: Log question details to verify answerIndex
-                console.log('[DEBUG] Question:', randomQ.question);
-                console.log('[DEBUG] Choices:', randomQ.choices);
-                console.log('[DEBUG] AnswerIndex:', randomQ.answerIndex);
-                console.log('[DEBUG] Correct Answer:', randomQ.choices[randomQ.answerIndex]);
 
                 // 1. Open Quiz in Controller (Starts Timer)
                 quizController.open(randomQ, dynamicTimeLimit);
@@ -217,8 +222,6 @@ export default function RunnerQuiz3D({ onClose }) {
                 setWallBoost(1); // Reset wall boost for new question
                 setGameSpeed(GAME_CONFIG.SPEED.QUESTION_ACTIVE); // Accelerate!
                 setCurrentQuestionScore(GAME_CONFIG.SCORING.MAX_SCORE); // Start with max score
-
-                console.log('[RunnerQuiz] States updated, question:', randomQ.question);
 
                 setTimeout(() => setSpawnSignal(false), 100);
             };
@@ -245,19 +248,22 @@ export default function RunnerQuiz3D({ onClose }) {
      */
     const processAnswerResult = useCallback((isCorrect, timeLeft) => {
         if (isCorrect) {
+            // Play correct sound
+            soundManager.play(SOUNDS.CORRECT);
+            
             // Increment Difficulty Stat
             setCorrectCount(prev => prev + 1);
 
             // Calculate score using new formula (200-500 range)
             const totalScore = GAME_CONFIG.SCORING.calculateScore(timeLeft, currentTimeLimitRef.current);
 
-            console.log(`[RunnerQuiz] Correct! TimeLeft: ${timeLeft}ms, Score: ${totalScore}`);
-
             setScore(prev => prev + totalScore);
             setCurrentQuestionScore(totalScore);
             setFeedback({ type: 'CORRECT', score: totalScore });
         } else {
-            console.log('[RunnerQuiz] Wrong!');
+            // Play wrong sound
+            soundManager.play(SOUNDS.WRONG);
+            
             setHearts(prev => prev - 1);
             setCurrentQuestionScore(GAME_CONFIG.SCORING.WRONG_SCORE);
             setFeedback({ type: 'WRONG', score: GAME_CONFIG.SCORING.WRONG_SCORE });
@@ -284,19 +290,9 @@ export default function RunnerQuiz3D({ onClose }) {
         if (pendingAnswerRef.current) return; // Already answered
         if (!quizController.activeQuestion) return;
 
-        console.log('[RunnerQuiz] Manual Answer Triggered at Lane:', playerLane);
-
-        // DEBUG: Log answer check details
-        console.log('[DEBUG] ActiveQuestion answerIndex:', quizController.activeQuestion.answerIndex);
-        console.log('[DEBUG] Player selected lane:', playerLane);
-        console.log('[DEBUG] Selected answer:', quizController.activeQuestion.choices[playerLane]);
-        console.log('[DEBUG] Correct answer:', quizController.activeQuestion.choices[quizController.activeQuestion.answerIndex]);
-
         // Check answer and store result
         const result = quizController.checkAnswer(playerLane);
         const { isCorrect, timeLeft } = result;
-        
-        console.log('[DEBUG] Check result - isCorrect:', isCorrect);
 
         // Store pending result (will be processed when wall hits)
         pendingAnswerRef.current = { isCorrect, timeLeft };
@@ -313,8 +309,6 @@ export default function RunnerQuiz3D({ onClose }) {
                 ? GAME_CONFIG.SCORING.calculateScore(timeLeft, currentTimeLimitRef.current)
                 : GAME_CONFIG.SCORING.WRONG_SCORE
         );
-
-        console.log('[RunnerQuiz] Answer locked, waiting for wall collision...');
     }, [gameState, playerLane]);
 
     /**
@@ -323,8 +317,6 @@ export default function RunnerQuiz3D({ onClose }) {
      * - Otherwise: check answer at collision time
      */
     const handleWallHit = useCallback((wallId, laneIndex) => {
-        console.log('[RunnerQuiz] Wall Hit at Lane:', laneIndex);
-
         // Check if there's a pending manual answer
         if (pendingAnswerRef.current) {
             const { isCorrect, timeLeft } = pendingAnswerRef.current;
@@ -355,13 +347,21 @@ export default function RunnerQuiz3D({ onClose }) {
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    setPlayerLane(prev => Math.max(0, prev - 1));
+                    setPlayerLane(prev => {
+                        const newLane = Math.max(0, prev - 1);
+                        if (newLane !== prev) soundManager.play(SOUNDS.SLIDE);
+                        return newLane;
+                    });
                     break;
                 // Right
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    setPlayerLane(prev => Math.min(3, prev + 1));
+                    setPlayerLane(prev => {
+                        const newLane = Math.min(3, prev + 1);
+                        if (newLane !== prev) soundManager.play(SOUNDS.SLIDE);
+                        return newLane;
+                    });
                     break;
                 // Manual Answer (Space / Enter)
                 case ' ':
@@ -433,6 +433,13 @@ export default function RunnerQuiz3D({ onClose }) {
     const handleVictorySkipSave = useCallback(() => {
         setGameState('VICTORY'); // Go to final victory screen without saving
     }, []);
+
+    // Sound Toggle Handler
+    const toggleSound = useCallback(() => {
+        const newMuted = soundManager.toggleMute();
+        setIsMuted(newMuted);
+    }, []);
+
     // --- Render ---
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans select-none">
@@ -522,7 +529,10 @@ export default function RunnerQuiz3D({ onClose }) {
                                                 key={i}
                                                 // Clicking also sets lane for mobile/mouse users
                                                 onClick={() => {
-                                                    if (gameState === 'QUESTION_GATE') setPlayerLane(i);
+                                                    if (gameState === 'QUESTION_GATE') {
+                                                        if (playerLane !== i) soundManager.play(SOUNDS.SLIDE);
+                                                        setPlayerLane(i);
+                                                    }
                                                 }}
                                                 className={`
                                                     relative flex flex-col items-center justify-center p-2 border-[3px] border-black
@@ -649,6 +659,34 @@ export default function RunnerQuiz3D({ onClose }) {
                                 <div className="border border-black p-1 col-span-2">SPACE</div>
                             </div>
                         </div>
+                        
+                        {/* Sound Toggle */}
+                        <button
+                            onClick={toggleSound}
+                            className={`
+                                w-full py-2 border-[3px] border-black font-bold uppercase tracking-widest text-sm
+                                shadow-[3px_3px_0px_#000] active:shadow-none active:translate-x-[3px] active:translate-y-[3px]
+                                transition-all flex items-center justify-center gap-2
+                                ${isMuted ? 'bg-gray-300 text-gray-600' : 'bg-[#4D9DE0] text-white'}
+                            `}
+                        >
+                            {isMuted ? (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                                    </svg>
+                                    SOUND OFF
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                    </svg>
+                                    SOUND ON
+                                </>
+                            )}
+                        </button>
                     </div>
 
                     {/* Footer / Exit */}
