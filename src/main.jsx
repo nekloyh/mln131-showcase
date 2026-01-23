@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 
-import HomePage from "./pages/home/index.jsx";
 import Header from "./components/layout/Header.jsx";
+import HomePage from "./pages/home/index.jsx";
 import GovermentPage from "./pages/government/index.jsx";
 import PopularPage from "./pages/popular/index.jsx";
 import GamesPage from "./pages/games/index.jsx";
@@ -19,13 +19,8 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/trang-chu" element={<HomePage />} />
-        <Route path="/nhan-dan-lam-chu" element={<HomePage />} />
-        <Route path="/dang-cong-san" element={<GovermentPage />} />
-        <Route path="/bo-may-nha-nuoc" element={<GovermentPage />} />{" "}
-        {/* Keep legacy for safe measure or remove? Better to redirect conceptually, but here we just alias */}
-        <Route path="/nha-nuoc-phap-quyen" element={<PopularPage />} />
-        <Route path="/dang-va-nhan-dan" element={<PopularPage />} />{" "}
-        {/* Legacy alias */}
+        <Route path="/bo-may-nha-nuoc" element={<GovermentPage />} />
+        <Route path="/dang-va-nhan-dan" element={<PopularPage />} />
         <Route path="/tro-choi" element={<GamesPage />} />
         <Route path="/ai-chatbot" element={<AIChatboxPage />} />
         <Route path="/ai-usage" element={<AiUsagePage />} />

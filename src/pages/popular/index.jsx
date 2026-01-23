@@ -124,7 +124,7 @@ const DangVaNhanDanPage = () => {
 
             <div className="bg-ink text-bone p-6 shadow-hard flex flex-col justify-center">
               <h3 className="font-bold text-xl uppercase mb-3 text-gold">
-                � Điểm khác biệt với Tư sản
+                Điểm khác biệt với Tư sản
               </h3>
               <ul className="space-y-2 list-disc list-inside marker:text-gold">
                 <li>
@@ -188,7 +188,7 @@ const DangVaNhanDanPage = () => {
                       <li>Bầu cử Hội đồng nhân dân các cấp</li>
                     </ul>
                     <p className="text-sm italic font-medium text-ink">
-                      👉 Không có cơ quan nào đứng "trên" Nhân dân.
+                      Không có cơ quan nào đứng "trên" Nhân dân.
                     </p>
                   </div>
 
@@ -201,8 +201,7 @@ const DangVaNhanDanPage = () => {
                       các "nhánh độc lập đối kháng".
                     </p>
                     <p className="text-sm text-ink font-medium">
-                      👉 Tất cả quyền lực vì lợi ích chung và quyền lợi của Nhân
-                      dân.
+                      Tất cả quyền lực vì lợi ích chung và quyền lợi của Nhân dân.
                     </p>
                   </div>
                 </div>
@@ -501,68 +500,86 @@ const DangVaNhanDanPage = () => {
           </div>
 
           <div className="mt-16 max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="font-display text-2xl font-bold text-ink uppercase mb-2">
-                4. Phối hợp & Kiểm soát Quyền lực
-              </h3>
-              <div className="w-24 h-1 bg-crimson mx-auto"></div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Phối hợp */}
-              <div className="bg-bone border-2 border-ink p-6 shadow-hard">
-                <h4 className="font-bold text-xl text-ink mb-4 flex items-center gap-2">
-                  <span className="bg-ink text-white w-8 h-8 flex items-center justify-center rounded-full text-sm">
-                    A
-                  </span>
-                  Nguyên tắc "Phối hợp"
-                </h4>
-                <ul className="space-y-3 text-graphite text-base list-disc list-outside ml-4 marker:text-crimson">
-                  <li>
-                    <strong>Không tách biệt tuyệt đối:</strong> Khác với "Tam
-                    quyền phân lập" tư bản chủ nghĩa, các cơ quan quyền lực Việt
-                    Nam có sự gắn kết chặt chẽ.
-                  </li>
-                  <li>
-                    <strong>Mục tiêu chung:</strong> Cùng hướng tới xây dựng và
-                    bảo vệ Tổ quốc, phục vụ lợi ích của Nhân dân.
-                  </li>
-                </ul>
-              </div>
-
-              {/* Kiểm soát */}
-              <div className="bg-bone border-2 border-ink p-6 shadow-hard">
-                <h4 className="font-bold text-xl text-ink mb-4 flex items-center gap-2">
-                  <span className="bg-ink text-white w-8 h-8 flex items-center justify-center rounded-full text-sm">
-                    B
-                  </span>
-                  Nguyên tắc "Kiểm soát"
-                </h4>
-                <p className="mb-3 text-ink/70 italic text-sm">
-                  Mục đích: Tránh lạm quyền, độc đoán.
-                </p>
-                <ul className="space-y-3 text-graphite text-base list-disc list-outside ml-4 marker:text-crimson">
-                  <li>
-                    <strong>Kiểm soát bên trong:</strong> Mỗi cơ quan có cơ chế
-                    tự kiểm soát (Thanh tra, Kiểm toán nhà nước).
-                  </li>
-                  <li>
-                    <strong>Kiểm soát lẫn nhau:</strong> Quốc hội giám sát Chính
-                    phủ; Tòa án xét xử hành chính; VKS kiểm sát tư pháp.
-                  </li>
-                  <li>
-                    <strong>Nhân dân kiểm soát:</strong> Qua bầu cử, khiếu nại,
-                    tố cáo, tiếp cận thông tin.
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 text-center">
+            <div className="text-center">
               <span className="inline-block bg-white px-4 py-2 border border-ink text-sm text-ink italic rounded-full shadow-sm">
                 "Quyền lực nhà nước là thống nhất, có sự phân công, phối hợp,
                 kiểm soát giữa các cơ quan nhà nước." (Điều 2 - Hiến pháp 2013)
               </span>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* SECTION 4B: PHỐI HỢP & KIỂM SOÁT QUYỀN LỰC */}
+      <Section className="items-center justify-center px-4 md:px-10 bg-ink text-bone border-y-2 border-bone">
+        <div className="max-w-screen-2xl mx-auto w-full py-16">
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-block bg-gold border-4 border-bone px-6 py-2 shadow-hard transform rotate-1 mb-6"
+            >
+              <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-ink">
+                Phần 4
+              </span>
+            </motion.div>
+            <h2 className="font-display text-3xl md:text-5xl font-black uppercase mb-4 text-white">
+              Phối hợp & Kiểm soát <span className="text-gold">Quyền lực</span>
+            </h2>
+            <p className="text-bone/70 max-w-3xl mx-auto text-lg">
+              Mối quan hệ biện chứng giữa các cơ quan trong việc thực thi quyền lực nhà nước.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Phối hợp */}
+            <div className="bg-white/5 border-2 border-bone/30 p-8 hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="bg-gold text-ink w-10 h-10 flex items-center justify-center rounded-full text-lg font-black">
+                  A
+                </span>
+                <h4 className="font-display text-2xl font-bold text-gold uppercase">
+                  Nguyên tắc "Phối hợp"
+                </h4>
+              </div>
+              <ul className="space-y-4 text-bone/80">
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 bg-gold rounded-full shrink-0"></span>
+                  <span><strong className="text-gold">Không tách biệt tuyệt đối:</strong> Khác với "Tam quyền phân lập" tư bản chủ nghĩa, các cơ quan quyền lực Việt Nam có sự gắn kết chặt chẽ.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 bg-gold rounded-full shrink-0"></span>
+                  <span><strong className="text-gold">Mục tiêu chung:</strong> Cùng hướng tới xây dựng và bảo vệ Tổ quốc, phục vụ lợi ích của Nhân dân.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Kiểm soát */}
+            <div className="bg-white/5 border-2 border-bone/30 p-8 hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="bg-crimson text-white w-10 h-10 flex items-center justify-center rounded-full text-lg font-black">
+                  B
+                </span>
+                <h4 className="font-display text-2xl font-bold text-crimson uppercase">
+                  Nguyên tắc "Kiểm soát"
+                </h4>
+              </div>
+              <p className="mb-4 text-bone/50 italic text-sm">Mục đích: Tránh lạm quyền, độc đoán.</p>
+              <ul className="space-y-4 text-bone/80">
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 bg-crimson rounded-full shrink-0"></span>
+                  <span><strong className="text-crimson">Kiểm soát bên trong:</strong> Mỗi cơ quan có cơ chế tự kiểm soát (Thanh tra, Kiểm toán nhà nước).</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 bg-crimson rounded-full shrink-0"></span>
+                  <span><strong className="text-crimson">Kiểm soát lẫn nhau:</strong> Quốc hội giám sát Chính phủ; Tòa án xét xử hành chính; VKS kiểm sát tư pháp.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 bg-crimson rounded-full shrink-0"></span>
+                  <span><strong className="text-crimson">Nhân dân kiểm soát:</strong> Qua bầu cử, khiếu nại, tố cáo, tiếp cận thông tin.</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -645,8 +662,7 @@ const DangVaNhanDanPage = () => {
                   </span>
                 </div>
                 <p className="mt-4 text-sm font-medium text-purple-900">
-                  👉 Ý nghĩa: Bảo đảm Nhà nước thực sự vì Nhân dân, củng cố niềm
-                  tin.
+                  Ý nghĩa: Bảo đảm Nhà nước thực sự vì Nhân dân, củng cố niềm tin.
                 </p>
               </div>
             </Card>

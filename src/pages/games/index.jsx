@@ -9,24 +9,113 @@ import RunnerQuizGame from "./runner-quiz/RunnerQuizGame";
 import CrosswordGame from "./crossword/CrosswordGame";
 import { fetchLeaderboard } from "../../services/runnerQuizApi";
 
-const GuideModal = ({ onClose }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-        <div className="w-full max-w-2xl h-[60vh] bg-bone border-4 border-ink shadow-hard-xl flex flex-col relative">
-            <div className="h-12 bg-ink text-bone flex items-center justify-between px-4 border-b-4 border-ink select-none">
-                <div className="flex items-center gap-2">
-                    <Info size={20} />
-                    <span className="font-mono font-bold uppercase">GUIDE.TXT</span>
+const GuideModal = ({ gameId, onClose }) => {
+    const guides = {
+        1: { // Runner Quiz
+            title: "RUNNER QUIZ",
+            sections: [
+                {
+                    heading: "Cách chơi",
+                    content: [
+                        "Di chuyển giữa 4 làn đường bằng phím ← → hoặc A/D",
+                        "Mỗi làn tương ứng với một đáp án A, B, C, D",
+                        "Nhấn SPACE hoặc Enter để khóa đáp án sớm và nhận điểm cao hơn",
+                        "Nếu không nhấn, đáp án sẽ được tính khi tường chạm vào bạn"
+                    ]
+                },
+                {
+                    heading: "Hệ thống điểm & Mạng",
+                    content: [
+                        "Trả lời càng nhanh → điểm càng cao (200-500 điểm)",
+                        "Bạn có 3 mạng (trái tim) để chơi",
+                        "Sai hoặc hết giờ = mất 1 mạng",
+                        "Hết mạng = Game Over, điểm được lưu vào bảng xếp hạng"
+                    ]
+                },
+                {
+                    heading: "Độ khó tăng dần",
+                    content: [
+                        "Thời gian trả lời bắt đầu từ 20 giây",
+                        "Mỗi câu đúng, thời gian sẽ giảm dần (tối thiểu 12 giây)",
+                        "Trả lời hết tất cả câu hỏi để chiến thắng!"
+                    ]
+                }
+            ]
+        },
+        2: { // Ô chữ
+            title: "Ô CHỮ PHÁP QUYỀN",
+            sections: [
+                {
+                    heading: "Luật chơi",
+                    content: [
+                        "Giải 7 hàng ngang để tìm ra từ khóa dọc bí ẩn",
+                        "Mỗi hàng ngang là một câu hỏi về Nhà nước pháp quyền XHCN",
+                        "Nhập đáp án vào ô trống (không dấu, viết liền)"
+                    ]
+                },
+                {
+                    heading: "Cách nhập đáp án",
+                    content: [
+                        "Click vào hàng ngang muốn giải",
+                        "Đọc câu hỏi và gợi ý bên dưới",
+                        "Nếu cần thêm gợi ý, nhấn nút 'Gợi ý thêm'",
+                        "Nhập câu trả lời và nhấn Enter hoặc nút Kiểm tra"
+                    ]
+                },
+                {
+                    heading: "Chiến thắng",
+                    content: [
+                        "Giải đúng tất cả hàng ngang để lộ diện từ khóa: ĐOÀN KẾT",
+                        "Từ khóa dọc sẽ sáng lên khi bạn hoàn thành",
+                        "Không giới hạn thời gian - hãy suy nghĩ kỹ!"
+                    ]
+                }
+            ]
+        }
+    };
+
+    const guide = guides[gameId] || guides[1];
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-2xl max-h-[80vh] bg-bone border-4 border-ink shadow-hard-xl flex flex-col relative overflow-hidden">
+                <div className="h-12 bg-ink text-bone flex items-center justify-between px-4 border-b-4 border-ink select-none shrink-0">
+                    <div className="flex items-center gap-2">
+                        <Info size={20} />
+                        <span className="font-mono font-bold uppercase">HƯỚNG DẪN: {guide.title}</span>
+                    </div>
+                    <button onClick={onClose} className="hover:text-crimson transition-colors">
+                        <X size={24} />
+                    </button>
                 </div>
-                <button onClick={onClose} className="hover:text-crimson transition-colors">
-                    <X size={24} />
-                </button>
-            </div>
-            <div className="flex-1 p-8 flex items-center justify-center text-ink/40 font-mono text-xl uppercase tracking-widest">
-                [ Nội dung hướng dẫn trống ]
+                <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+                    <div className="space-y-6">
+                        {guide.sections.map((section, idx) => (
+                            <div key={idx} className="border-2 border-ink/20 p-4 bg-white shadow-sm">
+                                <h3 className="font-display text-xl font-bold text-ink uppercase mb-3 pb-2 border-b-2 border-dashed border-ink/20">
+                                    {section.heading}
+                                </h3>
+                                <ul className="space-y-2">
+                                    {section.content.map((item, itemIdx) => (
+                                        <li key={itemIdx} className="flex items-start gap-3 text-graphite">
+                                            <span className="mt-1 w-2 h-2 bg-crimson rounded-full shrink-0"></span>
+                                            <span className="font-body">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="p-4 bg-ink/5 border-t-2 border-ink/20 shrink-0">
+                    <p className="text-center font-mono text-xs text-ink/60 uppercase">
+                        Chúc bạn chơi vui vẻ và học tập hiệu quả!
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const LeaderboardModal = ({ onClose }) => {
     const [scores, setScores] = useState([]);
@@ -200,7 +289,7 @@ const GamesPage = () => {
         <div className="page-shell w-full bg-bone min-h-screen">
             {/* Guide Modal */}
             <AnimatePresence>
-                {activeGuide && <GuideModal onClose={() => setActiveGuide(null)} />}
+                {activeGuide && <GuideModal gameId={activeGuide} onClose={() => setActiveGuide(null)} />}
             </AnimatePresence>
 
             {/* Leaderboard Modal */}
@@ -220,13 +309,6 @@ const GamesPage = () => {
 
             {/* SECTION 1: HEADER & GAME LIST COMBINED FOR BETTER FLOW */}
             <Section autoHeight={true} className="items-center justify-center pt-24 px-4 md:px-10 border-b-2 border-ink bg-bone relative overflow-hidden">
-                 {/* Decorative Background Elements */}
-                <div className="absolute top-20 left-10 opacity-10 pointer-events-none animate-pulse">
-                    <Gamepad2 size={120} />
-                </div>
-                <div className="absolute bottom-20 right-10 opacity-10 pointer-events-none animate-bounce" style={{ animationDuration: '3s' }}>
-                    <Zap size={100} />
-                </div>
 
                 <div className="flex flex-col items-center justify-center space-y-8 max-w-5xl mx-auto w-full relative z-10 mb-16">
                      {/* Top Label Box */}

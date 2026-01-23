@@ -6,8 +6,6 @@ import { sendMessageToAI } from "../../services/aiService";
 import Section from "../../components/layout/Section";
 import Button from "../../components/ui/Button";
 
-import { KineticHeading, KineticSubline } from "../../components/ui/KineticText";
-
 const AITalkingAvatar = () => {
   return (
     <div className="w-12 h-12 flex items-center justify-center bg-ink border-2 border-ink shadow-hard-sm rounded-none">
@@ -123,47 +121,32 @@ const AIPage = () => {
 
   return (
     <div className="w-full h-screen flex flex-col bg-bone">
-      <Section className="flex-1 flex flex-col items-center pt-28 pb-4 px-4 md:px-8 border-b-0 h-full">
+      <Section className="flex-1 flex flex-col items-center pt-20 pb-4 px-4 md:px-8 border-b-0 h-full">
         <div className="w-full max-w-screen-xl flex-1 flex flex-col overflow-hidden px-0 lg:px-8 h-full">
 
-          {/* Header Section */}
-          <div className="flex flex-col items-center justify-center space-y-6 mb-8 shrink-0 relative z-10 w-full">
+          {/* Header */}
+          <div className="flex flex-col items-center justify-center mb-5 shrink-0 relative z-10 w-full">
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-crimson border-4 border-ink px-6 py-2 shadow-hard transform rotate-1"
+              className="bg-crimson border-2 border-ink px-4 py-1.5 shadow-hard-sm mb-3"
             >
-              <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-bone">
+              <span className="font-mono font-bold uppercase tracking-widest text-xs text-bone">
                 AI Assistant
               </span>
             </motion.div>
-
-            <div className="relative text-center">
-              <motion.h1
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, type: "spring" }}
-                className="font-display font-black text-6xl md:text-8xl uppercase text-ink leading-[0.85] tracking-tighter drop-shadow-hard"
-              >
-                HỎI ĐÁP CÙNG
-              </motion.h1>
-              <motion.h1
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
-                className="font-display font-black text-6xl md:text-8xl uppercase text-transparent text-stroke-black leading-[0.85] tracking-tighter"
-              >
-                MLN131 BOT
-              </motion.h1>
-            </div>
-
-            <KineticSubline className="text-center max-w-3xl mx-auto pt-2">
-              Đặt câu hỏi về Chủ nghĩa xã hội khoa học, lịch sử tư tưởng, thời kỳ quá độ và nhận giải thích súc tích.
-            </KineticSubline>
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="font-display font-black text-4xl md:text-5xl uppercase text-ink tracking-tight text-center leading-tight"
+            >
+              Hỏi đáp cùng <span className="text-crimson">MLN131 Bot</span>
+            </motion.h1>
           </div>
 
           {/* Chat Container */}
-          <div className="flex-1 bg-white border-2 border-ink shadow-hard-lg flex flex-col relative overflow-hidden rounded-none kinetic-grid mb-6">
+          <div className="flex-1 bg-white border-2 border-ink shadow-hard-lg flex flex-col relative overflow-hidden rounded-none kinetic-grid mb-4">
 
             {/* Decorative Header Bar */}
             <div className="h-10 bg-ink flex items-center justify-between px-4 shrink-0">

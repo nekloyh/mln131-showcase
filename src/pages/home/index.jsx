@@ -5,12 +5,8 @@ import {
   ArrowRight,
   ChevronDown,
   Quote,
-  Users,
-  Scale,
-  FileText,
-  Activity,
 } from "lucide-react";
-import TiltCard from "../../components/ui/TiltCard";
+import TrongDong3D from "../../components/ui/TrongDong3D";
 import {
   KineticHeading,
   KineticSubline,
@@ -86,17 +82,6 @@ const HomePage = () => {
               >
                 KHOA HỌC
               </motion.h1>
-
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="absolute -top-10 -right-10 w-24 h-24 bg-gold rounded-full flex items-center justify-center border-4 border-ink shadow-hard hidden md:flex"
-              >
-                <span className="font-black text-xl transform -rotate-12">
-                  2026
-                </span>
-              </motion.div>
             </div>
 
             <KineticSubline className="max-w-xl text-ink/80 text-lg font-medium border-l-4 border-crimson pl-4 ml-2">
@@ -134,59 +119,17 @@ const HomePage = () => {
             </div>
           </motion.div>
 
-          {/* Hero Image / Visual */}
+          {/* Hero 3D Model - Trống Đồng */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative hidden lg:block"
+            className="relative hidden lg:block lg:col-span-1 xl:scale-110 xl:origin-center"
           >
-            <div className="absolute -inset-4 bg-ink transform rotate-2 rounded-sm opacity-20"></div>
-            <TiltCard className="w-full aspect-[4/3] bg-bone border-4 border-ink shadow-hard-xl p-0 relative group">
-              {/* Decorative corners */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-b-4 border-r-4 border-ink bg-gold z-20"></div>
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-t-4 border-l-4 border-ink bg-crimson z-20"></div>
-
-              <div className="w-full h-full relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_the_Communist_Party_of_Vietnam.svg/1200px-Flag_of_the_Communist_Party_of_Vietnam.svg.png"
-                  alt="Vietnam Communist Party Flag"
-                  className="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition-transform duration-1000"
-                />
-
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-transparent opacity-60"></div>
-
-                {/* Text Overlay */}
-                <div className="absolute bottom-6 left-6 right-6 z-10">
-                  <p className="text-gold font-mono text-sm uppercase tracking-widest mb-1">
-                    Since 1930
-                  </p>
-                  <p className="text-white font-display text-4xl font-black uppercase leading-none drop-shadow-md">
-                    Độc lập <br />
-                    <span className="text-transparent text-stroke-white">
-                      Tự do
-                    </span>{" "}
-                    <br />
-                    Hạnh phúc
-                  </p>
-                </div>
-              </div>
-            </TiltCard>
-
-            {/* Floating Element */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-8 -left-8 bg-paper border-2 border-ink p-4 shadow-hard flex items-center gap-3 max-w-xs z-30"
-            >
-              <div className="w-10 h-10 bg-crimson rounded-full flex items-center justify-center text-white font-bold">
-                !
-              </div>
-              <p className="font-mono text-xs font-bold leading-tight">
-                TRIẾT HỌC MÁC - LÊNIN <br /> CHO THỜI ĐẠI MỚI
-              </p>
-            </motion.div>
+            {/* 3D Trống Đồng Model - No Frame */}
+            <div className="w-[200%] aspect-square relative min-h-[100%] -ml-[50%] -translate-y-20 -translate-x-20">
+              <TrongDong3D className="rounded-sm" />
+            </div>
           </motion.div>
         </div>
       </Section>
@@ -257,8 +200,10 @@ const HomePage = () => {
               hoverEffect
               className="p-8 border-t-8 border-t-blue-600 flex flex-col"
             >
-              <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-6 border-2 border-blue-600 shadow-[4px_4px_0px_0px_#2563EB]">
-                <Users size={32} strokeWidth={2.5} />
+              <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6 border-2 border-blue-600 shadow-[4px_4px_0px_0px_#2563EB]">
+                <span className="font-display font-black text-3xl text-blue-600">
+                  01
+                </span>
               </div>
               <h3 className="font-display text-2xl font-bold mb-4 uppercase">
                 Nhà nước phục vụ
@@ -275,8 +220,10 @@ const HomePage = () => {
               hoverEffect
               className="p-8 border-t-8 border-t-ember flex flex-col"
             >
-              <div className="w-16 h-16 bg-ember/20 rounded-lg flex items-center justify-center text-ember mb-6 border-2 border-ember shadow-[4px_4px_0px_0px_#FF5500]">
-                <FileText size={32} strokeWidth={2.5} />
+              <div className="w-16 h-16 bg-ember/20 rounded-lg flex items-center justify-center mb-6 border-2 border-ember shadow-[4px_4px_0px_0px_#FF5500]">
+                <span className="font-display font-black text-3xl text-ember">
+                  02
+                </span>
               </div>
               <h3 className="font-display text-2xl font-bold mb-4 uppercase">
                 Nhân dân làm chủ
@@ -293,8 +240,10 @@ const HomePage = () => {
               hoverEffect
               className="p-8 border-t-8 border-t-purple-600 flex flex-col"
             >
-              <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-6 border-2 border-purple-600 shadow-[4px_4px_0px_0px_#9333EA]">
-                <Scale size={32} strokeWidth={2.5} />
+              <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6 border-2 border-purple-600 shadow-[4px_4px_0px_0px_#9333EA]">
+                <span className="font-display font-black text-3xl text-purple-600">
+                  03
+                </span>
               </div>
               <h3 className="font-display text-2xl font-bold mb-4 uppercase">
                 Quyền & Nghĩa vụ
@@ -319,64 +268,86 @@ const HomePage = () => {
       </Section>
 
       {/* SECTION 4: STUDENT RESPONSIBILITY (Topic 5) */}
-      <Section className="items-center justify-center px-4 md:px-10 bg-white">
+      <Section className="items-center justify-center px-4 md:px-10 bg-sand border-t-2 border-ink">
         <div className="max-w-screen-2xl mx-auto w-full py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-display font-black text-ink uppercase mb-6">
-              Trách nhiệm <span className="text-crimson">Sinh viên</span>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-block bg-crimson border-4 border-ink px-6 py-2 shadow-hard transform -rotate-1 mb-6"
+            >
+              <span className="font-mono font-bold uppercase tracking-widest text-sm md:text-base text-white">
+                Trách nhiệm
+              </span>
+            </motion.div>
+            <h2 className="text-3xl md:text-5xl font-display font-black text-ink uppercase mb-4">
+              Sinh viên <span className="text-crimson">chúng ta</span>
             </h2>
-            <p className="text-xl italic text-graphite/60 font-body">
-              "Chúng ta cần làm gì?"
+            <p className="text-xl text-graphite/70 font-body max-w-2xl mx-auto">
+              "Chúng ta cần làm gì để xứng đáng là công dân tốt?"
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Responsibility 1 */}
-            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
-              <div className="text-4xl mb-4">🧠</div>
-              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
-                1. Hiểu đúng
+            <Card variant="flat" hoverEffect className="p-6 border-t-8 border-t-blue-600 flex flex-col h-full">
+              <div className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-4 border-2 border-blue-600 shadow-[4px_4px_0px_0px_#2563EB]">
+                <span className="font-display font-black text-2xl text-blue-600">01</span>
+              </div>
+              <h3 className="font-display text-xl font-bold uppercase mb-3 text-ink">
+                Hiểu đúng
               </h3>
-              <p className="text-graphite">
+              <p className="text-graphite/80 flex-grow">
                 Tìm hiểu kỹ về Hiến pháp, pháp luật để có nhận thức đúng đắn.
               </p>
-            </div>
+              <div className="h-1.5 w-12 bg-blue-600 mt-4"></div>
+            </Card>
 
             {/* Responsibility 2 */}
-            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
-              <div className="text-4xl mb-4">✅</div>
-              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
-                2. Làm đúng
+            <Card variant="flat" hoverEffect className="p-6 border-t-8 border-t-ember flex flex-col h-full">
+              <div className="w-14 h-14 bg-ember/20 rounded-lg flex items-center justify-center mb-4 border-2 border-ember shadow-[4px_4px_0px_0px_#FF5500]">
+                <span className="font-display font-black text-2xl text-ember">02</span>
+              </div>
+              <h3 className="font-display text-xl font-bold uppercase mb-3 text-ink">
+                Làm đúng
               </h3>
-              <p className="text-graphite">
+              <p className="text-graphite/80 flex-grow">
                 Tuân thủ nội quy nhà trường, quy định địa phương, luật giao
                 thông, an ninh mạng...
               </p>
-            </div>
+              <div className="h-1.5 w-12 bg-ember mt-4"></div>
+            </Card>
 
             {/* Responsibility 3 */}
-            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
-              <div className="text-4xl mb-4">💬</div>
-              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
-                3. Phản biện đúng
+            <Card variant="flat" hoverEffect className="p-6 border-t-8 border-t-purple-600 flex flex-col h-full">
+              <div className="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-4 border-2 border-purple-600 shadow-[4px_4px_0px_0px_#9333EA]">
+                <span className="font-display font-black text-2xl text-purple-600">03</span>
+              </div>
+              <h3 className="font-display text-xl font-bold uppercase mb-3 text-ink">
+                Phản biện đúng
               </h3>
-              <p className="text-graphite">
+              <p className="text-graphite/80 flex-grow">
                 Góp ý xây dựng văn minh, tỉnh táo trước các luận điệu xuyên tạc
                 của thế lực thù địch.
               </p>
-            </div>
+              <div className="h-1.5 w-12 bg-purple-600 mt-4"></div>
+            </Card>
 
             {/* Responsibility 4 */}
-            <div className="bg-bone border-2 border-ink p-6 shadow-hard hover:-translate-y-1 transition-transform h-full">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="font-bold text-xl uppercase mb-3 text-ink">
-                4. Hành động
+            <Card variant="flat" hoverEffect className="p-6 border-t-8 border-t-gold flex flex-col h-full">
+              <div className="w-14 h-14 bg-gold/20 rounded-lg flex items-center justify-center mb-4 border-2 border-gold shadow-[4px_4px_0px_0px_#D4A300]">
+                <span className="font-display font-black text-2xl text-gold">04</span>
+              </div>
+              <h3 className="font-display text-xl font-bold uppercase mb-3 text-ink">
+                Hành động
               </h3>
-              <p className="text-graphite">
+              <p className="text-graphite/80 flex-grow">
                 Rèn luyện đạo đức, tri thức. Sinh viên là rường cột của quốc gia
                 trong tương lai.
               </p>
-            </div>
+              <div className="h-1.5 w-12 bg-gold mt-4"></div>
+            </Card>
           </div>
         </div>
       </Section>

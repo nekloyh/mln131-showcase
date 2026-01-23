@@ -20,14 +20,18 @@ const tools = [
   {
     category: "RESEARCH & DATA",
     name: "Nghiên cứu & Tổng hợp",
-    tools: ["ChatGPT 4o", "NoteGPT"],
+    tools: ["ChatGPT 5", "NotebookLM"],
     icon: Search,
     description: [
       "Phân tích, đối chiếu quan điểm giáo trình & văn kiện Đảng.",
       "Tóm tắt video bài giảng, trích xuất luận điểm cốt lõi.",
       "Kiểm tra chéo (Cross-check) kiến thức lịch sử."
     ],
-    images: ["DATA_ANALYSIS", "SOURCE_CHECK", "SUMMARY_LOG"],
+    images: [
+      "/images/ai-usage/gpt.jpg",
+      "/images/ai-usage/notebooklm1.jpg",
+      "/images/ai-usage/notebooklm2.jpg"
+    ],
     color: "bg-green-100",
     border: "border-green-800",
     iconColor: "text-green-800",
@@ -43,7 +47,10 @@ const tools = [
       "Tối ưu độ trễ phản hồi (<1s) với Groq LPU.",
       "Xây dựng Persona 'Cộng' gần gũi, học thuật."
     ],
-    images: ["MODEL_TUNING", "LATENCY_TEST", "PERSONA_CFG"],
+    images: [
+      "/images/ai-usage/googlestudio.png",
+      "/images/ai-usage/groq.png"
+    ],
     color: "bg-orange-100",
     border: "border-orange-800",
     iconColor: "text-orange-800",
@@ -59,7 +66,10 @@ const tools = [
       "Tối ưu Responsive & Animation (Framer Motion).",
       "Debug logic & Refactor code base."
     ],
-    images: ["UI_SCAFFOLD", "DOM_TREE", "BUILD_LOG"],
+    images: [
+      "/images/ai-usage/gemini_1.png",
+      "/images/ai-usage/gemini_2.png"
+    ],
     color: "bg-blue-100",
     border: "border-blue-800",
     iconColor: "text-blue-800",
@@ -115,6 +125,30 @@ const ToolCard = ({ item }) => {
             </li>
           ))}
         </ul>
+
+        {/* Images Gallery */}
+        {item.images && item.images.length > 0 && (
+          <div className="mb-6">
+            <h4 className="font-bold font-mono text-xs text-ink/60 uppercase mb-3 tracking-widest">Screenshots:</h4>
+            <div className={`grid gap-3 ${item.images.length === 1 ? 'grid-cols-1' : item.images.length === 2 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'}`}>
+              {item.images.map((img, i) => (
+                <a 
+                  key={i} 
+                  href={img} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block border-2 border-ink overflow-hidden hover:shadow-hard transition-shadow duration-200 bg-ink/5"
+                >
+                  <img 
+                    src={img} 
+                    alt={`${item.name} screenshot ${i + 1}`}
+                    className="w-full h-32 object-cover object-top hover:scale-105 transition-transform duration-300"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Footer Status */}

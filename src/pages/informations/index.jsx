@@ -25,8 +25,8 @@ const members = [
     role: "leader",
     gender: "female",
     task: [
+      "Tìm kiếm và đóng góp tư liệu học thuật",
       "Điều phối tiến độ, rà soát học thuật",
-      "Quay, dựng và chỉnh sửa podcast",
     ],
   },
   {
@@ -34,7 +34,7 @@ const members = [
     studentCode: "SE183397",
     role: "member",
     gender: "male",
-    task: ["Thiết kế & xây dựng website", "Tích hợp chatbot AI và hạ tầng API"],
+    task: ["Biên tập nội dung thuyết trình", "Thiết kế & xây dựng website"],
   },
   {
     name: "Châu Vĩnh Tiến",
@@ -43,7 +43,7 @@ const members = [
     gender: "male",
     task: [
       "Thu thập tư liệu, số liệu cho website",
-      "Biên tập nội dung thuyết trình",
+      "Tìm kiếm và đóng góp tư liệu học thuật",
     ],
   },
   {
@@ -52,7 +52,7 @@ const members = [
     role: "member",
     gender: "male",
     task: [
-      "Hỗ trợ xây dựng nội dung website",
+      "Hỗ trợ xây dựng các nội dung trò chơi",
       "Đối chiếu nguồn chính thống, kiểm chứng trích dẫn",
     ],
   },
@@ -61,32 +61,30 @@ const members = [
     studentCode: "SE181748",
     role: "member",
     gender: "male",
-    task: ["Hỗ trợ nghiên cứu nội dung", "Kiểm thử và đánh giá trải nghiệm"],
+    task: [
+      "Tích hợp và phát triển chatbot AI", 
+      "Kiểm thử và đánh giá trải nghiệm"
+    ],
   },
 ];
 
 const references = [
   {
-    title: "Giáo trình Tư tưởng Hồ Chí Minh (Bộ GD&ĐT)",
+    title: "Giáo trình Chủ nghĩa Xã hội khoa học (Bộ GD&ĐT)",
     type: "document",
-    link: "https://moet.gov.vn/content/vanban/Lists/VBDH/Attachments/2729/GT%20h%E1%BB%8Dc%20ph%E1%BA%A7n%20T%C6%B0%20t%C6%B0%E1%BB%9Fng%20HCM%20(K)%20Tr69%20-Tr141.pdf",
+    link: "https://drive.google.com/file/d/1fgQf9P5Vc77CiIkhcXfs65qgAFgWlp9u/view",
   },
   {
-    title: "Cương lĩnh xây dựng đất nước (2011)",
-    type: "article",
-    link: "https://tulieuvankien.dangcongsan.vn/ban-chap-hanh-trung-uong-dang/dai-hoi-dang/lan-thu-xi/cuong-linh-xay-dung-dat-nuoc-trong-thoi-ky-qua-do-len-chu-nghia-xa-hoi-bo-sung-phat-trien-nam-2011-1528",
-  },
-  {
-    title: "Đường Kách Mệnh",
+    title: "Slide bài giảng MLN131 - FPT University",
     type: "document",
-    link: "https://cdn.thuvienphapluat.vn/uploads/Hoidapphapluat/2024/NTH/06122024/T%C3%A1c%20ph%E1%BA%A9m%20%C4%90%C6%B0%E1%BB%9Dng%20K%C3%A1ch%20M%E1%BB%87nh.pdf",
+    link: "https://drive.google.com/drive/folders/1QupRI2q9CcG8rycs1V7Hqd1iGvfzv1Q5",
   },
 ];
 
 const ProfileCard = ({ member }) => {
   const isLeader = member.role === "leader";
-  // Simulated avatar initials
-  const initials = member.name.split(" ").slice(-2).map(n => n[0]).join("");
+  const isFemale = member.gender === "female";
+  const avatarSrc = isFemale ? "/images/user/female.png" : "/images/user/male.png";
 
   return (
     <Card
@@ -96,9 +94,18 @@ const ProfileCard = ({ member }) => {
       hasDecorativeCorners={false}
     >
       <div className="flex justify-between items-start mb-6">
-        {/* Avatar Placeholder */}
-        <div className="w-20 h-20 border-2 border-ink bg-bone shrink-0 flex items-center justify-center relative shadow-sm">
-          <span className="font-display font-black text-2xl text-ink/40 select-none group-hover:text-crimson transition-colors">{initials}</span>
+        {/* Avatar Image */}
+        <div className="w-20 h-20 border-2 border-ink bg-bone shrink-0 flex items-center justify-center relative shadow-sm overflow-hidden">
+          <img 
+            src={avatarSrc} 
+            alt={member.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+          {isLeader && (
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-gold border-2 border-ink flex items-center justify-center shadow-sm">
+              <Crown size={12} className="text-ink" />
+            </div>
+          )}
         </div>
 
         {/* Name & Role */}
@@ -235,9 +242,11 @@ const InformationsPage = () => {
             <div className="h-px bg-ink/30 flex-1 max-w-[100px]"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {references.map((ref, index) => (
-              <ReferenceCard key={index} reference={ref} index={index} />
+              <div key={index} className="w-full md:w-[calc(50%-0.75rem)] max-w-md">
+                <ReferenceCard reference={ref} index={index} />
+              </div>
             ))}
           </div>
         </div>
