@@ -134,50 +134,7 @@ const HomePage = () => {
         </div>
       </Section>
 
-      {/* SECTION 2: QUOTE & PRINCIPLES */}
-      <Section
-        id="quote-section"
-        className="items-center justify-center bg-ink text-sand border-b-2 border-bone"
-      >
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "linear-gradient(#F0F0E0 1px, transparent 1px), linear-gradient(to right, #F0F0E0 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        ></div>
-
-        <div className="max-w-screen-lg mx-auto text-center relative z-10 space-y-12">
-          <div className="w-16 h-16 bg-crimson mx-auto flex items-center justify-center border-2 border-sand shadow-[4px_4px_0px_0px_#F0F0E0]">
-            <Quote className="w-8 h-8 text-sand" strokeWidth={3} />
-          </div>
-
-          <motion.blockquote
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-3xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight uppercase"
-          >
-            "Quyền lực nhà nước là{" "}
-            <span className="text-ink bg-crimson px-2 box-decoration-clone">
-              thống nhất
-            </span>
-            , có sự phân công, phối hợp và kiểm soát giữa các cơ quan nhà nước."
-          </motion.blockquote>
-
-          <div className="py-8">
-            <MarqueeStrip
-              text="Lập pháp // Hành pháp // Tư pháp"
-              speed={30}
-              tone="dark"
-              className="bg-transparent text-sand/50 font-display font-bold uppercase tracking-widest text-xl border-none"
-            />
-          </div>
-        </div>
-      </Section>
-
-      {/* SECTION 3: PEOPLE'S MASTERSHIP (Topic 4) */}
+      {/* SECTION 2: PEOPLE'S MASTERSHIP (Topic 4) */}
       <Section
         scrollable={true}
         className="items-center justify-center px-4 md:px-10 bg-sand"
@@ -262,6 +219,49 @@ const HomePage = () => {
               speed={26}
               tone="dark"
               className="font-display font-bold uppercase tracking-widest text-xl border-2 border-ink shadow-hard"
+            />
+          </div>
+        </div>
+      </Section>
+
+      {/* SECTION 3: QUOTE & PRINCIPLES */}
+      <Section
+        id="quote-section"
+        className="items-center justify-center bg-ink text-sand border-b-2 border-bone"
+      >
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "linear-gradient(#F0F0E0 1px, transparent 1px), linear-gradient(to right, #F0F0E0 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        ></div>
+
+        <div className="max-w-screen-lg mx-auto text-center relative z-10 space-y-12">
+          <div className="w-16 h-16 bg-crimson mx-auto flex items-center justify-center border-2 border-sand shadow-[4px_4px_0px_0px_#F0F0E0]">
+            <Quote className="w-8 h-8 text-sand" strokeWidth={3} />
+          </div>
+
+          <motion.blockquote
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-display text-3xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight uppercase"
+          >
+            "Quyền lực nhà nước là{" "}
+            <span className="text-ink bg-crimson px-2 box-decoration-clone">
+              thống nhất
+            </span>
+            , có sự phân công, phối hợp và kiểm soát giữa các cơ quan nhà nước."
+          </motion.blockquote>
+
+          <div className="py-8">
+            <MarqueeStrip
+              text="Lập pháp // Hành pháp // Tư pháp"
+              speed={30}
+              tone="dark"
+              className="bg-transparent text-sand/50 font-display font-bold uppercase tracking-widest text-xl border-none"
             />
           </div>
         </div>
