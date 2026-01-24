@@ -9,7 +9,7 @@ const VERTICAL_WORD = "ĐOÀN KẾT";
 // 1. Đ Ả N G C Ộ N G S Ả N  -> Đ (index 0)
 // 2. K I Ể M S O Á T       -> O (index 5)  
 // 3. P H Á P L U Ậ T       -> A (index 2, but Á)
-// 4. N H Â N D Â N         -> N (index 4)
+// 4. N H Â N D Â N         -> N (index 3)
 // 5. K I Ể M T R A         -> K (index 0)
 // 6. H I Ế N P H Á P       -> Ế (index 2)
 // 7. T H Ố N G N H Ấ T     -> T (index 0)
@@ -34,13 +34,13 @@ const CROSSWORD_ROWS = [
         anchor: "Chữ O ở vị trí 6"
     },
     {
-        id: 3,
-        answer: "PHÁP LUẬT",
-        hint1: "Công cụ đảm bảo tính tối thượng trong việc điều chỉnh các quan hệ xã hội.",
-        hint2: "Dân chủ xã hội chủ nghĩa muốn thực hiện được phải gắn liền với kỷ cương và được thể chế hóa bằng yếu tố này.",
-        clue: "Nhà nước pháp quyền XHCN Việt Nam quản lý xã hội chủ yếu bằng công cụ gì? (8 chữ cái)",
-        verticalIndex: 2,
-        anchor: "Chữ Á ở vị trí 3"
+      id: 3,
+      answer: "NHÀ NƯỚC",
+      hint1: "Thiết chế quyền lực công đặc biệt, đại diện cho quyền lực của nhân dân, được sử dụng để tổ chức và quản lý xã hội.",
+      hint2: "Trong Nhà nước pháp quyền XHCN Việt Nam, công cụ quản lý xã hội gắn liền với bộ máy quyền lực công này.",
+      clue: "Trong Nhà nước pháp quyền XHCN Việt Nam, chủ thể nào giữ vai trò trung tâm trong việc tổ chức, quản lý xã hội theo Hiến pháp và pháp luật? (7 chữ cái)",
+      verticalIndex: 2,
+      anchor: "Chữ À ở vị trí 3"
     },
     {
         id: 4,
@@ -48,8 +48,8 @@ const CROSSWORD_ROWS = [
         hint1: "Theo quan điểm của Hồ Chí Minh và Đảng ta, trong chế độ xã hội chủ nghĩa, bao nhiêu quyền hạn đều là của đối tượng này.",
         hint2: "Đây là chủ thể tối cao của quyền lực nhà nước; Nhà nước pháp quyền XHCN Việt Nam được xây dựng là nhà nước của ai, do ai và vì ai?",
         clue: "Trong đặc điểm của Nhà nước pháp quyền XHCN Việt Nam, đây là chủ thể làm chủ đất nước; Nhà nước được xây dựng là của chủ thể này, do chủ thể này và vì chủ thể này. (7 chữ cái)",
-        verticalIndex: 4,
-        anchor: "Chữ N ở vị trí 5"
+        verticalIndex: 3,
+        anchor: "Chữ N ở vị trí 4"
     },
     {
         id: 5,
