@@ -85,8 +85,8 @@ const HomePage = () => {
             </div>
 
             <KineticSubline className="max-w-xl text-ink/80 text-lg font-medium border-l-4 border-crimson pl-4 ml-2">
-              Hệ thống tri thức lý luận về sứ mệnh lịch sử của giai cấp công
-              nhân và con đường đi lên chủ nghĩa xã hội.
+              Hệ thống kiến thức môn học Chủ nghĩa xã hội khoa học 
+              về Nhà nước Việt Nam, Đảng và nhân dân.
             </KineticSubline>
 
             <div className="flex flex-wrap gap-3 pt-4">
